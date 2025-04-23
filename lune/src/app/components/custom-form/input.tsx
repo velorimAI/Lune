@@ -126,7 +126,7 @@ export const Input: FC<InputProps> = (props) => {
       )}
     >
       <FormLabel
-        className="dark:text-zinc-400 shrink-0 "
+        className="dark:text-zinc-400 shrink-0 mb-2 "
         inValid={!!formField?.error}
         disabled={disabled}
         label={label}
@@ -141,7 +141,7 @@ export const Input: FC<InputProps> = (props) => {
       >
         <InputShadcn
           {...formField.fieldRegister}
-          className={cn(
+          className={cn( 
             `${submitButton?.status ? 'rounded-r-none dark:focus:ring-0 ' : ''}`,
             inputStyle,
             type === 'number' ? 'no-spinner' : '',
@@ -173,13 +173,13 @@ export const Input: FC<InputProps> = (props) => {
           <>
             {eyeOff && (
               <EyeOff
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
                 onClick={() => setEye((prevState) => !prevState)}
               />
             )}
             {!eyeOff && (
               <Eye
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
                 onClick={() => setEye((prevState) => !prevState)}
               />
             )}
