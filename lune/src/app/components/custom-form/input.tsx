@@ -188,7 +188,7 @@ export const Input: FC<InputProps> = (props) => {
         {clearable &&
           formField.valueState && ( // Show clear icon if clearable and input has value
             <CircleX
-              className="text-gray-600 absolute right-1 top-1/2 transform -translate-y-1/2 cursor-pointer"
+              className="text-gray-600 absolute left-1 top-1/2 transform -translate-y-1/2 cursor-pointer"
               onClick={handleClear}
             />
           )}
