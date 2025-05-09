@@ -1,7 +1,8 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Info } from "lucide-react";
+import axios from "axios";
 
 interface Order {
   fullName: string;
@@ -17,6 +18,29 @@ interface OrdersListProps {
 }
 
 export const OrdersList: FC<OrdersListProps> = ({ data }) => {
+  const [orders, setOrders] = useState<Order[]>([]);
+
+
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem("token"); // فرض بر اینه که توکن با کلید "token" ذخیره شده
+        const response = await axios.get("http://localhost:3001/api/orders/all", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setOrders(response.data);
+      } catch (error) {
+        console.error("خطا در دریافت سفارش‌ها:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+    
+
   return (
     <div className="space-y-4">
       {data.map((order: Order, index: any) => (
