@@ -11,20 +11,24 @@ const Login: FC = () => {
   //   console.log(data.username);
   // };
 
-  const onSubmit = async (data: any) => {
-    try {
-      const response = await axios.post("http://localhost:5000/login", {
-        code_meli: data.username,
-        password: data.password,
-      });
+const onSubmit = async (data: any) => {
+  try {
+    const response = await axios.post("http://localhost:3001/api/auth/login", {
+      code_meli: data.username,
+      password: data.password,
+    });
 
-      console.log("Login successful:", response.data);
-      alert(`Welcome ${response.data.name} ${response.data.last_name}!`);
-    } catch (error: any) {
-      console.error("Login failed:", error.response?.data || error.message);
-      alert(error.response?.data?.error || "Login failed");
-    }
-  };
+    // ذخیره توکن در LocalStorage
+    localStorage.setItem("token", response.data.token);
+
+    console.log("Login successful:", response.data);
+    alert(`Welcome ${response.data.name} ${response.data.last_name}!`);
+  } catch (error: any) {
+    console.error("Login failed:", error.response?.data || error.message);
+    alert(error.response?.data?.error || "Login failed");
+  }
+};
+
 
   return (
     <div className="min-h-screen  bg-cover bg-center">
