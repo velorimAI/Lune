@@ -10,5 +10,5 @@ export default function Home() {
     router.push("/auth/login");
   }, [router]);
 
-  return null; // چون قراره فقط ریدایرکت انجام بشه، چیزی نمایش داده نمی‌شه
+  return null;
 }

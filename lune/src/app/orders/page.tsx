@@ -1,13 +1,13 @@
 "use client";
 
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { OrdersList } from "./components/orders-list";
 import { mockOrders } from "@/mock/ordersListData";
 import { useStaticSearchDevices } from "./hooks/use-static-search-devices";
 import { SearchBox } from "../components/table/search-box";
 import { Card } from "../components/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { CirclePlus, Trash2 } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import { Modal } from "../components/modal";
 import { Form } from "../components/custom-form/form";
 import { Input } from "../components/custom-form/input";
@@ -28,16 +28,20 @@ const Orders: FC = () => {
   const [userName, setUserName] = useState<string | null>("");
   const [userLastname, setUserLastname] = useState<string | null>("");
 
-  useEffect(() => {
-    // دریافت مقدار role از localStorage
-    const storedRole = localStorage.getItem("role");
-    setRole(storedRole); // ذخیره مقدار role در state
+  //   const { data, isLoading, isError, error } = useQuery({
+  //   queryKey: ["orders"],
+  //   queryFn: getOrdersList,
+  // });
+  // console.log(data);
 
-    // دریافت مقادیر name و lastname از localStorage
+  useEffect(() => {
+    const storedRole = localStorage.getItem("role");
+    setRole(storedRole);
+
     const storedName = localStorage.getItem("name");
     const storedLastname = localStorage.getItem("lastname");
-    setUserName(storedName); // ذخیره مقدار name در state
-    setUserLastname(storedLastname); // ذخیره مقدار lastname در state
+    setUserName(storedName);
+    setUserLastname(storedLastname);
   }, []);
   const filteredDataList = useStaticSearchDevices(orders || [], searchText);
 
@@ -45,36 +49,26 @@ const Orders: FC = () => {
     setSearchText(value || "");
   };
 
-  const sortedOrders = [...filteredDataList].sort((a, b) => {
-    if (sortBy === "name") {
-      return a.fullName.localeCompare(b.fullName); // ← درست شد
-    } else if (sortBy === "receptionDate") {
-      // تاریخ‌ها در فرمت شمسی هستن، باید برای مرتب‌سازی تبدیل به معادل میلادی بشن یا به‌صورت رشته‌ای مقایسه شن
-      return b.receptionDate.localeCompare(a.receptionDate);
-    }
-    return 0;
-  });
-
   const handleOpen = (e?: React.MouseEvent) => {
     e?.stopPropagation?.();
     setOpen(true);
   };
 
-  const handleSubmit = (data: any) => {
-    const newOrder = {
-      id: Date.now(),
-      fullName: `${data.name} ${data.lastname}`,
-      ...data,
-    };
-    setOrders([newOrder, ...orders]);
-    setOpen(false);
-  };
+  // const handleSubmit = (data: any) => {
+  //   const newOrder = {
+  //     id: Date.now(),
+  //     fullName: `${data.name} ${data.lastname}`,
+  //     ...data,
+  //   };
+  //   setOrders([newOrder, ...orders]);
+  //   setOpen(false);
+  // };
 
   return (
     <>
       {/* <h1>{role && <div className="text-right p-4">{role}</div>}</h1> */}
       <Card
-        title={`سفارش ها (${orders.length})`}
+        title={`سفارش ها (${orders?.length})`}
         description={
           <div className="flex items-center gap-3 mt-2">
             {role && userName && userLastname && (
@@ -106,7 +100,7 @@ const Orders: FC = () => {
         </div>
         <ScrollArea className="w-full flex flex-col justify-start items-center pr-3 h-[73vh] 4xl:h-[80vh]">
           <div dir="rtl">
-            <OrdersList data={sortedOrders || []} />
+            <OrdersList data={(filteredDataList as Order[]) || []} />
           </div>
           <div className="fixed left-10 bottom-[30px]">
             <CirclePlus

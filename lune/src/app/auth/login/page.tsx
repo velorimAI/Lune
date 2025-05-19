@@ -22,7 +22,7 @@ const Login: FC = () => {
           password: data.password,
         }
       );
-      const { name, last_name } = response.data; // گرفتن name و last_name از ریسپانس
+      const { name, last_name } = response.data;
 
       toast.success(`خوش آمدید، ${name} ${last_name}`, {
         action: {
@@ -37,8 +37,9 @@ const Login: FC = () => {
       localStorage.setItem("lastname", last_name);
       router.push("/orders");
     } catch (error: any) {
-      console.error("Login failed:", error.response?.data || error.message);
-      toast.error(error.response?.data?.error || " ورود ناموفق بود");
+      toast.error(
+        error.response?.data?.message || error.message || "ورود ناموفق بود"
+      );
     } finally {
       setLoading(false);
     }
@@ -55,7 +56,12 @@ const Login: FC = () => {
             height={100}
             className="mx-auto object-contain mt-4 mb-4"
           />
-          <Form onSubmit={onSubmit} submitText="ورود" cancelHide submitLoading={loading}>
+          <Form
+            onSubmit={onSubmit}
+            submitText="ورود"
+            cancelHide
+            submitLoading={loading}
+          >
             <Input
               label="نام کاربری"
               placeholder="نام کابری خود را وارد کنید :"
