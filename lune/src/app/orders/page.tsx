@@ -18,6 +18,12 @@ const sortOptions = [
   { value: "name", label: "مرتب‌سازی بر اساس نام" },
   { value: "receptionDate", label: "مرتب‌سازی بر اساس تاریخ پذیرش" },
 ];
+const tabs = [
+  { label: "همه سفارش‌ها", value: "all" },
+  { label: "تسویه شده", value: "تسویه شده" },
+  { label: "تسویه نشده", value: "تسویه نشده" },
+  { label: "لغو شده", value: "canceled" },
+];
 
 const Orders: FC = () => {
   const [searchText, setSearchText] = useState<string>("");
@@ -27,6 +33,7 @@ const Orders: FC = () => {
   const [role, setRole] = useState<string | null>("");
   const [userName, setUserName] = useState<string | null>("");
   const [userLastname, setUserLastname] = useState<string | null>("");
+  const [activeTab, setActiveTab] = useState<string>("all");
 
   //   const { data, isLoading, isError, error } = useQuery({
   //   queryKey: ["orders"],
@@ -53,6 +60,11 @@ const Orders: FC = () => {
     e?.stopPropagation?.();
     setOpen(true);
   };
+
+  const filteredOrdersByTab = useMemo(() => {
+    if (activeTab === "all") return filteredDataList;
+    return filteredDataList?.filter((item: any) => item.status === activeTab);
+  }, [filteredDataList, activeTab]);
 
   // const handleSubmit = (data: any) => {
   //   const newOrder = {
@@ -82,6 +94,28 @@ const Orders: FC = () => {
           </div>
         }
       >
+        <div className="flex gap-2 p-4 border-b border-gray-300">
+          {tabs.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveTab(tab.value)}
+              className={`relative px-4 py-2 text-sm font-medium transition-all duration-200
+        ${
+          activeTab === tab.value
+            ? "text-primary"
+            : "text-gray-500 hover:text-primary"
+        }
+      `}
+            >
+              {tab.label}
+              <span
+                className={`absolute left-0 -bottom-[2px] w-full h-[2px] transition-all duration-200
+          ${activeTab === tab.value ? "bg-primary" : "bg-gray-300"}
+        `}
+              />
+            </button>
+          ))}
+        </div>
         <div className="flex items-center gap-4 w-full max-w-[600px]">
           <div className="w-[300px]">
             <SearchBox onSearch={handleSearch} />
@@ -100,7 +134,7 @@ const Orders: FC = () => {
         </div>
         <ScrollArea className="w-full flex flex-col justify-start items-center pr-3 h-[73vh] 4xl:h-[80vh]">
           <div dir="rtl">
-            <OrdersList data={(filteredDataList as Order[]) || []} />
+            <OrdersList data={(filteredOrdersByTab as Order[]) || []} />
           </div>
           <div className="fixed left-10 bottom-[30px]">
             <CirclePlus
