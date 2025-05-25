@@ -9,13 +9,16 @@ import {
   CalendarPlus2,
   CalendarCheck,
   FileDigit,
-  FileQuestion,
   PackageOpen,
   Wrench,
   XCircle,
   CheckCircle,
   ShoppingCart,
+  SquarePen,
+  Trash2,
+  DollarSign,
 } from "lucide-react";
+import { DeleteItem } from "./delete-items";
 
 export const OrdersList: FC<OrdersListProps> = ({ data }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -23,6 +26,8 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
   const toggleDetails = (index: number) => {
     setExpandedIndex(index === expandedIndex ? null : index);
   };
+
+  console.log(data);
 
   return (
     <div className="space-y-4">
@@ -45,43 +50,47 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
             <div className="grid grid-cols-7 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center">
               <div className="flex items-center gap-2">
                 <User className="w-5 h-5" />
-                <span>{order?.fullName}</span>
+                <span>
+                  {order?.customer_name} {order?.customer_last_name}
+                </span>
               </div>
 
               <div className="flex items-center gap-2">
                 <Phone className="w-5 h-5" />
-                <span>{order?.phone}</span>
+                <span>{order?.customer_phone}</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <CalendarPlus2 className="w-5 h-5" />
-                <span>{order?.orderDate}</span>
+                <span>{order?.order_date}</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <CalendarCheck className="w-5 h-5" />
-                <span>{order.deliveryDate}</span>
+                <span>{order.prediction_delivery_date}</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <FileDigit className="w-5 h-5" />
-                <span>{order?.orderNumber}</span>
+                <span>{order?.reception_number}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <FileQuestion className="w-5 h-5" />
+                <DollarSign className="w-5 h-5" />
                 <span
                   className={
-                    order.status === "تسویه نشده"
+                    order.settlement_status === "پرداخت نشده"
                       ? "text-red-500 font-bold"
                       : "text-green-600 font-bold"
                   }
                 >
-                  {order?.status}
+                  {order?.settlement_status}
                 </span>
               </div>
 
-              <div className="flex justify-center">
+              <div className="flex gap-6 justify-center">
+                <Trash2 className="hover:text-red-600 hover:cursor-pointer" />
+                <SquarePen />
                 {expandedIndex === index ? (
                   <CircleArrowDown
                     className="w-6 h-5 cursor-pointer transition-transform duration-200 scale-125 text-blue-600"
@@ -89,7 +98,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                   />
                 ) : (
                   <CircleArrowLeft
-                    className="w-6 h-5 cursor-pointer transition-transform duration-200"
+                    className="w-6 h-6 cursor-pointer transition-transform duration-200"
                     onClick={() => toggleDetails(index)}
                   />
                 )}
@@ -118,6 +127,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                         <th className="px-4 py-2 font-medium whitespace-nowrap">
                           وضعیت تحویل
                         </th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -130,31 +140,35 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                         >
                           <td className="px-4 py-3 flex items-center gap-2 font-medium text-black whitespace-nowrap">
                             <PackageOpen className="w-5 h-5 text-gray-500" />
-                            {part.partName}
+                            {part.piece_name}
                           </td>
 
                           <td className="px-4 py-3 font-semibold text-gray-700 whitespace-nowrap">
-                            {part.orderType}
+                            {part.order_channel}
                           </td>
 
                           <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
-                            {part.quantity}
+                            {part.number_of_pieces}
                           </td>
 
                           <td className="px-4 py-3 whitespace-nowrap flex items-center gap-2 font-bold">
-                            {part.deliveryStatus === "رسیده" ? (
+                            {part.status === "دریافت شده" ? (
                               <>
                                 <CheckCircle className="w-5 h-5 " />
-                                <span className="">{part.deliveryStatus}</span>
+                                <span className="">{part.status}</span>
                               </>
                             ) : (
                               <>
                                 <XCircle className="w-5 h-5 text-red-400" />
                                 <span className="text-red-400">
-                                  {part.deliveryStatus}
+                                  {part.status}
                                 </span>
                               </>
                             )}
+                          </td>
+                          <td>
+                            {/* <Trash2 className="hover:text-red-600 hover:cursor-pointer" /> */}
+                            <DeleteItem id={part.order_id} name={part.piece_name}/>
                           </td>
                         </tr>
                       ))}

@@ -12,7 +12,7 @@ export const useStaticSearchDevices = (
     if (!devices) return [];
 
     return devices.filter((item) => {
-      const matchesSearch = [item?.fullName, item?.orderNumber, item?.phone].some(
+      const matchesSearch = [item?.customer_name , item?.reception_number, item?.customer_phone].some(
         (field) =>
           field !== undefined &&
           field !== null &&
