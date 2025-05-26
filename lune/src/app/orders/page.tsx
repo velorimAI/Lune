@@ -11,6 +11,7 @@ import { getOrdersList } from "../apis/orders/orderService";
 import { useQuery } from "@tanstack/react-query";
 import { Select } from "../components/custom-form/select-box";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const sortOptions = [
   { value: "default", label: "مرتب‌سازی پیش‌فرض" },
@@ -57,6 +58,7 @@ const Orders: FC = () => {
       (item: any) => item.settlement_status === activeTab
     );
   }, [filteredDataList, activeTab]);
+  console.log(data);
 
   return (
     <Card
@@ -65,31 +67,35 @@ const Orders: FC = () => {
         <div className="flex items-center gap-3 mt-2">
           {role && userName && userLastname && (
             <span className="text-xs text-gray-500">
-              <strong>{userName} {userLastname}</strong>
+              <strong>
+                {userName} {userLastname}
+              </strong>
               <span className="text-xs text-gray-500 mx-1">({role})</span>
             </span>
           )}
         </div>
       }
     >
+      {/* تب‌ها، سرچ، و انتخاب مرتب‌سازی */}
+
       <div className="flex gap-2 p-4 border-b border-gray-300">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             onClick={() => setActiveTab(tab.value)}
             className={`relative px-4 py-2 text-sm font-medium transition-all duration-200
-              ${
-                activeTab === tab.value
-                  ? "text-primary"
-                  : "text-gray-500 hover:text-primary"
-              }
-            `}
+            ${
+              activeTab === tab.value
+                ? "text-primary"
+                : "text-gray-500 hover:text-primary"
+            }
+          `}
           >
             {tab.label}
             <span
               className={`absolute left-0 -bottom-[2px] w-full h-[2px] transition-all duration-200
-                ${activeTab === tab.value ? "bg-primary" : "bg-gray-300"}
-              `}
+              ${activeTab === tab.value ? "bg-primary" : "bg-gray-300"}
+            `}
             />
           </button>
         ))}
@@ -111,8 +117,23 @@ const Orders: FC = () => {
 
       <ScrollArea className="w-full flex flex-col justify-start items-center pr-3 h-[73vh] 4xl:h-[80vh] mt-2">
         <div dir="rtl" className="w-full">
-          <OrdersList data={filteredOrdersByTab as Order[] || []} />
+          {isLoading ? (
+            <>
+              {[...Array(5)].map((_, i) => (
+                <div
+                  key={i}
+                  className="p-3 mb-3 border rounded-[10px] animate-pulse bg-white  border-gray-200"
+                >
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-2 w-2/4" />
+                </div>
+              ))}
+            </>
+          ) : (
+            <OrdersList data={(filteredOrdersByTab as Order[]) || []} />
+          )}
         </div>
+
         <div className="fixed left-10 bottom-[30px]">
           <CirclePlus
             className="w-[30px] h-[30px] cursor-pointer"

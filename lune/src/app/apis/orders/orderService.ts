@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const token = localStorage.getItem("token");
 
 export const getOrdersList = async () => {
+  const token = localStorage.getItem("token");
   const res = await axios.get("http://localhost:3001/api/orders/all", {
     headers: {
       Authorization: `${token}`,
@@ -13,8 +13,9 @@ export const getOrdersList = async () => {
 };
 
 export const deletePart = async (id: string) => {
+  const token = localStorage.getItem("token");
   const response = await axios.delete(
-    `http://localhost:3001/api/orders/delete/${id}`,
+    `http://localhost:3001/api/orders/deleteorder/${id}`,
     {
       headers: {
         Authorization: `${token}`,

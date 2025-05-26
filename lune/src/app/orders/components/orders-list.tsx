@@ -127,6 +127,9 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                         <th className="px-4 py-2 font-medium whitespace-nowrap">
                           وضعیت تحویل
                         </th>
+                        <th className="px-4 py-2 font-medium whitespace-nowrap">
+                          کد قطعه 
+                        </th>
                         <th></th>
                       </tr>
                     </thead>
@@ -140,15 +143,15 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                         >
                           <td className="px-4 py-3 flex items-center gap-2 font-medium text-black whitespace-nowrap">
                             <PackageOpen className="w-5 h-5 text-gray-500" />
-                            {part.piece_name}
+                            {part?.piece_name}
                           </td>
 
                           <td className="px-4 py-3 font-semibold text-gray-700 whitespace-nowrap">
-                            {part.order_channel}
+                            {part?.order_channel}
                           </td>
 
                           <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
-                            {part.number_of_pieces}
+                            {part?.number_of_pieces}
                           </td>
 
                           <td className="px-4 py-3 whitespace-nowrap flex items-center gap-2 font-bold">
@@ -166,9 +169,13 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                               </>
                             )}
                           </td>
+                          <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                            {/* <Trash2 className="hover:text-red-600 hover:cursor-pointer" /> */}
+                            {part?.part_id}
+                          </td>
                           <td>
                             {/* <Trash2 className="hover:text-red-600 hover:cursor-pointer" /> */}
-                            <DeleteItem id={part.order_id} name={part.piece_name}/>
+                            <DeleteItem id={part?.order_id} name={part?.piece_name}/>
                           </td>
                         </tr>
                       ))}

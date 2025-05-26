@@ -15,7 +15,9 @@ export const useDeletePart = () => {
           onClick: () => {},
         },
       });
-      queryClient.invalidateQueries({ queryKey: ["parts"] });
+
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.refetchQueries({ queryKey: ["orders"] });
     },
     onError: () => {
       toast.error("حذف قطعه با خطا مواجه شد");

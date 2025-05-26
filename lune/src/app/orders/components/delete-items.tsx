@@ -1,8 +1,10 @@
+"use client";
 import { Modal } from "@/app/components/modal";
 import { Trash2 } from "lucide-react";
 import { FC, useState } from "react";
 import { useDeletePart } from "../hooks/use-delete-part";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+
 
 
 interface DeleteItemProps {
@@ -20,7 +22,6 @@ export const DeleteItem: FC<DeleteItemProps> = ({ id, name }) => {
     mutate(id, {
       onSuccess: () => {
         setOpen(false);
-          router.reload();
       },
     });
   };
