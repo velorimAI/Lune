@@ -59,7 +59,6 @@ const NewOrderPage = () => {
     }
   };
 
-  // وقتی کانال تغییر کنه این تابع اجرا میشه
   const handleOrderChannelChange = (value: string) => {
     setOrderChannel(value);
   };
@@ -112,7 +111,6 @@ const NewOrderPage = () => {
             />
           </div>
 
-          {/* ستون سمت راست */}
           <div className="flex-1 space-y-6 ">
             <h3 className="text-xl font-semibold mb-4 border-b pb-2">
               جزئیات سفارش
@@ -123,13 +121,11 @@ const NewOrderPage = () => {
               required
             />
 
-            {/* باکس سفارش قطعه */}
             <div className="border rounded-lg p-4 space-y-6 bg-gray-50">
               <h3 className="text-lg font-semibold mb-4 border-b pb-2">
                 سفارش قطعه 1
               </h3>
 
-              {/* ردیف اول: نام قطعه و کد قطعه کنار هم */}
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <Input
@@ -147,7 +143,6 @@ const NewOrderPage = () => {
                 </div>
               </div>
 
-              {/* ردیف دوم: تعداد و کانال سفارش کنار هم */}
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <Input
@@ -174,7 +169,6 @@ const NewOrderPage = () => {
                 </div>
               </div>
 
-              {/* ردیف سوم: نام فروشگاه و شماره فروشگاه کنار هم */}
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <Input
@@ -194,7 +188,6 @@ const NewOrderPage = () => {
                 </div>
               </div>
 
-              {/* ردیف چهارم: تاریخ سفارش و تاریخ پیش‌بینی تحویل کنار هم */}
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <Input
@@ -210,7 +203,6 @@ const NewOrderPage = () => {
                 </div>
               </div>
 
-              {/* ردیف پنجم: وضعیت سفارش و وضعیت تسویه کنار هم */}
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <Select
@@ -236,7 +228,6 @@ const NewOrderPage = () => {
                 </div>
               </div>
 
-              {/* توضیحات به صورت textarea کامل زیر */}
               <Input
                 name="orders[0].description"
                 label="توضیحات"
