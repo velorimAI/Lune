@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClientWrapper } from "./components/layout/client-wrapper";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { AuthGuard } from "./components/layout/AuthGuard";
+import TopBar from "./components/layout/TopBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +36,11 @@ export default function RootLayout({
       >
         <AuthGuard>
           <ReactQueryProvider>
-            <ClientWrapper>{children}</ClientWrapper>
+            <ClientWrapper>
+              {" "}
+              <TopBar />
+              {children}
+            </ClientWrapper>
           </ReactQueryProvider>
         </AuthGuard>
       </body>
