@@ -13,42 +13,49 @@ export default function SettingsPage() {
   const router = useRouter();
 
   const handleSubmit = () => {
-    // اینجا ذخیره‌سازی یا ارسال درخواست API می‌تونی انجام بدی
     alert(`تنظیمات ذخیره شد:\nتعداد روز: ${days}\nنوع سفارش: ${orderType}`);
     router.push("/");
   };
 
   return (
-    <div className="max-w-md mx-auto mt-40 p-6 bg-white shadow rounded">
-      <Form onSubmit={handleSubmit} submitText="ذخیره تغییرات" >
-        <h1 className="text-xl font-bold mb-6 text-center">تنظیمات سفارش</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          تنظیمات سفارش
+        </h1>
 
-        {/* فیلد تعداد روز */}
-        <div className="mb-4">
-          <Input
-            label="تعداد روز"
-            type="number"
-            value={String(days)}
-            name="day-count"
-            onChange={(val?: string) => setDays(val ? Number(val) : 0)}
-            className="w-full px-3 py-2 border rounded text-right"
-          />
-        </div>
+        <Form
+          onSubmit={handleSubmit}
+          submitText="ذخیره تغییرات"
+          cancelText="لغو"
+        >
+          <div className="flex justify-center items-center gap-2 mx-6 mb-6 w-full">
+            <div className="w-full">
+              <Input
+                label="تعداد روز"
+                type="number"
+                value={String(days)}
+                name="day-count"
+                onChange={(val?: string) => setDays(val ? Number(val) : 0)}
+                className="w-full py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+            </div>
 
-        {/* فیلد نوع سفارش */}
-        <div className="mb-6">
-          <Select
-            label="نوع سفارش"
-            value={orderType}
-            onChange={(option: any) => setOrderType(option.value)}
-            className="w-full px-3 py-2 border rounded text-right"
-            options={[
-              { value: "VIS", label: "VIS" },
-              { value: "VOR", label: "VOR" },
-            ]}
-          />
-        </div>
-      </Form>
+            <div className="w-1/2">
+              <Select
+                label=" سفارش"
+                value={orderType}
+                onChange={(option: any) => setOrderType(option.value)}
+                className="w-full py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                options={[
+                  { value: "VIS", label: "VIS" },
+                  { value: "VOR", label: "VOR" },
+                ]}
+              />
+            </div>
+          </div>
+        </Form>
+      </div>
     </div>
   );
 }

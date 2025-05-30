@@ -141,15 +141,16 @@ export const Select: FC<SelectBoxProps> = (props) => {
       )}
     >
       {label && (
-        <FormLabel
-          className={labelClassName}
-          label={label}
-          required={required}
-          inValid={!!formField?.error}
-          tooltipTriggerIcon={tooltipTriggerIcon}
-          tooltip={tooltip}
-        />
-      )}
+  <FormLabel
+    className={cn('mb-2', labelClassName)}
+    label={label}
+    required={required}
+    inValid={!!formField?.error}
+    tooltipTriggerIcon={tooltipTriggerIcon}
+    tooltip={tooltip}
+  />
+)}
+
       <SelectShadcn
         onOpenChange={(open: boolean) => {
           if (!open && searchTerm) {

@@ -25,7 +25,7 @@ const data = {
   ],
   navSecondary: [
     { title: "کاربر", url: "/auth/login", icon: User , sidbar: true,},
-    { title: "تنظیمات", url: "#", icon: Settings , sidbar: true,},
+    { title: "تنظیمات", url: "settings", icon: Settings , sidbar: true,},
     // {
     //   disabled: true,
     //   icon: CreditCard,

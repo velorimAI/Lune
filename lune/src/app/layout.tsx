@@ -37,8 +37,8 @@ export default function RootLayout({
         <AuthGuard>
           <ReactQueryProvider>
             <ClientWrapper>
-              {" "}
               <TopBar />
+              {" "}
               {children}
             </ClientWrapper>
           </ReactQueryProvider>
