@@ -117,7 +117,7 @@ export const Form: FC<FormProps> = (props) => {
         <div className="w-full">
           <div className="flex justify-end gap-4">
             {!cancelHide && (
-              <Button type="button" variant="outline" onClick={handleCancel}>
+              <Button type="button" variant="outline" className='text-black' onClick={handleCancel}>
                 {cancelText}
               </Button>
             )}
