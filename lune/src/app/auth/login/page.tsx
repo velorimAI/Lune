@@ -67,6 +67,8 @@ const Login: FC = () => {
               placeholder="نام کابری خود را وارد کنید :"
               className="w-[400px]"
               name="username"
+              idNumber
+              type="number"              
             />
             <Input
               label="رمز عبور"
