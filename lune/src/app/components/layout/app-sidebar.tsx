@@ -21,7 +21,7 @@ const data = {
   navMain: [
     { title: "داشبورد", url: "#", icon: ChartColumn },
     { title: "سفارش ها", url: "/orders", icon: ClipboardList },
-    { title: "جست و جو", url: "#", icon: Search,  sidbar: true}
+ 
   ],
   navSecondary: [
     { title: "کاربر", url: "/auth/login", icon: User , sidbar: true,},
