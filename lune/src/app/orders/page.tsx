@@ -77,6 +77,9 @@ const Orders: FC = () => {
       }
     >
       {/* تب‌ها، سرچ، و انتخاب مرتب‌سازی */}
+      <div className="w-[300px]">
+        <SearchBox onSearch={handleSearch} />
+      </div>
 
       <div className="flex gap-2 p-4 border-b border-gray-300">
         {tabs.map((tab) => (
@@ -84,11 +87,10 @@ const Orders: FC = () => {
             key={tab.value}
             onClick={() => setActiveTab(tab.value)}
             className={`relative px-4 py-2 text-sm font-medium transition-all duration-200
-            ${
-              activeTab === tab.value
+            ${activeTab === tab.value
                 ? "text-primary"
                 : "text-gray-500 hover:text-primary"
-            }
+              }
           `}
           >
             {tab.label}
@@ -102,9 +104,7 @@ const Orders: FC = () => {
       </div>
 
       <div className="flex items-center gap-4 w-full max-w-[600px] px-4 pt-2">
-        <div className="w-[300px]">
-          <SearchBox onSearch={handleSearch} />
-        </div>
+
         <div>
           <Select
             value={sortBy}
