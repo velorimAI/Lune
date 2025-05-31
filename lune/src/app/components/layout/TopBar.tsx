@@ -56,7 +56,7 @@ export default function TopBar() {
   if (pathname === "/auth/login") return null;
 
   return (
-    <div className="flex justify-between items-center px-6 py-3 bg-gray-50 shadow-sm border-b border-blue-200 rounded-b-lg mb-20">
+    <div className="flex justify-between items-center px-6 py-3 bg-gray-50 shadow-sm border-b border-blue-200 rounded-b-lg">
       
       <div className="flex items-center gap-3 text-black">
         <Clock4 className="w-5 h-5 text-black" />
