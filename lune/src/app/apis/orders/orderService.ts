@@ -18,7 +18,7 @@ export const deletePart = async (id: string) => {
     `http://localhost:3001/api/orders/deleteorder/${id}`,
     {
       headers: {
-        Authorization: `${token}`,
+        Authorization: `Bearer ${token}`,
       },
     }
   );
