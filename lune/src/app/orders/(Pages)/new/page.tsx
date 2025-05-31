@@ -8,7 +8,8 @@ import { Input } from "@/app/components/custom-form/input";
 import { Select } from "@/app/components/custom-form/select-box";
 import { Button } from "@/app/components/button";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, RefreshCcw, Edit2 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type Piece = {
   piece_name: string;
@@ -17,11 +18,11 @@ type Piece = {
   order_channel: string;
   market_name: string;
   market_phone: string;
-  order_date?: string;
-  prediction_delivery_date?: string;
+  prediction_delivery_date?: string; // now treated as a number, but stored as string
   status?: string;
   settlement_status?: string;
   description?: string;
+  confirmed?: boolean;
 };
 
 type OrderGroup = {
@@ -32,6 +33,7 @@ type OrderGroup = {
 export default function NewOrderPage() {
   const router = useRouter();
 
+  // --- State for customer and reception info ---
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
     phone_number: "",
@@ -41,10 +43,14 @@ export default function NewOrderPage() {
     reception_number: "",
     reception_date: "",
   });
+
+  // --- State for groups of orders and registered pieces ---
   const [orderGroups, setOrderGroups] = useState<OrderGroup[]>([
     { order_number: "", pieces: [emptyPiece()] },
   ]);
+  const [registeredPieces, setRegisteredPieces] = useState<Piece[]>([]);
 
+  // --- Utility to create an “empty” piece object ---
   function emptyPiece(): Piece {
     return {
       piece_name: "",
@@ -53,21 +59,15 @@ export default function NewOrderPage() {
       order_channel: "",
       market_name: "",
       market_phone: "",
-      order_date: "",
       prediction_delivery_date: "",
       status: "دریافت نشده",
       settlement_status: "پرداخت نشده",
       description: "",
+      confirmed: false,
     };
   }
 
-  const handleAddOrderGroup = () => {
-    setOrderGroups([
-      ...orderGroups,
-      { order_number: "", pieces: [emptyPiece()] },
-    ]);
-  };
-
+  // --- Handlers for adding/removing order groups and pieces ---
   const handleRemoveOrderGroup = (idx: number) => {
     const groups = orderGroups.filter((_, i) => i !== idx);
     setOrderGroups(
@@ -78,41 +78,116 @@ export default function NewOrderPage() {
   };
 
   const handleOrderNumberChange = (idx: number, value?: string) => {
-    const groups = [...orderGroups];
-    groups[idx].order_number = value || "";
-    setOrderGroups(groups);
+    const groupsCopy = [...orderGroups];
+    groupsCopy[idx].order_number = value || "";
+    setOrderGroups(groupsCopy);
   };
 
   const handleAddPiece = (orderIdx: number) => {
-    const groups = [...orderGroups];
-    groups[orderIdx].pieces.push(emptyPiece());
-    setOrderGroups(groups);
+    const groupsCopy = [...orderGroups];
+    groupsCopy[orderIdx].pieces.push(emptyPiece());
+    setOrderGroups(groupsCopy);
   };
 
   const handleRemovePiece = (orderIdx: number, pieceIdx: number) => {
-    const groups = [...orderGroups];
-    const pieces = groups[orderIdx].pieces.filter((_, j) => j !== pieceIdx);
-    groups[orderIdx].pieces = pieces.length ? pieces : [emptyPiece()];
-    setOrderGroups(groups);
+    const groupsCopy = [...orderGroups];
+    const filteredPieces = groupsCopy[orderIdx].pieces.filter(
+      (_, j) => j !== pieceIdx
+    );
+    groupsCopy[orderIdx].pieces = filteredPieces.length
+      ? filteredPieces
+      : [emptyPiece()];
+    setOrderGroups(groupsCopy);
   };
 
+  // --- Handler for changes to any field of a piece ---
   const handlePieceChange = (
     orderIdx: number,
     pieceIdx: number,
     field: keyof Piece,
-    value: string | number
+    value: string | number | boolean
   ) => {
-    const groups = [...orderGroups];
+    const groupsCopy = [...orderGroups];
     if (field === "number_of_pieces") {
-      groups[orderIdx].pieces[pieceIdx][field] = Number(value);
+      groupsCopy[orderIdx].pieces[pieceIdx][field] = Number(value);
+    } else if (field === "confirmed") {
+      groupsCopy[orderIdx].pieces[pieceIdx][field] = Boolean(value);
     } else {
-      // @ts-ignore
-      groups[orderIdx].pieces[pieceIdx][field] = value;
+      groupsCopy[orderIdx].pieces[pieceIdx][field] = value as string;
     }
-    setOrderGroups(groups);
+    setOrderGroups(groupsCopy);
   };
 
+  // --- When “ثبت قطعه” is clicked, move that piece from the form into the registeredPieces list ---
+  const handleRegisterPiece = (orderIdx: number, pieceIdx: number) => {
+    const pieceToRegister = orderGroups[orderIdx].pieces[pieceIdx];
+    setRegisteredPieces((prev) => [...prev, pieceToRegister]);
+    handleRemovePiece(orderIdx, pieceIdx);
+  };
+
+  // --- Reset entire form (but do not clear registeredPieces) ---
+  const handleResetForm = () => {
+    setCustomerInfo({ name: "", phone_number: "", car_status: "متوقف" });
+    setReceptionInfo({ reception_number: "", reception_date: "" });
+    setOrderGroups([{ order_number: "", pieces: [emptyPiece()] }]);
+    // Note: registeredPieces is intentionally NOT cleared here
+  };
+
+  // --- Remove a piece from the “registered” list ---
+  const handleRemoveRegisteredPiece = (idx: number) => {
+    const updated = registeredPieces.filter((_, i) => i !== idx);
+    setRegisteredPieces(updated);
+  };
+
+  // --- Edit a piece from the “registered” list ---
+  const handleEditRegisteredPiece = (idx: number) => {
+    const pieceToEdit = registeredPieces[idx];
+    setOrderGroups((prev) => {
+      const newGroups = [...prev];
+      newGroups[0].pieces[0] = pieceToEdit; // Load into the first piece of the first group
+      return newGroups;
+    });
+    handleRemoveRegisteredPiece(idx);
+  };
+
+  // --- Final submit: gather all data and POST to backend ---
   const handleSubmit = async () => {
+    // Basic client‐side check: highlight any empty required fields
+    let hasEmpty = false;
+
+    if (!customerInfo.name.trim() || !customerInfo.phone_number.trim()) {
+      hasEmpty = true;
+    }
+    if (!receptionInfo.reception_number.trim() || !receptionInfo.reception_date) {
+      hasEmpty = true;
+    }
+    orderGroups.forEach((grp) => {
+      if (!grp.order_number.trim()) {
+        hasEmpty = true;
+      }
+      grp.pieces.forEach((p) => {
+        if (
+          !p.piece_name.trim() ||
+          !p.part_id.trim() ||
+          !String(p.number_of_pieces).trim() ||
+          !p.order_channel.trim() ||
+          !String(p.prediction_delivery_date).trim()
+        ) {
+          hasEmpty = true;
+        }
+        if (p.order_channel === "انبار مرکزی") {
+          if (!p.market_name.trim() || !p.market_phone.trim()) {
+            hasEmpty = true;
+          }
+        }
+      });
+    });
+
+    if (hasEmpty) {
+      toast.error("لطفاً تمام فیلدهای ضروری را پر کنید");
+      return;
+    }
+
     const payload = {
       customer: customerInfo,
       reception: receptionInfo,
@@ -132,7 +207,6 @@ export default function NewOrderPage() {
               p.order_channel === "انبار مرکزی" ? p.market_phone : null,
           },
           dates: {
-            order_date: p.order_date,
             prediction_delivery_date: p.prediction_delivery_date,
           },
           status: {
@@ -140,6 +214,7 @@ export default function NewOrderPage() {
             settlement_status: p.settlement_status,
           },
           description: p.description,
+          confirmed: p.confirmed,
         })),
       })),
     };
@@ -157,6 +232,7 @@ export default function NewOrderPage() {
       if (res.ok) {
         toast.success("سفارش‌ها با موفقیت ثبت شدند");
         setOrderGroups([{ order_number: "", pieces: [emptyPiece()] }]);
+        setRegisteredPieces([]);
       } else {
         toast.error("خطا در ثبت سفارش‌ها");
       }
@@ -166,278 +242,417 @@ export default function NewOrderPage() {
   };
 
   return (
-    <Card
-      title="ثبت سفارش"
-      extra={
-        <Button onClick={() => router.push("/orders")}> <ArrowLeft /> </Button>
-      }
-      className="w-full p-4"
-    >
-      <Form cancelHide submitText="ثبت" onSubmit={handleSubmit}>
-        {/* مشتری و پذیرش */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-1 mb-3">
-          <Input
-            name="customer.name"
-            label="نام و خانوادگی"
-            required
-            value={customerInfo.name}
-            onChange={(v) =>
-              setCustomerInfo({ ...customerInfo, name: v || "" })
-            }
-          />
-          <Input
-            name="customer.phone_number"
-            label="شماره تماس"
-            required
-            value={customerInfo.phone_number}
-            onChange={(v) =>
-              setCustomerInfo({ ...customerInfo, phone_number: v || "" })
-            }
-          />
-          <Select
-            name="customer.car_status"
-            label="وضعیت خودرو"
-            className="mt-2"
-            inputStyle="w-full"
-            required
-            value={customerInfo.car_status}
-            onChange={(v) =>
-              setCustomerInfo({ ...customerInfo, car_status: v || "" })
-            }
-            options={[
-              { value: "متوقف", label: "متوقف" },
-              { value: "متوقع", label: "متوقع" },
-            ]}
-          />
-          <Input
-            name="reception.reception_number"
-            label="شماره پذیرش"
-            required
-            value={receptionInfo.reception_number}
-            onChange={(v) =>
-              setReceptionInfo({
-                ...receptionInfo,
-                reception_number: v || "",
-              })
-            }
-          />
-          <Input
-            name="reception.reception_date"
-            label="تاریخ پذیرش"
-            required
-            type="date"
-            value={receptionInfo.reception_date}
-            onChange={(v) =>
-              setReceptionInfo({ ...receptionInfo, reception_date: v || "" })
-            }
-          />
+    <div className="max-w-6xl mx-auto p-4">
+      <Card
+        title="ثبت سفارش"
+        extra={
+          <Button
+            onClick={() => router.push("/orders")}
+            variant="outline"
+            size="sm"
+            className="ml-2"
+          >
+            <ArrowLeft size={16} className="text-black" />
+          </Button>
+        }
+        className="w-full p-4"
+      >
+        {/* ---------- Reset Button (with Refresh Icon) Above the Form ---------- */}
+        <div className="flex justify-start mb-4">
+          <Button onClick={handleResetForm} size="sm" variant="outline" className="text-black">
+            <RefreshCcw size={16} />
+          </Button>
         </div>
 
-        {/* گروه‌های سفارش */}
-        {orderGroups.map((grp, i) => (
-          <div key={i} className="mb-3">
-            <div className="flex items-center justify-between mb-1">
-              <h4 className="text-lg font-medium text-blue-700">
-                📦 سفارش {i + 1}
-              </h4>
-              <div className="flex gap-1">
-                <Button
-                  onClick={() => handleRemoveOrderGroup(i)}
-                  size="sm"
-                  variant="outline"
-                  className="text-red-600"
-                >
-                  <Trash2 size={16} />
-                </Button>
-                <Button onClick={() => handleAddPiece(i)} size="sm">
-                  + قطعه
-                </Button>
-                <Button
-                  onClick={handleAddOrderGroup}
-                  size="sm"
-                  variant="outline"
-                  className="text-black"
-                >
-                  + سفارش جدید
-                </Button>
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="text-lg font-medium text-blue-700">📦 ثبت سفارش</h4>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* ---------------- Left Column: Input Form ---------------- */}
+          <div>
+            <Form cancelHide submitHide onSubmit={handleSubmit} >
+              {/*  Customer Information */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-1 mb-2">
+                <Input
+                  name="customer.name"
+                  label="نام و خانوادگی"
+                  required={false}
+                  value={customerInfo.name}
+                  onChange={(v) =>
+                    setCustomerInfo({ ...customerInfo, name: v || "" })
+                  }
+                  className={`${
+                    !customerInfo.name.trim() ? "border-red-500" : ""
+                  }`}
+                />
+                <Input
+                  name="customer.phone_number"
+                  label="شماره تماس"
+                  required={false}
+                  value={customerInfo.phone_number}
+                  onChange={(v) =>
+                    setCustomerInfo({
+                      ...customerInfo,
+                      phone_number: v || "",
+                    })
+                  }
+                  className={`${
+                    !customerInfo.phone_number.trim() ? "border-red-500" : ""
+                  }`}
+                />
+                <Select
+                  name="customer.car_status"
+                  label="وضعیت خودرو"
+                  inputStyle="w-full"
+                  labelClassName="mt-2"
+                  required={false}
+                  value={customerInfo.car_status}
+                  onChange={(v) =>
+                    setCustomerInfo({ ...customerInfo, car_status: v || "" })
+                  }
+                  options={[
+                    { value: "متوقف", label: "متوقف" },
+                    { value: "متوقع", label: "متوقع" },
+                  ]}
+                  className={`${
+                    !customerInfo.car_status.trim() ? "border-red-500" : ""
+                  }`}
+                />
               </div>
-            </div>
 
-            <Input
-              name={`orderGroups[${i}].order_number`}
-              label="شماره سفارش"
-              required
-              className="mb-1"
-              value={grp.order_number}
-              onChange={(v) => handleOrderNumberChange(i, v)}
-            />
+              {/*  Reception Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mb-2">
+                <Input
+                  name="reception.reception_number"
+                  label="شماره پذیرش"
+                  required={false}
+                  value={receptionInfo.reception_number}
+                  onChange={(v) =>
+                    setReceptionInfo({
+                      ...receptionInfo,
+                      reception_number: v || "",
+                    })
+                  }
+                  className={`${
+                    !receptionInfo.reception_number.trim()
+                      ? "border-red-500"
+                      : ""
+                  }`}
+                />
+                <Input
+                  name="reception.reception_date"
+                  label="تاریخ پذیرش"
+                  type="date"
+                  required={false}
+                  value={receptionInfo.reception_date}
+                  onChange={(v) =>
+                    setReceptionInfo({
+                      ...receptionInfo,
+                      reception_date: v || "",
+                    })
+                  }
+                  className={`${
+                    !receptionInfo.reception_date ? "border-red-500" : ""
+                  }`}
+                />
+              </div>
 
-            <div className="space-y-2">
-              {grp.pieces.map((p, j) => (
-                <div
-                  key={j}
-                  className="p-2 bg-gray-50 rounded border border-gray-200"
-                >
-                  {/* چیدمان حذف جلوی عنوان قطعه */}
-                  <div className="flex items-center mb-2">
-                    <Trash2
-                      onClick={() => handleRemovePiece(i, j)}
-                      className="text-red-600 cursor-pointer ml-2"
-                      size={16}
-                    />
-                    <div className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-semibold">
-                      قطعه {j + 1}
-                    </div>
+              {/*  Loop through each Order Group */}
+              {orderGroups.map((grp, i) => (
+                <div key={i} className="mb-4 border border-gray-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-md font-semibold text-blue-700">
+                      📦 سفارش {i + 1}
+                    </h4>
+                    {/* Removed Trash button from order group */}
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-1">
-                    <Input
-                      name={`orderGroups[${i}].pieces[${j}].piece_name`}
-                      label="قطعه"
-                      required
-                      value={p.piece_name}
-                      onChange={(v) =>
-                        handlePieceChange(i, j, "piece_name", v || "")
-                      }
-                    />
-                    <Input
-                      name={`orderGroups[${i}].pieces[${j}].part_id`}
-                      label="کد"
-                      required
-                      value={p.part_id}
-                      onChange={(v) =>
-                        handlePieceChange(i, j, "part_id", v || "")
-                      }
-                    />
-                    <Input
-                      name={`orderGroups[${i}].pieces[${j}].number_of_pieces`}
-                      label="تعداد"
-                      type="number"
-                      required
-                      value={String(p.number_of_pieces)}
-                      onChange={(v) =>
-                        handlePieceChange(i, j, "number_of_pieces", v || "1")
-                      }
-                    />
-                    <Select
-                      name={`orderGroups[${i}].pieces[${j}].order_channel`}
-                      label="کانال"
-                      className="mt-2"
-                      inputStyle="w-full"
-                      required
-                      value={p.order_channel}
-                      onChange={(v) =>
-                        handlePieceChange(i, j, "order_channel", v || "")
-                      }
-                      options={[
-                        { value: "VOR", label: "VOR" },
-                        { value: "VIS", label: "VIS" },
-                        { value: "انبار مرکزی", label: "انبار مرکزی" },
-                      ]}
-                    />
-                    {p.order_channel === "انبار مرکزی" && (
-                      <>
-                        <Input
-                          name={`orderGroups[${i}].pieces[${j}].market_name`}
-                          label="فروشگاه"
-                          required
-                          value={p.market_name}
-                          onChange={(v) =>
-                            handlePieceChange(i, j, "market_name", v || "")
-                          }
-                          className="md:col-span-2"
-                        />
-                        <Input
-                          name={`orderGroups[${i}].pieces[${j}].market_phone`}
-                          label="تلفن فروشگاه"
-                          required
-                          value={p.market_phone}
-                          onChange={(v) =>
-                            handlePieceChange(i, j, "market_phone", v || "")
-                          }
-                          className="md:col-span-2"
-                        />
-                      </>
-                    )}
-                    <Input
-                      name={`orderGroups[${i}].pieces[${j}].order_date`}
-                      label="تاریخ"
-                      value={p.order_date}
-                      onChange={(v) =>
-                        handlePieceChange(i, j, "order_date", v || "")
-                      }
-                    />
-                    <Input
-                      name={`orderGroups[${i}].pieces[${j}].prediction_delivery_date`}
-                      label="تحویل"
-                      value={p.prediction_delivery_date}
-                      onChange={(v) =>
-                        handlePieceChange(
-                          i,
-                          j,
-                          "prediction_delivery_date",
-                          v || ""
-                        )
-                      }
-                    />
-                    <Select
-                      name={`orderGroups[${i}].pieces[${j}].status`}
-                      label="وضعیت"
-                      className="mt-2"
-                      inputStyle="w-full"
-                      value={p.status}
-                      onChange={(v) =>
-                        handlePieceChange(i, j, "status", v || "دریافت نشده")
-                      }
-                      options={[
-                        { value: "دریافت نشده", label: "دریافت نشده" },
-                        { value: "دریافت شده", label: "دریافت شده" },
-                      ]}
-                    />
-                    <Select
-                      name={`orderGroups[${i}].pieces[${j}].settlement_status`}
-                      label="تسویه"
-                      className="mt-2"
-                      inputStyle="w-full"
-                      value={p.settlement_status}
-                      onChange={(v) =>
-                        handlePieceChange(
-                          i,
-                          j,
-                          "settlement_status",
-                          v || "پرداخت نشده"
-                        )
-                      }
-                      options={[
-                        { value: "پرداخت نشده", label: "پرداخت نشده" },
-                        { value: "پرداخت شده", label: "پرداخت شده" },
-                      ]}
-                    />
-                    <Input
-                      name={`orderGroups[${i}].pieces[${j}].description`}
-                      label="توضیحات"
-                      type="textarea"
-                      value={p.description}
-                      onChange={(v) =>
-                        handlePieceChange(i, j, "description", v || "")
-                      }
-                      className="md:col-span-4"
-                    />
+                  {/*  Order Number Input */}
+                  <Input
+                    name={`orderGroups[${i}].order_number`}
+                    label="شماره سفارش"
+                    required={false}
+                    value={grp.order_number}
+                    onChange={(v) => handleOrderNumberChange(i, v)}
+                    className={`mb-2 ${
+                      !grp.order_number.trim() ? "border-red-500" : ""
+                    }`}
+                  />
+
+                  {/*  Pieces inside this Order Group */}
+                  <div className="space-y-3">
+                    {grp.pieces.map((p, j) => (
+                      <div
+                        key={j}
+                        className="p-3 bg-gray-50 rounded border border-gray-200"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-semibold">
+                            قطعه {j + 1}
+                          </div>
+                          <Button
+                            onClick={() => handleRegisterPiece(i, j)}
+                            size="sm"
+                            variant="outline"
+                            className="text-green-600"
+                          >
+                            ثبت قطعه
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                          <Input
+                            name={`orderGroups[${i}].pieces[${j}].piece_name`}
+                            label="قطعه"
+                            required={false}
+                            value={p.piece_name}
+                            onChange={(v) =>
+                              handlePieceChange(i, j, "piece_name", v || "")
+                            }
+                            className={`${
+                              !p.piece_name.trim() ? "border-red-500" : ""
+                            }`}
+                          />
+                          <Input
+                            name={`orderGroups[${i}].pieces[${j}].part_id`}
+                            label="کد"
+                            required={false}
+                            value={p.part_id}
+                            onChange={(v) =>
+                              handlePieceChange(i, j, "part_id", v || "")
+                            }
+                            className={`${
+                              !p.part_id.trim() ? "border-red-500" : ""
+                            }`}
+                          />
+                          <Input
+                            name={`orderGroups[${i}].pieces[${j}].number_of_pieces`}
+                            label="تعداد"
+                            type="number"
+                            required={false}
+                            value={String(p.number_of_pieces)}
+                            onChange={(v) =>
+                              handlePieceChange(
+                                i,
+                                j,
+                                "number_of_pieces",
+                                v || "1"
+                              )
+                            }
+                            className={`${
+                              !String(p.number_of_pieces).trim()
+                                ? "border-red-500"
+                                : ""
+                            }`}
+                          />
+                          <Select
+                            name={`orderGroups[${i}].pieces[${j}].order_channel`}
+                            label="کانال"
+                            inputStyle="w-full"
+                            labelClassName="mt-2"
+                            required={false}
+                            value={p.order_channel}
+                            onChange={(v) =>
+                              handlePieceChange(i, j, "order_channel", v || "")
+                            }
+                            options={[
+                              { value: "VOR", label: "VOR" },
+                              { value: "VIS", label: "VIS" },
+                              { value: "انبار مرکزی", label: "انبار مرکزی" },
+                            ]}
+                            className={`${
+                              !p.order_channel.trim() ? "border-red-500" : ""
+                            }`}
+                          />
+                          {p.order_channel === "انبار مرکزی" && (
+                            <>
+                              <Input
+                                name={`orderGroups[${i}].pieces[${j}].market_name`}
+                                label="فروشگاه"
+                                required={false}
+                                value={p.market_name}
+                                onChange={(v) =>
+                                  handlePieceChange(
+                                    i,
+                                    j,
+                                    "market_name",
+                                    v || ""
+                                  )
+                                }
+                                className={`md:col-span-2 ${
+                                  !p.market_name.trim()
+                                    ? "border-red-500"
+                                    : ""
+                                }`}
+                              />
+                              <Input
+                                name={`orderGroups[${i}].pieces[${j}].market_phone`}
+                                label="تلفن فروشگاه"
+                                required={false}
+                                value={p.market_phone}
+                                onChange={(v) =>
+                                  handlePieceChange(
+                                    i,
+                                    j,
+                                    "market_phone",
+                                    v || ""
+                                  )
+                                }
+                                className={`md:col-span-2 ${
+                                  !p.market_phone.trim()
+                                    ? "border-red-500"
+                                    : ""
+                                }`}
+                              />
+                            </>
+                          )}
+                        </div>
+                        {/* Modified: Delivery, Status, and Settlement in a 3-column grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
+                          <Input
+                            name={`orderGroups[${i}].pieces[${j}].prediction_delivery_date`}
+                            label="تحویل"
+                            type="number"
+                            required={false}
+                            value={p.prediction_delivery_date}
+                            onChange={(v) =>
+                              handlePieceChange(
+                                i,
+                                j,
+                                "prediction_delivery_date",
+                                v || ""
+                              )
+                            }
+                          />
+                          <Select
+                            name={`orderGroups[${i}].pieces[${j}].status`}
+                            label="وضعیت"
+                            inputStyle="w-full"
+                            labelClassName="mt-2"
+                            required={false}
+                            value={p.status}
+                            onChange={(v) =>
+                              handlePieceChange(i, j, "status", v || "")
+                            }
+                            options={[
+                              { value: "دریافت نشده", label: "دریافت نشده" },
+                              { value: "دریافت شده", label: "دریافت شده" },
+                            ]}
+                          />
+                          <Select
+                            name={`orderGroups[${i}].pieces[${j}].settlement_status`}
+                            label="تسویه"
+                            inputStyle="w-full"
+                            labelClassName="mt-2"
+                            required={false}
+                            value={p.settlement_status}
+                            onChange={(v) =>
+                              handlePieceChange(
+                                i,
+                                j,
+                                "settlement_status",
+                                v || ""
+                              )
+                            }
+                            options={[
+                              { value: "پرداخت نشده", label: "پرداخت نشده" },
+                              { value: "پرداخت شده", label: "پرداخت شده" },
+                            ]}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Input
+                            name={`orderGroups[${i}].pieces[${j}].description`}
+                            label="توضیحات"
+                            type="textarea"
+                            required={false}
+                            value={p.description}
+                            onChange={(v) =>
+                              handlePieceChange(i, j, "description", v || "")
+                            }
+                          />
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={p.confirmed}
+                              onChange={(e) =>
+                                handlePieceChange(i, j, "confirmed", e.target.checked)
+                              }
+                              className="mr-2"
+                            />
+                            <label>تایید نمایندگی</label>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
+            </Form>
+          </div>
+
+          {/* ---------------- Right Column: Registered Pieces List ---------------- */}
+          <div className="bg-gray-100 p-4 rounded-lg flex flex-col">
+            <h4 className="text-lg font-medium text-blue-700 mb-3">
+              📋 لیست قطعات ثبت‌شده
+            </h4>
+            {/* Scrollable list area with fixed max-height */}
+            <ScrollArea className="overflow-y-auto space-y-2 h-96">
+              {registeredPieces.length === 0 ? (
+                <p className="text-gray-500 text-right">هیچ قطعه‌ای ثبت نشده است</p>
+              ) : (
+                registeredPieces.map((piece, idx) => (
+                  <div
+                    key={idx}
+                    className="p-2 bg-white rounded border border-gray-200 flex justify-between items-center mb-2"
+                  >
+                    {/* Modified: Horizontal layout for piece info */}
+                    <div className="flex space-x-4">
+                      <p className="font-semibold">{piece.piece_name}</p>
+                      <p className="text-sm text-gray-600">کد: {piece.part_id}</p>
+                      <p className="text-sm text-gray-600">تعداد: {piece.number_of_pieces}</p>
+                      <p
+                        className={`text-sm ${
+                          piece.order_channel === "VOR"
+                            ? "text-gray-400"
+                            : "text-gray-600"
+                        }`}
+                      >
+                        کانال: {piece.order_channel}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleEditRegisteredPiece(idx)}
+                        size="sm"
+                        variant="outline"
+                        className="text-blue-600"
+                      >
+                        <Edit2 size={16} />
+                      </Button>
+                      <Button
+                        onClick={() => handleRemoveRegisteredPiece(idx)}
+                        size="sm"
+                        variant="outline"
+                        className="text-red-600"
+                      >
+                        حذف
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </ScrollArea>
+            {/* Final Submit Button (fixed below scrollable list) */}
+            <div className="mt-4 sticky bottom-0 bg-gray-100 p-2">
+              <Button onClick={handleSubmit} className="w-full font-bold">
+                ثبت نهایی
+              </Button>
             </div>
           </div>
-        ))}
-
-        {/* دکمه‌های فرم */}
-        <div className="flex justify-end items-center mt-2 space-x-2 border border-gray-200 p-2 rounded">
-          <Button type="submit">ثبت</Button>
-          <Button type="button" onClick={handleSubmit}>
-            ثبت نهایی
-          </Button>
         </div>
-      </Form>
-    </Card>
+      </Card>
+    </div>
   );
 }
