@@ -4,16 +4,20 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "../components/button";
 import { Input } from "../components/custom-form/input";
-import { Select } from "../components/custom-form/select-box";
 import { Form } from "../components/custom-form/form";
+import clsx from "clsx";
 
 export default function SettingsPage() {
-  const [days, setDays] = useState(7);
   const [orderType, setOrderType] = useState("VIS");
+  const [days, setDays] = useState({
+    VIS: 7,
+    VOR: 3,
+  });
+
   const router = useRouter();
 
   const handleSubmit = () => {
-    alert(`تنظیمات ذخیره شد:\nتعداد روز: ${days}\nنوع سفارش: ${orderType}`);
+    alert(`تنظیمات ذخیره شد:\nنوع سفارش: ${orderType}\nتعداد روز`);
     router.push("/");
   };
 
@@ -29,30 +33,40 @@ export default function SettingsPage() {
           submitText="ذخیره تغییرات"
           cancelText="لغو"
         >
-          <div className="flex justify-center items-center gap-2 mx-6 mb-6 w-full">
-            <div className="w-full">
-              <Input
-                label="تعداد روز"
-                type="number"
-                value={String(days)}
-                name="day-count"
-                onChange={(val?: string) => setDays(val ? Number(val) : 0)}
-                className="w-full py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-            </div>
+          <div className="flex flex-col gap-4 mb-6">
+            {["VIS", "VOR"].map((type) => (
+              <div
+                key={type}
+                className="flex items-center gap-4 border border-gray-200 p-3 rounded-lg"
+              >
+                {/* دکمه انتخاب نوع سفارش */}
+                <button
+                  type="button"
+                  onClick={() => setOrderType(type)}
+                  className={clsx(
+                    "px-4 py-2 rounded-md border text-sm font-semibold transition whitespace-nowrap",
+                    
+                  )}
+                >
+                  {type}
+                </button>
 
-            <div className="w-1/2">
-              <Select
-                label=" سفارش"
-                value={orderType}
-                onChange={(option: any) => setOrderType(option.value)}
-                className="w-full py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                options={[
-                  { value: "VIS", label: "VIS" },
-                  { value: "VOR", label: "VOR" },
-                ]}
-              />
-            </div>
+                {/* فیلد تعداد روز */}
+                <Input
+                  label="تعداد روز"
+                  type="number"
+                  value={String(days[type as "VIS" | "VOR"])}
+                  name={`${type}-day-count`}
+                  onChange={(val?: string) =>
+                    setDays((prev) => ({
+                      ...prev,
+                      [type]: val ? Number(val) : 0,
+                    }))
+                  }
+                  className="flex-1"
+                />
+              </div>
+            ))}
           </div>
         </Form>
       </div>
