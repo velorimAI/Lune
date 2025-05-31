@@ -76,7 +76,6 @@ const Orders: FC = () => {
         </div>
       }
     >
-      {/* تب‌ها، سرچ، و انتخاب مرتب‌سازی */}
       <div className="w-[300px]">
         <SearchBox onSearch={handleSearch} />
       </div>
