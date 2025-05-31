@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Clock4 } from "lucide-react";
 import { Button } from "../button";
 import { toast } from "sonner";
+import { LogoutButton } from "./logout-button";
 
 const toEnglishDigits = (str: string) =>
   str.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
@@ -67,13 +68,7 @@ export default function TopBar() {
       </div>
 
       
-      <Button
-        onClick={handleLogout}
-        className="flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-200 transition px-3 py-1.5 rounded-md shadow-sm"
-      >
-        <LogOut className="w-4 h-4" />
-        <span className="text-sm">خروج</span>
-      </Button>
+      <LogoutButton />
     </div>
   );
 }
