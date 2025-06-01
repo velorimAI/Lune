@@ -21,6 +21,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { DeleteItem } from "./delete-items";
+import { DeleteOrder } from "./DeleteOrderButton";
 
 export const OrdersList: FC<OrdersListProps> = ({ data }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -106,7 +107,8 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
               </div> */}
 
               <div className="flex gap-6 justify-center">
-                <Trash2 className="hover:text-red-600 hover:cursor-pointer" />
+                {/* <Trash2 className="hover:text-red-600 hover:cursor-pointer" /> */}
+                 <DeleteOrder id={order?.customer_id} name={order?.customer_name} />
                 <SquarePen />
                 {expandedIndex === index ? (
                   <CircleArrowDown
