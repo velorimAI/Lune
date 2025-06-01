@@ -19,6 +19,7 @@ interface OrderItem {
 // }
 
 interface Order {
+  [x: string]: string;
   customer_name: string;
   customer_last_name: string;
   customer_phone: string;

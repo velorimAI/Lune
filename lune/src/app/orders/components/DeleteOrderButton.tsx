@@ -1,28 +1,35 @@
 "use client";
-import { Modal } from "@/app/components/modal";
-import { Trash2 } from "lucide-react";
+
 import { FC, useState } from "react";
-import { useDeletePart } from "../hooks/use-delete-part";
+import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Modal } from "@/app/components/modal";
+import { useDeletePart } from "../hooks/use-delete-part";
 import { useDeleteOrder } from "../hooks/use-delete-order";
-
-
 
 interface DeleteItemProps {
   id: string;
   name: string;
 }
 
-export const DeleteItem: FC<DeleteItemProps> = ({ id, name }) => {
+export const DeleteOrder: FC<DeleteItemProps> = ({ id, name }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
   const { mutate, isPending } = useDeleteOrder();
+
+ 
+  
 
   const handleDelete = () => {
     mutate(id, {
       onSuccess: () => {
+        toast.success(`سفارش «${name}» با موفقیت حذف شد`);
         setOpen(false);
+        router.refresh(); 
+      },
+      onError: () => {
+        toast.error("خطا در حذف سفارش");
       },
     });
   };
@@ -36,7 +43,7 @@ export const DeleteItem: FC<DeleteItemProps> = ({ id, name }) => {
 
       <Modal
         open={open}
-        title="حذف قطعه"
+        title="حذف سفارش"
         onCancel={() => setOpen(false)}
         onConfirm={handleDelete}
         cancelText="لغو"
@@ -44,7 +51,7 @@ export const DeleteItem: FC<DeleteItemProps> = ({ id, name }) => {
         confirmLoading={isPending}
       >
         <p className="text-right">
-          آیا مطمئن هستید که می‌خواهید قطعه <strong>{name}</strong> را حذف کنید؟
+          آیا مطمئن هستید که می‌خواهید سفارش «{name}» را حذف کنید؟
         </p>
       </Modal>
     </>

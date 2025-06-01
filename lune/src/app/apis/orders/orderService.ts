@@ -24,3 +24,16 @@ export const deletePart = async (id: string) => {
   );
   return response.data;
 };
+
+export const deleteOrder = async (id: string) => {
+  const token = localStorage.getItem("token");
+  const response = await axios.delete(
+    `http://localhost:3001/api/orders/deletecustomer/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
