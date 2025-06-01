@@ -17,6 +17,8 @@ import {
   SquarePen,
   Trash2,
   DollarSign,
+  Ban,
+  HelpCircle,
 } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 
@@ -28,6 +30,21 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
   };
 
   console.log(data);
+
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case "دریافت شده":
+        return { color: "text-green-500", icon: <CheckCircle className="w-5 h-5 text-green-500" /> };
+      case "دریافت‌ نشده":
+        return { color: "text-yellow-500", icon: <XCircle className="w-5 h-5 text-yellow-500" /> };
+      case "ابطال شده":
+        return { color: "text-red-500", icon: <Ban className="w-5 h-5 text-red-500" /> };
+      case "لغو شده":
+        return { color: "text-gray-400", icon: <HelpCircle className="w-5 h-5 text-gray-400" /> };
+      default:
+        return { color: "text-black", icon: null };
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -47,11 +64,11 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
       ) : (
         data.map((order, index) => (
           <div key={index} className="space-y-2">
-            <div className="grid grid-cols-7 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center">
+            <div className="grid grid-cols-5 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center">
               <div className="flex items-center gap-2">
                 <User className="w-5 h-5" />
                 <span>
-                  {order?.customer_name} {order?.customer_last_name}
+                  {order?.customer_name}
                 </span>
               </div>
 
@@ -62,20 +79,20 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
 
               <div className="flex items-center gap-2">
                 <CalendarPlus2 className="w-5 h-5" />
-                <span>{order?.order_date}</span>
+                <span>{order?.reception_date?.split(" ")[0]}</span>
               </div>
 
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <CalendarCheck className="w-5 h-5" />
                 <span>{order.prediction_delivery_date}</span>
-              </div>
+              </div> */}
 
               <div className="flex items-center gap-2">
                 <FileDigit className="w-5 h-5" />
                 <span>{order?.reception_number}</span>
               </div>
 
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <DollarSign className="w-5 h-5" />
                 <span
                   className={
@@ -86,7 +103,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                 >
                   {order?.settlement_status}
                 </span>
-              </div>
+              </div> */}
 
               <div className="flex gap-6 justify-center">
                 <Trash2 className="hover:text-red-600 hover:cursor-pointer" />
@@ -128,18 +145,17 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                           وضعیت تحویل
                         </th>
                         <th className="px-4 py-2 font-medium whitespace-nowrap">
-                          کد قطعه 
+                          کد قطعه
                         </th>
                         <th></th>
                       </tr>
                     </thead>
                     <tbody>
-                      {order?.items?.map((part, i) => (
+                      {order?.orders?.map((part, i) => (
                         <tr
                           key={i}
-                          className={`border-b border-gray-200 ${
-                            i % 2 === 0 ? "bg-gray-50" : "bg-white"
-                          }`}
+                          className={`border-b border-gray-200 ${i % 2 === 0 ? "bg-gray-50" : "bg-white"
+                            }`}
                         >
                           <td className="px-4 py-3 flex items-center gap-2 font-medium text-black whitespace-nowrap">
                             <PackageOpen className="w-5 h-5 text-gray-500" />
@@ -155,27 +171,24 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                           </td>
 
                           <td className="px-4 py-3 whitespace-nowrap flex items-center gap-2 font-bold">
-                            {part.status === "دریافت شده" ? (
-                              <>
-                                <CheckCircle className="w-5 h-5 " />
-                                <span className="">{part.status}</span>
-                              </>
-                            ) : (
-                              <>
-                                <XCircle className="w-5 h-5 text-red-400" />
-                                <span className="text-red-400">
-                                  {part.status}
-                                </span>
-                              </>
-                            )}
+                            {(() => {
+                              const { color, icon } = getStatusStyle(part.status);
+                              return (
+                                <>
+                                  {icon}
+                                  <span className={color}>{part.status}</span>
+                                </>
+                              );
+                            })()}
                           </td>
+
                           <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
                             {/* <Trash2 className="hover:text-red-600 hover:cursor-pointer" /> */}
                             {part?.part_id}
                           </td>
                           <td>
                             {/* <Trash2 className="hover:text-red-600 hover:cursor-pointer" /> */}
-                            <DeleteItem id={part?.order_id} name={part?.piece_name}/>
+                            <DeleteItem id={part?.order_id} name={part?.piece_name} />
                           </td>
                         </tr>
                       ))}

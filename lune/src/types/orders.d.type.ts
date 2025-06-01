@@ -22,11 +22,11 @@ interface Order {
   customer_name: string;
   customer_last_name: string;
   customer_phone: string;
- order_date: string;
+  reception_date: string;
   prediction_delivery_date: string;
- reception_number: string;
-  settlement_status : any;
-  items: OrderPart[];
+  reception_number: string;
+  settlement_status: any;
+  orders: OrderPart[];
 }
 
 // interface Order {
