@@ -8,7 +8,7 @@ import { Input } from "@/app/components/custom-form/input";
 import { Select } from "@/app/components/custom-form/select-box";
 import { Button } from "@/app/components/button";
 import { toast } from "sonner";
-import { ArrowLeft, RefreshCcw, Edit2 } from "lucide-react";
+import { ArrowLeft, RefreshCcw, Edit2, Trash2} from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 type Piece = {
@@ -121,6 +121,37 @@ export default function NewOrderPage() {
   // --- When “ثبت قطعه” is clicked, move that piece from the form into the registeredPieces list ---
   const handleRegisterPiece = (orderIdx: number, pieceIdx: number) => {
     const pieceToRegister = orderGroups[orderIdx].pieces[pieceIdx];
+    
+    // Check for empty required fields (excluding confirmed checkbox)
+    let hasEmpty = false;
+    if (!pieceToRegister.piece_name.trim()) hasEmpty = true;
+    if (!pieceToRegister.part_id.trim()) hasEmpty = true;
+    if (!String(pieceToRegister.number_of_pieces).trim()) hasEmpty = true;
+    if (!pieceToRegister.order_channel.trim()) hasEmpty = true;
+    if (!pieceToRegister.prediction_delivery_date?.trim()) hasEmpty = true;
+    if (pieceToRegister.order_channel === "انبار مرکزی") {
+      if (!pieceToRegister.market_name.trim()) hasEmpty = true;
+      if (!pieceToRegister.market_phone.trim()) hasEmpty = true;
+    }
+
+    if (hasEmpty) {
+      toast.error("لطفاً تمام فیلدهای ضروری را پر کنید");
+      // Update the piece with error states for empty fields
+      const groupsCopy = [...orderGroups];
+      groupsCopy[orderIdx].pieces[pieceIdx] = {
+        ...pieceToRegister,
+        piece_name: pieceToRegister.piece_name.trim() ? pieceToRegister.piece_name : "",
+        part_id: pieceToRegister.part_id.trim() ? pieceToRegister.part_id : "",
+        number_of_pieces: pieceToRegister.number_of_pieces || 1,
+        order_channel: pieceToRegister.order_channel.trim() ? pieceToRegister.order_channel : "",
+        market_name: pieceToRegister.order_channel === "انبار مرکزی" && pieceToRegister.market_name.trim() ? pieceToRegister.market_name : "",
+        market_phone: pieceToRegister.order_channel === "انبار مرکزی" && pieceToRegister.market_phone.trim() ? pieceToRegister.market_phone : "",
+        prediction_delivery_date: pieceToRegister.prediction_delivery_date?.trim() ? pieceToRegister.prediction_delivery_date : "",
+      };
+      setOrderGroups(groupsCopy);
+      return;
+    }
+
     setRegisteredPieces((prev) => [...prev, pieceToRegister]);
     handleRemovePiece(orderIdx, pieceIdx);
   };
@@ -360,7 +391,7 @@ export default function NewOrderPage() {
 
               {/*  Loop through each Order Group */}
               {orderGroups.map((grp, i) => (
-                <div key={i} className="mb-4 border border-gray-200 rounded-lg p-3">
+                <div key={i} className="mb4 border border-gray-200 rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-md font-semibold text-blue-700">
                       📦 سفارش {i + 1}
@@ -524,6 +555,9 @@ export default function NewOrderPage() {
                                 v || ""
                               )
                             }
+                            className={`${
+                              !p.prediction_delivery_date?.trim() ? "border-red-500" : ""
+                            }`}
                           />
                           <Select
                             name={`orderGroups[${i}].pieces[${j}].status`}
@@ -637,7 +671,7 @@ export default function NewOrderPage() {
                         variant="outline"
                         className="text-red-600"
                       >
-                        حذف
+                        <Trash2  size={16} />
                       </Button>
                     </div>
                   </div>
