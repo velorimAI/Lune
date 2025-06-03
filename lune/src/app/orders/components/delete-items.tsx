@@ -17,7 +17,7 @@ export const DeleteItem: FC<DeleteItemProps> = ({ id, name }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const { mutate, isPending } = useDeleteOrder();
+  const { mutate, isPending } = useDeletePart();
 
   const handleDelete = () => {
     mutate(id, {
