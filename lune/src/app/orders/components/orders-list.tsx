@@ -6,7 +6,7 @@ import {
   CircleArrowDown,
   User,
   Phone,
-   CalendarCheck,
+  CalendarPlus2,
   FileDigit,
   PackageOpen,
   Wrench,
@@ -14,39 +14,12 @@ import {
   CheckCircle,
   ShoppingCart,
   SquarePen,
-  Trash2,
   Ban,
   HelpCircle,
   DollarSign,
 } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { DeleteOrder } from "./DeleteOrderButton";
-
-interface OrderPart {
-  order_id: string;
-  piece_name: string;
-  order_channel: string;
-  number_of_pieces: number;
-  status: string;
-  order_date: string; // ISO string or "YYYY-MM-DD HH:mm:ss"
-  estimated_arrival_days: number;
-  part_id: string;
-}
-
-interface Order {
-  customer_id: string;
-  customer_name: string;
-  customer_phone: string;
-  reception_date: string; // ISO string or "YYYY-MM-DD HH:mm:ss"
-  reception_number: string;
-  settlement_status_overall?: string;
-  latest_unreceived_estimated_arrival_date?: string; // "YYYY-MM-DD" format
-  orders?: OrderPart[];
-}
-
-interface OrdersListProps {
-  data: Order[];
-}
 
 export const OrdersList: FC<OrdersListProps> = ({ data }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -95,27 +68,26 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
         </div>
       ) : (
         data.map((order, index) => (
-          <div key={order.customer_id || index} className="space-y-2">
-            {/* Main summary row with 7 columns */}
+          <div key={index} className="space-y-2">
+            {/* Main summary row now has 7 columns (grid-cols-7) */}
             <div className="grid grid-cols-5 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center">
               {/* Customer Name */}
               <div className="flex items-center gap-1.5 text-gray-800">
                 <User className="w-5 h-5" />
-                <span>{order.customer_name}</span>
+                <span>{order?.customer_name}</span>
               </div>
 
               {/* Customer Phone */}
               <div className="flex items-center gap-1.5 text-gray-800">
                 <Phone className="w-5 h-5" />
-                <span>{order.customer_phone}</span>
+                <span>{order?.customer_phone}</span>
               </div>
-
 
               {/* Latest Unreceived Estimated Arrival Date */}
               <div className="flex items-center gap-1.5 text-gray-800">
-                < CalendarCheck className="w-5 h-5" />
+                <CalendarPlus2 className="w-5 h-5" />
                 <span>
-                  {order.latest_unreceived_estimated_arrival_date
+                  {order?.latest_unreceived_estimated_arrival_date
                     ? order.latest_unreceived_estimated_arrival_date
                     : "—"}
                 </span>
@@ -126,16 +98,16 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                 <DollarSign className="w-5 h-5 text-gray-600" />
                 <span
                   className={`font-semibold ${
-                    getSettlementStyle(order.settlement_status_overall || "تسویه نشده").color
+                    getSettlementStyle(order?.settlement_status_overall || "تسویه نشده").color
                   }`}
                 >
-                  {order.settlement_status_overall || "تسویه نشده"}
+                  {order?.settlement_status_overall || "تسویه نشده"}
                 </span>
               </div>
 
-              {/* Actions: Delete, Edit, Expand/Collapse */}
+              {/* Actions: DeleteOrder, Edit, Expand/Collapse */}
               <div className="flex gap-4 justify-center text-gray-700">
-                <DeleteOrder id={order.customer_id} name={order.customer_name} />
+                <DeleteOrder id={order?.customer_id} name={order?.customer_name} />
                 <SquarePen className="cursor-pointer hover:text-blue-600" />
                 {expandedIndex === index ? (
                   <CircleArrowDown
@@ -151,8 +123,8 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
               </div>
             </div>
 
-            {/* Details section (expands when clicked) */}
-            {expandedIndex === index && order.orders && (
+            {/* Expanded Details Section */}
+            {expandedIndex === index && (
               <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-md mt-2">
                 <div className="flex items-center gap-2 mb-4 text-gray-800 font-semibold text-lg">
                   <Wrench className="w-5 h-5" />
@@ -174,22 +146,20 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {order.orders.map((part, i) => (
+                      {order?.orders?.map((part, i) => (
                         <tr
-                          key={part.order_id || i}
-                          className={`border-b border-gray-200 ${
-                            i % 2 === 0 ? "bg-gray-50" : "bg-white"
-                          }`}
+                          key={i}
+                          className={`border-b border-gray-200 ${i % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
                         >
                           <td className="px-4 py-3 flex items-center gap-1.5 font-medium whitespace-nowrap text-gray-800">
                             <PackageOpen className="w-5 h-5 text-gray-600" />
-                            {part.piece_name}
+                            {part?.piece_name}
                           </td>
                           <td className="px-4 py-3 font-semibold whitespace-nowrap text-gray-700">
-                            {part.order_channel}
+                            {part?.order_channel}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                            {part.number_of_pieces}
+                            {part?.number_of_pieces}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap flex items-center gap-1.5 font-bold">
                             {(() => {
@@ -203,16 +173,16 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                             })()}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                            {part.order_date?.split(" ")[0]}
+                            {part?.order_date?.split(" ")[0]}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                            {part.estimated_arrival_days}
+                            {part?.estimated_arrival_days}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                            {part.part_id}
+                            {part?.part_id}
                           </td>
                           <td className="px-4 py-3 text-center whitespace-nowrap">
-                            <DeleteItem id={part.order_id} name={part.piece_name} />
+                            <DeleteItem id={part?.order_id} name={part?.piece_name} />
                           </td>
                         </tr>
                       ))}
