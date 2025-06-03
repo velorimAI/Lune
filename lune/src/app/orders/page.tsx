@@ -46,7 +46,7 @@ const Orders: FC = () => {
     setUserLastname(localStorage.getItem("lastname"));
   }, []);
 
-  const filteredDataList = useStaticSearchDevices(data || [], searchText);
+  const filteredDataList = useStaticSearchDevices(data?.data || [], searchText);
 
   const handleSearch = (value?: string) => {
     setSearchText(value || "");
