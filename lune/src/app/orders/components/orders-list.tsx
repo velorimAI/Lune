@@ -143,7 +143,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
 
               {/* Latest Unreceived Estimated Arrival Date */}
               <div className="flex items-center gap-1.5 text-gray-800">
-                <CalendarCheck  className="w-5 h-5" />
+                <CalendarCheck className="w-5 h-5" />
                 <span>
                   {order?.latest_unreceived_estimated_arrival_date
                     ? order.latest_unreceived_estimated_arrival_date
@@ -203,13 +203,13 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                           نام قطعه
                         </th>
                         <th className="px-4 py-2 font-medium whitespace-nowrap">
-                          نوع سفارش
+                          کد قطعه
                         </th>
                         <th className="px-4 py-2 font-medium whitespace-nowrap">
                           تعداد
                         </th>
                         <th className="px-4 py-2 font-medium whitespace-nowrap">
-                          وضعیت تحویل
+                          نوع سفارش
                         </th>
                         <th className="px-4 py-2 font-medium whitespace-nowrap">
                           تاریخ سفارش
@@ -218,7 +218,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                           رسیدن (روز)
                         </th>
                         <th className="px-4 py-2 font-medium whitespace-nowrap">
-                          کد قطعه
+                          وضعیت تحویل
                         </th>
                         <th className="px-4 py-2 font-medium whitespace-nowrap">
                           وضیعت پرداخت
@@ -239,26 +239,14 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                               <PackageOpen className="w-5 h-5 text-gray-600" />
                               {part?.piece_name}
                             </td>
-                            <td className="px-4 py-3 font-semibold whitespace-nowrap text-gray-700">
-                              {part?.order_channel}
+                            <td className="px-4 py-3 whitespace-nowrap text-gray-700">
+                              {part?.part_id}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap text-gray-700">
                               {part?.number_of_pieces}
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap flex items-center gap-1.5 font-bold">
-                              {(() => {
-                                const { color, icon } = getStatusStyle(
-                                  part.status
-                                );
-                                return (
-                                  <>
-                                    {icon}
-                                    <span className={`${color}`}>
-                                      {part.status}
-                                    </span>
-                                  </>
-                                );
-                              })()}
+                            <td className="px-4 py-3 font-semibold whitespace-nowrap text-gray-700">
+                              {part?.order_channel}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap text-gray-700">
                               {part?.order_date?.split(" ")[0]}
@@ -266,23 +254,32 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                             <td className="px-4 py-3 whitespace-nowrap text-gray-700">
                               {part?.estimated_arrival_days}
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                              {part?.part_id}
+                            <td className="px-4 py-3 whitespace-nowrap font-bold">
+                              <div className="flex items-center gap-1.5">
+                                {(() => {
+                                  const { color, icon } = getStatusStyle(part.status);
+                                  return (
+                                    <>
+                                      {icon}
+                                      <span className={`${color}`}>{part.status}</span>
+                                    </>
+                                  );
+                                })()}
+                              </div>
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap flex items-center gap-1.5 font-bold">
-                              {(() => {
-                                const { color, icon } = getPaymentStatusStyle(
-                                  part?.settlement_status
-                                );
-                                return (
-                                  <>
-                                    {icon}
-                                    <span className={`${color}`}>
-                                      {part?.settlement_status}
-                                    </span>
-                                  </>
-                                );
-                              })()}
+
+                            <td className="px-4 py-3 whitespace-nowrap font-bold">
+                              <div className="flex items-center gap-1.5">
+                                {(() => {
+                                  const { color, icon } = getPaymentStatusStyle(part?.settlement_status);
+                                  return (
+                                    <>
+                                      {icon}
+                                      <span className={`${color}`}>{part?.settlement_status}</span>
+                                    </>
+                                  );
+                                })()}
+                              </div>
                             </td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
                               <DeleteItem
