@@ -45,7 +45,7 @@ const Orders: FC = () => {
     setSearchText(value || "");
   };
 
-  // محاسبه تعداد رکوردهای هر فیلتر
+  
   const tabCounts = useMemo(() => {
     const allOrders = data?.data || [];
     const settledOrders = allOrders.filter((item: any) => {
@@ -69,7 +69,7 @@ const Orders: FC = () => {
     };
   }, [data?.data]);
 
-  // تعریف تب‌ها با تعداد رکوردها
+ 
   const tabs = [
     { label: `همه سفارش‌ها (${tabCounts.all || 0})`, value: "all" },
     { label: `تسویه شده (${tabCounts.settled || 0})`, value: "تسویه شده" },
@@ -78,7 +78,6 @@ const Orders: FC = () => {
     { label: `ارشیو  (${tabCounts.all || 0})`, value: "ارشیو" },
   ];
 
-  // فیلتر بر اساس تب انتخاب شده
   const filteredOrdersByTab = useMemo(() => {
     if (activeTab === "all") return filteredDataList;
 
@@ -122,7 +121,7 @@ const Orders: FC = () => {
         <SearchBox onSearch={handleSearch} />
       </div>
 
-      {/* Tabs */}
+      
       <div className="flex gap-2 p-4 border-b border-gray-300">
         {tabs.map((tab) => (
           <button
@@ -145,7 +144,7 @@ const Orders: FC = () => {
         ))}
       </div>
 
-      {/* Select Sorting */}
+      
       <div className="flex items-center gap-4 w-full max-w-[600px] px-4 pt-2">
         <div>
           <Select
@@ -157,7 +156,7 @@ const Orders: FC = () => {
         </div>
       </div>
 
-      {/* Orders List */}
+      
       <ScrollArea className="w-full flex flex-col justify-start items-center pr-3 h-[73vh] 4xl:h-[80vh] mt-2">
         <div dir="rtl" className="w-full">
           {isLoading ? (
@@ -177,7 +176,7 @@ const Orders: FC = () => {
           )}
         </div>
 
-        {/* Add new order button */}
+        
         <div className="fixed left-10 bottom-[30px]">
           <CirclePlus
             className="w-[30px] h-[30px] cursor-pointer"

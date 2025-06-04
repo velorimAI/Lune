@@ -105,21 +105,21 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
       ) : (
         data.map((order, index) => (
           <div key={index} className="space-y-2">
-            {/* Main summary row now has 7 columns (grid-cols-7) */}
+          
             <div className="grid grid-cols-6 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center">
-              {/* Customer Name */}
+             
               <div className="flex items-center gap-1.5 text-gray-800">
                 <User className="w-5 h-5" />
                 <span>{order?.customer_name}</span>
               </div>
 
-              {/* Customer Phone */}
+              
               <div className="flex items-center gap-1.5 text-gray-800">
                 <Phone className="w-5 h-5" />
                 <span>{order?.customer_phone}</span>
               </div>
 
-              {/* Latest Unreceived Estimated Arrival Date */}
+             
               <div className="flex items-center gap-1.5 text-gray-800">
                 <CalendarPlus2 className="w-5 h-5" />
                 <span>
@@ -132,7 +132,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                         .sort((a, b) => a.reception_date.localeCompare(b.reception_date));
 
                       return sorted.length
-                        ? sorted[0].reception_date.split(" ")[0] // فقط بخش تاریخ بدون زمان
+                        ? sorted[0].reception_date.split(" ")[0] 
                         : "—";
                     })()
                   }
@@ -141,7 +141,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
 
               </div>
 
-              {/* Latest Unreceived Estimated Arrival Date */}
+             
               <div className="flex items-center gap-1.5 text-gray-800">
                 <CalendarCheck  className="w-5 h-5" />
                 <span>
@@ -153,7 +153,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
 
 
 
-              {/* Settlement Status */}
+             
               <div className="flex items-center gap-1.5 justify-center text-gray-800">
                 <DollarSign className="w-5 h-5" />
                 <span
@@ -166,7 +166,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                 </span>
               </div>
 
-              {/* Actions: DeleteOrder, Edit, Expand/Collapse */}
+             
               <div className="flex gap-4 justify-center text-gray-700">
                 <DeleteOrder
                   id={String(order?.customer_id)}
@@ -187,7 +187,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
               </div>
             </div>
 
-            {/* Expanded Details Section */}
+            
             {expandedIndex === index && (
               <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-md mt-2">
                 <div className="flex items-center gap-2 mb-4 text-gray-800 font-semibold text-lg">

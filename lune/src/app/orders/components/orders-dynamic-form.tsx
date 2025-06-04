@@ -18,7 +18,7 @@ export const OrdersDynamicForm = () => {
         <div key={item.id} className="border p-4 rounded-md space-y-2 relative">
           <h4 className="font-semibold">سفارش {index + 1}</h4>
 
-          {/* دکمه حذف */}
+          
           {items.length > 1 && (
             <button
               type="button"
@@ -31,7 +31,7 @@ export const OrdersDynamicForm = () => {
             </button>
           )}
 
-          {/* piece_info */}
+          
           <div className="grid grid-cols-3 gap-4">
             <Input
               name={`orders[${index}].piece_name`}
@@ -47,7 +47,7 @@ export const OrdersDynamicForm = () => {
             />
           </div>
 
-          {/* source */}
+          
           <div className="grid grid-cols-3 gap-4">
             <Input
               name={`orders[${index}].order_channel`}
@@ -58,7 +58,7 @@ export const OrdersDynamicForm = () => {
             <Input name={`orders[${index}].market_phone`} label="شماره بازار" />
           </div>
 
-          {/* dates */}
+        
           <div className="grid grid-cols-4 gap-4">
             <Input
               name={`orders[${index}].order_date`}
@@ -79,7 +79,7 @@ export const OrdersDynamicForm = () => {
             />
           </div>
 
-          {/* status */}
+          
           <div className="grid grid-cols-2 gap-4">
             <Input
               name={`orders[${index}].status`}

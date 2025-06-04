@@ -39,7 +39,7 @@ export default function SettingsPage() {
                 key={type}
                 className="flex items-center gap-4 border border-gray-200 p-3 rounded-lg"
               >
-                {/* دکمه انتخاب نوع سفارش */}
+                
                 <button
                   type="button"
                   onClick={() => setOrderType(type)}
@@ -51,7 +51,7 @@ export default function SettingsPage() {
                   {type}
                 </button>
 
-                {/* فیلد تعداد روز */}
+                
                 <Input
                   label="تعداد روز"
                   type="number"
