@@ -33,12 +33,6 @@ const Orders: FC = () => {
     queryFn: getOrdersList,
   });
 
-  useEffect(() => {
-    setRole(localStorage.getItem("role"));
-    setUserName(localStorage.getItem("name"));
-    setUserLastname(localStorage.getItem("lastname"));
-  }, []);
-
   const filteredDataList = useStaticSearchDevices(data?.data || [], searchText);
 
   const handleSearch = (value?: string) => {
@@ -105,18 +99,6 @@ const Orders: FC = () => {
   return (
     <Card
       title={`سفارش ها (${filteredOrdersByTab?.length || 0})`}
-      description={
-        <div className="flex items-center gap-3 mt-2">
-          {role && userName && userLastname && (
-            <span className="text-xs text-gray-500">
-              <strong>
-                {userName} {userLastname}
-              </strong>
-              <span className="text-xs text-gray-500 mx-1">({role})</span>
-            </span>
-          )}
-        </div>
-      }
     >
       <div className="w-[300px]">
         <SearchBox onSearch={handleSearch} />
