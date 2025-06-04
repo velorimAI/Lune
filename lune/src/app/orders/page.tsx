@@ -19,13 +19,6 @@ const sortOptions = [
   { value: "receptionDate", label: "مرتب‌سازی بر اساس تاریخ پذیرش" },
 ];
 
-const tabs = [
-  { label: "همه سفارش‌ها", value: "all" },
-  { label: "تسویه شده", value: "تسویه شده" },
-  { label: "تسویه نشده", value: "تسویه نشده" },
-  { label: "لغو شده", value: "لغو شده" },
-];
-
 const Orders: FC = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("default");
@@ -52,6 +45,38 @@ const Orders: FC = () => {
     setSearchText(value || "");
   };
 
+  // محاسبه تعداد رکوردهای هر فیلتر
+  const tabCounts = useMemo(() => {
+    const allOrders = data?.data || [];
+    const settledOrders = allOrders.filter((item: any) => {
+      const status = item.settlement_status_overall?.toString().trim().toLowerCase();
+      return status?.includes("تسویه") && status?.includes("شده") && !status?.includes("ن");
+    });
+    const notSettledOrders = allOrders.filter((item: any) => {
+      const status = item.settlement_status_overall?.toString().trim().toLowerCase();
+      return status?.includes("تسویه") && status?.includes("نشده");
+    });
+    const canceledOrders = allOrders.filter((item: any) => {
+      const status = item.settlement_status_overall?.toString().trim().toLowerCase();
+      return status?.includes("لغو");
+    });
+
+    return {
+      all: allOrders.length,
+      settled: settledOrders.length,
+      notSettled: notSettledOrders.length,
+      canceled: canceledOrders.length,
+    };
+  }, [data?.data]);
+
+  // تعریف تب‌ها با تعداد رکوردها
+  const tabs = [
+    { label: `همه سفارش‌ها (${tabCounts.all || 0})`, value: "all" },
+    { label: `تسویه شده (${tabCounts.settled || 0})`, value: "تسویه شده" },
+    { label: `تسویه نشده (${tabCounts.notSettled || 0})`, value: "تسویه نشده" },
+    { label: `لغو شده (${tabCounts.canceled || 0})`, value: "لغو شده" },
+  ];
+
   // فیلتر بر اساس تب انتخاب شده
   const filteredOrdersByTab = useMemo(() => {
     if (activeTab === "all") return filteredDataList;
@@ -75,11 +100,10 @@ const Orders: FC = () => {
   }, [filteredDataList, activeTab]);
 
   console.log(data?.data);
-  
 
   return (
     <Card
-      title={`سفارش ها (${filteredOrdersByTab?.length || 0})`}
+      title={`سفارش ها`}
       description={
         <div className="flex items-center gap-3 mt-2">
           {role && userName && userLastname && (
