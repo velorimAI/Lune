@@ -191,9 +191,19 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
             {expandedIndex === index && (
               <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-md mt-2">
                 <div className="flex items-center gap-2 mb-4 text-gray-800 font-semibold text-lg">
-                  <Wrench className="w-5 h-5" />
-                  <span>جزئیات قطعات</span>
-                </div>
+                <Wrench className="w-5 h-5" />
+                <span>
+                  جزئیات قطعات
+                  {" "}
+                  (
+                  {
+                    order?.receptions
+                      ?.flatMap(reception => reception.orders || [])
+                      ?.length || 0
+                  }
+                  )
+                </span>
+              </div>
 
                 <div className="overflow-x-auto">
                   <table className="min-w-full text-sm text-right text-gray-800">
