@@ -7,7 +7,6 @@ import {
   User,
   Phone,
   CalendarPlus2,
-  FileDigit,
   PackageOpen,
   Wrench,
   XCircle,
@@ -17,6 +16,7 @@ import {
   Ban,
   HelpCircle,
   DollarSign,
+  CalendarCheck,
 } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { DeleteOrder } from "./DeleteOrderButton";
@@ -106,7 +106,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
         data.map((order, index) => (
           <div key={index} className="space-y-2">
             {/* Main summary row now has 7 columns (grid-cols-7) */}
-            <div className="grid grid-cols-5 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center">
+            <div className="grid grid-cols-6 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center">
               {/* Customer Name */}
               <div className="flex items-center gap-1.5 text-gray-800">
                 <User className="w-5 h-5" />
@@ -123,21 +123,44 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
               <div className="flex items-center gap-1.5 text-gray-800">
                 <CalendarPlus2 className="w-5 h-5" />
                 <span>
+                  {
+                    (() => {
+                      const receptions = order?.receptions || [];
+
+                      const sorted = receptions
+                        .filter(r => r.reception_date)
+                        .sort((a, b) => a.reception_date.localeCompare(b.reception_date));
+
+                      return sorted.length
+                        ? sorted[0].reception_date.split(" ")[0] // فقط بخش تاریخ بدون زمان
+                        : "—";
+                    })()
+                  }
+                </span>
+
+
+              </div>
+
+              {/* Latest Unreceived Estimated Arrival Date */}
+              <div className="flex items-center gap-1.5 text-gray-800">
+                <CalendarCheck  className="w-5 h-5" />
+                <span>
                   {order?.latest_unreceived_estimated_arrival_date
                     ? order.latest_unreceived_estimated_arrival_date
                     : "—"}
                 </span>
               </div>
 
+
+
               {/* Settlement Status */}
               <div className="flex items-center gap-1.5 justify-center text-gray-800">
-                <DollarSign className="w-5 h-5 text-gray-600" />
+                <DollarSign className="w-5 h-5" />
                 <span
-                  className={`font-semibold ${
-                    getSettlementStyle(
-                      order?.settlement_status_overall || "تسویه نشده"
-                    ).color
-                  }`}
+                  className={`font-semibold ${getSettlementStyle(
+                    order?.settlement_status_overall || "تسویه نشده"
+                  ).color
+                    }`}
                 >
                   {order?.settlement_status_overall || "تسویه نشده"}
                 </span>
@@ -209,9 +232,8 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                         ?.map((part, i) => (
                           <tr
                             key={i}
-                            className={`border-b border-gray-200 ${
-                              i % 2 === 0 ? "bg-gray-50" : "bg-white"
-                            }`}
+                            className={`border-b border-gray-200 ${i % 2 === 0 ? "bg-gray-50" : "bg-white"
+                              }`}
                           >
                             <td className="px-4 py-3 flex items-center gap-1.5 font-medium whitespace-nowrap text-gray-800">
                               <PackageOpen className="w-5 h-5 text-gray-600" />
