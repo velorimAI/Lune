@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Clock4 } from "lucide-react";
-import { Button } from "../button";
+import { Clock4 } from "lucide-react";
 import { toast } from "sonner";
 import { LogoutButton } from "./logout-button";
 
