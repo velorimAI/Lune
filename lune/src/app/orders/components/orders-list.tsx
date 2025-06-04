@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import React, { FC, useState } from "react";
 import {
   CircleArrowLeft,
   CircleArrowDown,
@@ -191,19 +191,19 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
             {expandedIndex === index && (
               <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-md mt-2">
                 <div className="flex items-center gap-2 mb-4 text-gray-800 font-semibold text-lg">
-                <Wrench className="w-5 h-5" />
-                <span>
-                  جزئیات قطعات
-                  {" "}
-                  (
-                  {
-                    order?.receptions
-                      ?.flatMap(reception => reception.orders || [])
-                      ?.length || 0
-                  }
-                  )
-                </span>
-              </div>
+                  <Wrench className="w-5 h-5" />
+                  <span>
+                    جزئیات قطعات
+                    {" "}
+                    (
+                    {
+                      order?.receptions
+                        ?.flatMap(reception => reception.orders || [])
+                        ?.length || 0
+                    }
+                    )
+                  </span>
+                </div>
 
                 <div className="overflow-x-auto">
                   <table className="min-w-full text-sm text-right text-gray-800">
@@ -237,69 +237,75 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {order?.receptions
-                        ?.flatMap((reception) => reception.orders)
-                        ?.map((part, i) => (
-                          <tr
-                            key={i}
-                            className={`border-b border-gray-200 ${i % 2 === 0 ? "bg-gray-50" : "bg-white"
-                              }`}
-                          >
-                            <td className="px-4 py-3 flex items-center gap-1.5 font-medium whitespace-nowrap text-gray-800">
-                              <PackageOpen className="w-5 h-5 text-gray-600" />
-                              {part?.piece_name}
-                            </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                              {part?.part_id}
-                            </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                              {part?.number_of_pieces}
-                            </td>
-                            <td className="px-4 py-3 font-semibold whitespace-nowrap text-gray-700">
-                              {part?.order_channel}
-                            </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                              {part?.order_date?.split(" ")[0]}
-                            </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                              {part?.estimated_arrival_days}
-                            </td>
-                            <td className="px-4 py-3 whitespace-nowrap font-bold">
-                              <div className="flex items-center gap-1.5">
-                                {(() => {
-                                  const { color, icon } = getStatusStyle(part.status);
-                                  return (
-                                    <>
-                                      {icon}
-                                      <span className={`${color}`}>{part.status}</span>
-                                    </>
-                                  );
-                                })()}
-                              </div>
-                            </td>
-
-                            <td className="px-4 py-3 whitespace-nowrap font-bold">
-                              <div className="flex items-center gap-1.5">
-                                {(() => {
-                                  const { color, icon } = getPaymentStatusStyle(part?.settlement_status);
-                                  return (
-                                    <>
-                                      {icon}
-                                      <span className={`${color}`}>{part?.settlement_status}</span>
-                                    </>
-                                  );
-                                })()}
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-center whitespace-nowrap">
-                              <DeleteItem
-                                id={String(part?.order_id)}
-                                name={part?.piece_name}
-                              />
+                      {order?.receptions?.map((reception, i) => (
+                        <React.Fragment key={i}>
+                          {/* نمایش شماره سفارش */}
+                          <tr>
+                            <td
+                              colSpan={9}
+                              className="bg-blue-50 text-blue-800 font-bold text-right px-4 py-2 border-y border-blue-200"
+                            >
+                              شماره سفارش: {reception.reception_number}
                             </td>
                           </tr>
-                        ))}
+
+                          {/* نمایش قطعات مربوط به این سفارش */}
+                          {reception?.orders?.map((part, j) => (
+                            <tr
+                              key={j}
+                              className={`border-b border-gray-200 ${j % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                            >
+                              <td className="px-4 py-3 flex items-center gap-1.5 font-medium whitespace-nowrap text-gray-800">
+                                <PackageOpen className="w-5 h-5 text-gray-600" />
+                                {part?.piece_name}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-gray-700">{part?.part_id}</td>
+                              <td className="px-4 py-3 whitespace-nowrap text-gray-700">{part?.number_of_pieces}</td>
+                              <td className="px-4 py-3 font-semibold whitespace-nowrap text-gray-700">{part?.order_channel}</td>
+                              <td className="px-4 py-3 whitespace-nowrap text-gray-700">
+                                {part?.order_date?.split(" ")[0]}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-gray-700">
+                                {part?.estimated_arrival_days}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap font-bold">
+                                <div className="flex items-center gap-1.5">
+                                  {(() => {
+                                    const { color, icon } = getStatusStyle(part.status);
+                                    return (
+                                      <>
+                                        {icon}
+                                        <span className={`${color}`}>{part.status}</span>
+                                      </>
+                                    );
+                                  })()}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap font-bold">
+                                <div className="flex items-center gap-1.5">
+                                  {(() => {
+                                    const { color, icon } = getPaymentStatusStyle(part?.settlement_status);
+                                    return (
+                                      <>
+                                        {icon}
+                                        <span className={`${color}`}>{part?.settlement_status}</span>
+                                      </>
+                                    );
+                                  })()}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 text-center whitespace-nowrap">
+                                <DeleteItem
+                                  id={String(part?.order_id)}
+                                  name={part?.piece_name}
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                        </React.Fragment>
+                      ))}
                     </tbody>
+
                   </table>
                 </div>
               </div>
