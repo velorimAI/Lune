@@ -136,21 +136,23 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
       ) : (
         data.map((order, index) => {
           // استخراج لیست کامل قطعات از تمام receptions
-          const allParts: PartData[] =
-            order?.receptions
-              ?.flatMap((reception) =>
-                reception.orders.map((p: any) => ({
-                  order_id: p.order_id,
-                  piece_name: p.piece_name,
-                  order_channel: p.order_channel,
-                  number_of_pieces: p.number_of_pieces,
-                  status: p.status as PartData["status"],
-                  order_date: p.order_date,
-                  estimated_arrival_days: p.estimated_arrival_days,
-                  part_id: p.part_id,
-                  settlement_status: p.settlement_status as PartData["settlement_status"],
-                }))
-              ) || [];
+        const allParts: PartData[] =
+          order?.receptions
+            ?.flatMap((reception) =>
+              reception.orders.map((p: any) => ({
+                order_id: p.order_id,
+                piece_name: p.piece_name,
+                order_channel: p.order_channel,
+                number_of_pieces: p.number_of_pieces,
+                status: p.status as PartData["status"],
+                order_date: p.order_date,
+                estimated_arrival_days: p.estimated_arrival_days,
+                part_id: p.part_id,
+                settlement_status: p.settlement_status as PartData["settlement_status"],
+                delivery_date: p.delivery_date, // ✅ اضافه شده
+              }))
+            ) || [];
+
 
           return (
             <div key={index} className="space-y-2">
