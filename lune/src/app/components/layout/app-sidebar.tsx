@@ -42,37 +42,38 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="max-xl:w-[10rem]" collapsible="icon">
-      <SidebarHeader className="flex gap-0 justify-start items-end relative">
-        <CustomSidebarTrigger
-          className={`${
-            state === "expanded" ? "mt-3" : "mt-0.5"
-          } text-secondaryBlue absolute left-0 z-50 !border-1 border-secondaryBlue`}
-        />
-        <div className=" w-full my-3 flex justify-center">
-          <Image
-            alt="App logo"
-            className="rounded-full cursor-pointer"
-            src={
-              state === "expanded"
-                ? "/img/logo/logo-lune.jpg"
-                : "/img/logo/fix-logo.jpg"
-            }
-            width={state === "expanded" ? 80 : 60}
-            height={state === "expanded" ? 80 : 60}
-            priority
-          />
-        </div>
-      </SidebarHeader>
+ 
+  <div className="relative w-full">
+    <CustomSidebarTrigger
+      className="absolute top-2 left-2 z-50 text-secondaryBlue !border-1 border-secondaryBlue"
+    />
+  </div>
 
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavSecondary
-          className="mt-auto"
-          items={data.navSecondary}
-        />
-      </SidebarContent>
+  
+  <SidebarHeader className="flex flex-col justify-center items-center pt-10 pb-4">
+    <div className="flex justify-center items-center w-full">
+      <Image
+        alt="App logo"
+        className="rounded-full cursor-pointer"
+        src={
+          state === "expanded"
+            ? "/img/logo/logo-lune.jpg"
+            : "/img/logo/fix-logo.jpg"
+        }
+        width={state === "expanded" ? 80 : 60}
+        height={state === "expanded" ? 80 : 60}
+        priority
+      />
+    </div>
+  </SidebarHeader>
 
-      <SidebarRail />
-    </Sidebar>
+  <SidebarContent className="pt-2">
+    <NavMain items={data.navMain} />
+    <NavSecondary className="mt-auto" items={data.navSecondary} />
+  </SidebarContent>
+
+  <SidebarRail />
+</Sidebar>
+
   );
 }

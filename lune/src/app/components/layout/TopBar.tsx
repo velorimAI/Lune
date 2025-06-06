@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Clock4 } from "lucide-react";
+import { Bell, Clock4 } from "lucide-react";
 import { toast } from "sonner";
 import { LogoutButton } from "./logout-button";
-import UserInfo from './user-info';
+import UserInfo from "./user-info";
 
 const toEnglishDigits = (str: string) =>
   str.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
@@ -58,8 +58,7 @@ export default function TopBar() {
 
   return (
     <div className="flex justify-between items-center px-6 py-3 bg-gray-50 shadow-sm border-b border-blue-200 rounded-b-lg mb-1">
-      
-      {/* ساعت و تاریخ */}
+     
       <div className="flex items-center gap-3 text-black">
         <Clock4 className="w-5 h-5 text-black" />
         <div className="flex flex-col text-sm leading-tight text-right">
@@ -68,11 +67,21 @@ export default function TopBar() {
         </div>
       </div>
 
-      {/* اطلاعات کاربر */}
+      
       <UserInfo />
 
-      {/* دکمه خروج */}
-      <LogoutButton />
+      
+      <div className="flex items-center gap-4">
+       
+        <div className="relative cursor-pointer hover:text-blue-600">
+          <Bell className="w-5 h-5 text-gray-600" />
+          
+          
+        </div>
+
+        
+        <LogoutButton />
+      </div>
     </div>
   );
 }
