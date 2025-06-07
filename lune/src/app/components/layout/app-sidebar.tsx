@@ -10,7 +10,6 @@ import {
   Search,
   Settings,
   ClipboardList,
-  User
 } from "lucide-react";
 import { CustomSidebarTrigger } from "../custom-sidebar-trigger";
 import Image from "next/image";
@@ -24,7 +23,6 @@ const data = {
  
   ],
   navSecondary: [
-    { title: "کاربر", url: "/auth/login", icon: User , sidbar: true,},
     { title: "تنظیمات", url: "settings", icon: Settings , sidbar: true,},
     // {
     //   disabled: true,

@@ -16,7 +16,7 @@ import { Modal } from "@/app/components/modal";
 export interface PartData {
   order_id: number;
   piece_name: string;
-  order_channel: string;
+  delivery_date: string; // فرمت "YYYY-MM-DD"
   number_of_pieces: number;
   status: "دریافت شده" | "دریافت‌ نشده" | "ابطال شده" | "لغو شده";
   order_date: string; // فرمت "YYYY-MM-DD HH:mm:ss"
@@ -27,30 +27,31 @@ export interface PartData {
 
 interface EditOrderModalProps {
   parts: PartData[]; // لیست تمامی قطعات مربوط به یک سفارش
-  onSave: (updatedPart: PartData) => Promise<void> | void;
+  onSave: (updatedPart: PartData & { dealership_confirmed: boolean }) => Promise<void> | void;
 }
 
 const EditOrderModal: React.FC<EditOrderModalProps> = ({ parts, onSave }) => {
   const [open, setOpen] = useState(false);
   const [selectedPartId, setSelectedPartId] = useState<string>("");
   const [localPartData, setLocalPartData] = useState<PartData | null>(null);
+  const [dealershipConfirmed, setDealershipConfirmed] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // وقتی مودال باز می‌شود، اگر لیست قطعات موجود باشد، اولین قطعه را به‌صورت پیش‌فرض انتخاب کن
   useEffect(() => {
     if (open && parts.length > 0) {
       const first = parts[0];
       setSelectedPartId(first.part_id);
       setLocalPartData({ ...first });
+      setDealershipConfirmed(false);
     }
   }, [open, parts]);
 
-  // زمانی‌که کاربر قطعه‌ی جدیدی را از دراپ‌داون انتخاب کند، داده‌های آن قطعه لود می‌شود
   const handlePartChange = (partId: string) => {
     setSelectedPartId(partId);
     const p = parts.find((pt) => pt.part_id === partId) || null;
     if (p) {
       setLocalPartData({ ...p });
+      setDealershipConfirmed(false);
     }
   };
 
@@ -63,7 +64,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ parts, onSave }) => {
     if (!localPartData) return;
     setIsSaving(true);
     try {
-      await onSave(localPartData);
+      await onSave({ ...localPartData, dealership_confirmed: dealershipConfirmed });
       setOpen(false);
     } finally {
       setIsSaving(false);
@@ -73,7 +74,7 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ parts, onSave }) => {
   return (
     <>
       <SquarePen
-        className="cursor-pointer text-blue-600"
+        className="cursor-pointer text-gray-500 hover:text-blue-600"
         onClick={() => setOpen(true)}
       />
 
@@ -107,10 +108,10 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ parts, onSave }) => {
             </Select>
           </div>
 
-          {/* فقط زمانی که localPartData لود شده باشد، فیلدهای ویرایش نمایش داده شود */}
+          {/* فقط زمانی که localPartData لود شده باشد، فیلدها نمایش داده شوند */}
           {localPartData && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* وضعیت تحویل (status) */}
+              {/* وضعیت تحویل */}
               <div>
                 <label className="block mb-1">وضعیت تحویل</label>
                 <Select
@@ -131,16 +132,13 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ parts, onSave }) => {
                 </Select>
               </div>
 
-              {/* وضعیت تسویه (settlement_status) */}
+              {/* وضعیت پرداخت */}
               <div>
                 <label className="block mb-1">وضعیت پرداخت</label>
                 <Select
                   value={localPartData.settlement_status}
                   onValueChange={(value) =>
-                    handleFieldChange(
-                      "settlement_status",
-                      value as PartData["settlement_status"]
-                    )
+                    handleFieldChange("settlement_status", value as PartData["settlement_status"])
                   }
                 >
                   <SelectTrigger className="w-full">
@@ -154,55 +152,31 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ parts, onSave }) => {
                 </Select>
               </div>
 
-              {/* تاریخ سفارش (غیرقابل ویرایش، فقط نمایش) */}
+              {/* تاریخ تحویل */}
               <div>
-                <label className="block mb-1">تاریخ سفارش</label>
+                <label className="block mb-1">تاریخ تحویل</label>
                 <Input
-                  type="text"
-                  className="w-full bg-gray-100 cursor-not-allowed"
-                  value={localPartData.order_date.split(" ")[0]}
-                  disabled
-                />
-              </div>
-
-              {/* تعداد قطعه (غیرقابل ویرایش، فقط نمایش) */}
-              <div>
-                <label className="block mb-1">تعداد</label>
-                <Input
-                  type="number"
-                  className="w-full bg-gray-100 cursor-not-allowed"
-                  value={localPartData.number_of_pieces.toString()}
-                  disabled
-                />
-              </div>
-
-              {/* کانال سفارش (order_channel) - قابل ویرایش */}
-              <div>
-                <label className="block mb-1">کانال سفارش</label>
-                <Input
-                  type="text"
+                  type="date"
                   className="w-full"
-                  value={localPartData.order_channel}
+                  value={localPartData.delivery_date}
                   onChange={(e) =>
-                    handleFieldChange("order_channel", e.target.value)
+                    handleFieldChange("delivery_date", e.target.value)
                   }
                 />
               </div>
 
-              {/* Estimated Arrival Days */}
-              <div>
-                <label className="block mb-1">روزهای تخمینی رسیدن</label>
-                <Input
-                  type="number"
-                  className="w-full"
-                  value={localPartData.estimated_arrival_days.toString()}
-                  onChange={(e) =>
-                    handleFieldChange(
-                      "estimated_arrival_days",
-                      parseInt(e.target.value, 10) || 0
-                    )
+              {/* تأیید نمایندگی */}
+              <div className="flex items-center mt-6 mr-12">
+                <Checkbox
+                  id="dealership-confirmed"
+                  checked={dealershipConfirmed}
+                  onCheckedChange={(checked) =>
+                    setDealershipConfirmed(Boolean(checked))
                   }
                 />
+                <label htmlFor="dealership-confirmed" className="mr-2 text-sm">
+                  تأیید نمایندگی
+                </label>
               </div>
             </div>
           )}

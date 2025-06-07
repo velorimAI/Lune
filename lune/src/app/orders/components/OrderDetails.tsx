@@ -1,12 +1,12 @@
 import React from "react";
-import { Wrench, PackageOpen } from "lucide-react";
+import { Wrench, PackageOpen, CirclePlus } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle, getPaymentStatusStyle } from "./statusStyles";
-
 
 export const OrderDetails = ({ order }: { order: any }) => (
   <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-md mt-2">
     <div className="flex items-center gap-2 mb-4 text-gray-800 font-semibold text-lg">
+      <CirclePlus className="w-5 h-5" />
       <Wrench className="w-5 h-5" />
       <span>
         جزئیات قطعات ({order?.receptions?.flatMap((r: { orders: any; }) => r.orders || []).length || 0})
@@ -33,7 +33,7 @@ export const OrderDetails = ({ order }: { order: any }) => (
             <React.Fragment key={i}>
               <tr>
                 <td colSpan={9} className="bg-blue-50 text-blue-800 font-bold text-right px-4 py-2 border-y border-blue-200">
-                  شماره سفارش: {reception.reception_number}
+                  شماره پذیرش: {reception.reception_number}
                 </td>
               </tr>
               {reception?.orders?.map((part, j) => (
