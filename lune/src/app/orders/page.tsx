@@ -72,27 +72,50 @@ const Orders: FC = () => {
     { label: `ارشیو  (${tabCounts.all || 0})`, value: "ارشیو" },
   ];
 
-  // فیلتر بر اساس تب انتخاب شده
+
   const filteredOrdersByTab = useMemo(() => {
-    if (activeTab === "all") return filteredDataList;
+    let list = [...filteredDataList];
 
-    return filteredDataList?.filter((item: any) => {
-      const status = item.settlement_status_overall?.toString().trim().toLowerCase();
+    // filter by tab
+    if (activeTab !== "all") {
+      list = list.filter((item: any) => {
+        const status = item.settlement_status_overall?.toString().trim().toLowerCase();
+        if (!status) return false;
 
-      if (!status) return false;
+        switch (activeTab) {
+          case "تسویه شده":
+            return status.includes("تسویه") && status.includes("شده") && !status.includes("ن");
+          case "تسویه نشده":
+            return status.includes("تسویه") && status.includes("نشده");
+          case "لغو شده":
+            return status.includes("لغو");
+          default:
+            return true;
+        }
+      });
+    }
 
-      switch (activeTab) {
-        case "تسویه شده":
-          return status.includes("تسویه") && status.includes("شده") && !status.includes("ن");
-        case "تسویه نشده":
-          return status.includes("تسویه") && status.includes("نشده");
-        case "لغو شده":
-          return status.includes("لغو");
-        default:
-          return true;
-      }
-    });
-  }, [filteredDataList, activeTab]);
+    // sort by selected field
+    switch (sortBy) {
+      case "name":
+        list.sort((a, b) =>
+          a?.customer_name?.localeCompare(b?.customer_name, "fa")
+        );
+
+        break;
+      case "receptionDate":
+        list.sort(
+          (a, b) => new Date(b?.reception_date).getTime() - new Date(a?.reception_date).getTime()
+        );
+        break;
+      default:
+        // default: no sorting or based on original API order
+        break;
+    }
+
+    return list;
+  }, [filteredDataList, activeTab, sortBy]);
+
 
   console.log(data?.data);
 

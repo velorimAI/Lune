@@ -22,6 +22,7 @@ import { DeleteOrder } from "./DeleteOrderButton";
 import { OrdersListProps } from "@/types/orders.d.type";
 import EditOrderModal, { PartData } from "./edit-orders-SquarePen";
 import { OrderDetails } from "./OrderDetails";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const OrdersList: FC<OrdersListProps> = ({ data }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -238,7 +239,11 @@ export const OrdersList: FC<OrdersListProps> = ({ data }) => {
               </div>
 
               {/* بخش جزئیات قطعات */}
-              {expandedIndex === index && <OrderDetails order={order} />}
+              {expandedIndex === index &&
+                <ScrollArea className="max-h-[300px]  overflow-auto border rounded-md p-2" dir="rtl">
+                  <OrderDetails order={order} />
+                </ScrollArea>
+              }
             </div>
           );
         })
