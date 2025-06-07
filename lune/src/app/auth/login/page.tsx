@@ -46,8 +46,11 @@ const Login: FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-cover bg-center">
-      <div className="flex flex-col items-center justify-center min-h-screen shadow-gray-700 shadow-2xl">
+    <div
+      className="min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: "url('/img/background/main.jpg')" }}
+    >
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white/80">
         <Card titleStyle="flex justify-center items-center" variant="ghost">
           <Image
             src="/img/logo/fix-logo.jpg"
@@ -64,9 +67,11 @@ const Login: FC = () => {
           >
             <Input
               label="نام کاربری"
-              placeholder="نام کابری خود را وارد کنید :"
+              placeholder="نام کاربری خود را وارد کنید :"
               className="w-[400px]"
               name="username"
+              idNumber
+              type="number"
             />
             <Input
               label="رمز عبور"

@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Clock4 } from "lucide-react";
-import { Button } from "../button";
+import { Bell, Clock4 } from "lucide-react";
 import { toast } from "sonner";
+import { LogoutButton } from "./logout-button";
+import UserInfo from "./user-info";
 
 const toEnglishDigits = (str: string) =>
   str.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
@@ -56,8 +57,7 @@ export default function TopBar() {
   if (pathname === "/auth/login") return null;
 
   return (
-    <div className="flex justify-between items-center px-6 py-3 bg-gray-50 shadow-sm border-b border-blue-200 rounded-b-lg">
-      
+    <div className="flex justify-between items-center px-6 py-3 bg-gray-50 shadow-sm border-b border-blue-200 rounded-b-lg mb-1">
       <div className="flex items-center gap-3 text-black">
         <Clock4 className="w-5 h-5 text-black" />
         <div className="flex flex-col text-sm leading-tight text-right">
@@ -66,14 +66,15 @@ export default function TopBar() {
         </div>
       </div>
 
-      
-      <Button
-        onClick={handleLogout}
-        className="flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-200 transition px-3 py-1.5 rounded-md shadow-sm"
-      >
-        <LogOut className="w-4 h-4" />
-        <span className="text-sm">خروج</span>
-      </Button>
+      <UserInfo />
+
+      <div className="flex items-center gap-4">
+        <div className="relative cursor-pointer hover:text-blue-600">
+          <Bell className="w-5 h-5 text-gray-600" />
+        </div>
+
+        <LogoutButton />
+      </div>
     </div>
   );
 }

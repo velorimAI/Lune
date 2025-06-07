@@ -12,7 +12,6 @@ import { toast } from "sonner";
 const NewOrderPage = () => {
   const router = useRouter();
 
-  // وضعیت کانال سفارش رو نگه می‌داریم
   const [orderChannel, setOrderChannel] = useState<string>("");
 
   const handleSubmit = async (data: any) => {
@@ -22,7 +21,6 @@ const NewOrderPage = () => {
       data.orders[0].piece_info.number_of_pieces = fixedNumberOfPieces;
     }
 
-    // اگر کانال سفارش چیز دیگه‌ای جز "انبار مرکزی" بود، اطلاعات فروشگاه رو null کن
     if (data.orders && data.orders[0]) {
       if (data.orders[0].source.order_channel !== "انبار مرکزی") {
         data.orders[0].source.market_name = null;
@@ -37,7 +35,7 @@ const NewOrderPage = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });

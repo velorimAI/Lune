@@ -30,6 +30,7 @@ type InputProps = {
   name?: string;
   onChange?: (value?: string) => void;
   phone?: boolean;
+  idNumber?: boolean;
   placeholder?: string;
   readOnly?: boolean;
   required?: boolean;
@@ -49,7 +50,7 @@ export const Input: FC<InputProps> = (props) => {
       text: '',
       className: '',
       type: 'button',
-      onClick: () => {},
+      onClick: () => { },
       isLoading: false,
     },
     className,
@@ -75,6 +76,7 @@ export const Input: FC<InputProps> = (props) => {
     tooltipTriggerIcon,
     tooltip,
     isPositiveNumber,
+    idNumber
   } = props;
 
   const [eyeOff, setEye] = useState<boolean>(true);
@@ -87,6 +89,7 @@ export const Input: FC<InputProps> = (props) => {
       ip,
       phone,
       isPositiveNumber,
+      idNumber
     },
     label,
   });
@@ -141,7 +144,7 @@ export const Input: FC<InputProps> = (props) => {
       >
         <InputShadcn
           {...formField.fieldRegister}
-          className={cn( 
+          className={cn(
             `${submitButton?.status ? 'rounded-r-none dark:focus:ring-0 ' : ''}`,
             inputStyle,
             type === 'number' ? 'no-spinner' : '',
