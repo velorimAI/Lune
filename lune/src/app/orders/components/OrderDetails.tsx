@@ -21,10 +21,11 @@ export const OrderDetails = ({ order }: { order: any }) => (
         <thead className="bg-gray-100 text-gray-700">
           <tr>
             <th className="px-4 py-2">نام قطعه</th>
-            <th className="px-4 py-2">کد قطعه</th>
+
             <th className="px-4 py-2">تعداد</th>
             <th className="px-4 py-2">نوع سفارش</th>
             <th className="px-4 py-2">تاریخ سفارش</th>
+            <th className="px-4 py-2">شماره سفارش</th>
             <th className="px-4 py-2">رسیدن (روز)</th>
             <th className="px-4 py-2">وضعیت تحویل</th>
             <th className="px-4 py-2">وضعیت پرداخت</th>
@@ -86,7 +87,6 @@ export const OrderDetails = ({ order }: { order: any }) => (
                       <PackageOpen className="w-5 h-5 text-gray-600" />
                       {part?.piece_name}
                     </td>
-                    <td className="px-4 py-3">{part?.part_id}</td>
                     <td className="px-4 py-3">{part?.number_of_pieces}</td>
                     <td className="px-4 py-3 font-semibold">
                       {part?.order_channel}
@@ -94,6 +94,7 @@ export const OrderDetails = ({ order }: { order: any }) => (
                     <td className="px-4 py-3">
                       {part?.order_date?.split(" ")[0]}
                     </td>
+                    <td className="px-4 py-3">{part?.order_number}</td>
                     <td className="px-4 py-3">
                       {part?.estimated_arrival_days}
                     </td>
