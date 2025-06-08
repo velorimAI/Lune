@@ -141,15 +141,15 @@ export const Select: FC<SelectBoxProps> = (props) => {
       )}
     >
       {label && (
-  <FormLabel
-    className={cn('mb-2', labelClassName)}
-    label={label}
-    required={required}
-    inValid={!!formField?.error}
-    tooltipTriggerIcon={tooltipTriggerIcon}
-    tooltip={tooltip}
-  />
-)}
+        <FormLabel
+          className={cn('mb-2', labelClassName)}
+          label={label}
+          required={required}
+          inValid={!!formField?.error}
+          tooltipTriggerIcon={tooltipTriggerIcon}
+          tooltip={tooltip}
+        />
+      )}
 
       <SelectShadcn
         onOpenChange={(open: boolean) => {
@@ -167,18 +167,20 @@ export const Select: FC<SelectBoxProps> = (props) => {
             inputStyle,
             'dark:bg-box-brighter dark:border-none dark:text-zinc-400'
           )}
+          dir='rtl'
           {...formField.fieldRegister}
         >
           <SelectValue placeholder={formField.valueState || placeholder} />
         </SelectTrigger>
 
         <SelectContent
-          className="dark:bg-box-brighter dark:border-none"
+          className="dark:bg-box-brighter dark:border-none "
         //   hiddenArrow={!hiddenSearch}
+        dir='rtl'
         >
           {isLoading ? (
             // <Loading cssClass="max-h-24 w-[200px]" />
-            <Skeleton/>
+            <Skeleton />
           ) : (
             <>
               {!hiddenSearch && (

@@ -28,7 +28,7 @@ const Orders: FC = () => {
   const [activeTab, setActiveTab] = useState<string>("all");
   const router = useRouter();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading , refetch} = useQuery({
     queryKey: ["orders"],
     queryFn: getOrdersList,
   });
@@ -98,7 +98,7 @@ const Orders: FC = () => {
 
   return (
     <Card
-      title={`سفارش ها (${filteredOrdersByTab?.length || 0})`}
+      title={`سفارش ها`}
     >
       <div className="w-[300px]">
         <SearchBox onSearch={handleSearch} />
@@ -155,7 +155,7 @@ const Orders: FC = () => {
               ))}
             </>
           ) : (
-            <OrdersList data={(filteredOrdersByTab as any[]) || []} />
+            <OrdersList data={(filteredOrdersByTab as any[]) || []} refetch={refetch} />
           )}
         </div>
 

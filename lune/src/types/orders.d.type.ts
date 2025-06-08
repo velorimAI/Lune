@@ -40,6 +40,7 @@ export interface Order {
 
 // پراپز کامپوننت
 export interface OrdersListProps {
+  refetch : () => void;
   data: Order[];
 }
 // هر قطعه‌ای که در یک پذیرش وجود داره
