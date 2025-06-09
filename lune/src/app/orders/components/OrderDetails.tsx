@@ -2,6 +2,7 @@ import React from "react";
 import { Wrench, PackageOpen, CirclePlus } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle, getPaymentStatusStyle } from "./statusStyles";
+import AddItem from "./add-item";
 
 export const OrderDetails = ({ order }: { order: any }) => (
   <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-md mt-2">
@@ -13,7 +14,8 @@ export const OrderDetails = ({ order }: { order: any }) => (
           .length || 0}
         )
       </span>
-      <CirclePlus className="w-5 h-5 mr-auto" />
+      {/* <CirclePlus className="w-5 h-5 mr-auto" /> */}
+      <AddItem/>
     </div>
 
     <div className="overflow-x-auto">

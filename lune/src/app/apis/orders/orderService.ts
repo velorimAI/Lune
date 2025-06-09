@@ -54,3 +54,20 @@ export const editOrder = async (id: string, updatedData: any) => {
 
   return response.data;
 };
+
+export const addItem = async (id: string, updatedData: any) => {
+  const token = localStorage.getItem("token");
+
+  const response = await axios.patch(
+    `http://localhost:3001/api/orders/edit/${id}`,
+    updatedData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return response.data;
+};
