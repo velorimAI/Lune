@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const sortOptions = [
   { value: "default", label: "مرتب‌سازی پیش‌فرض" },
-  { value: "name", label: "مرتب‌سازی بر اساس نام" },
+  { value: "name", label: "مرتب‌سازی بر اساس تاریخ سفارش" },
   { value: "receptionDate", label: "مرتب‌سازی بر اساس تاریخ پذیرش" },
 ];
 
