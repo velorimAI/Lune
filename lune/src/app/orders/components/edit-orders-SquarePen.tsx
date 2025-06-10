@@ -1,15 +1,15 @@
 "use client";
-
 import { editOrder } from "@/app/apis/orders/orderService";
 import { CheckBox } from "@/app/components/custom-form/check-box";
 import { Form } from "@/app/components/custom-form/form";
-import { Input } from "@/app/components/custom-form/input";
 import { Select } from "@/app/components/custom-form/select-box";
 import { Modal } from "@/app/components/modal";
-import { formatDateOnly } from "@/app/utils/formatDateOnly";
 import { SquarePen } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import DatePicker from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 
 interface editOrderModalProp {
   data: any;
@@ -20,6 +20,8 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
   const [open, setOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [deliveryDate, setDeliveryDate] = useState<string | null>(null);
+
   const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
 
   const orders = data.receptions?.flatMap((reception: any) => reception.orders) || [];
@@ -31,11 +33,24 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
 
   const selectedOrder = orders.find((o: any) => o.order_id.toString() === selectedOrderId) || null;
 
+  // اصلاح شده: فقط یک useEffect
   useEffect(() => {
-    if (!selectedOrderId && orders.length > 0) {
-      setSelectedOrderId(orders[0].order_id.toString());
+    if (selectedOrder?.delivery_date) {
+      try {
+        // تبدیل تاریخ به فرمت YYYY/MM/DD
+        const dateParts = selectedOrder.delivery_date.split('-');
+        if (dateParts.length === 3) {
+          setDeliveryDate(`${dateParts[0]}/${dateParts[1]}/${dateParts[2]}`);
+        } else {
+          setDeliveryDate(null);
+        }
+      } catch {
+        setDeliveryDate(null);
+      }
+    } else {
+      setDeliveryDate(null);
     }
-  }, [orders, selectedOrderId]);
+  }, [selectedOrder]);
 
   const handlePartSelect = (value: string) => {
     setSelectedOrderId(value);
@@ -46,6 +61,12 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
       if (!selectedOrderId) return;
 
       setLoading(true);
+      
+      // تبدیل تاریخ به فرمت YYYY-MM-DD برای ارسال به سرور
+      formData.delivery_date = deliveryDate 
+        ? deliveryDate.replaceAll("/", "-") 
+        : null;
+
       await editOrder(selectedOrderId, formData);
       refetch();
 
@@ -110,13 +131,31 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
           </div>
 
           <div className="flex w-full justify-between gap-3">
-            <Input
-              label="تاریخ تحویل"
-              name="delivery_date"
-              className="w-full"
-              value={formatDateOnly(selectedOrder?.delivery_date)}
-              disabled={!isWarehouse}
-            />
+            <div className="flex flex-col w-full">
+              <label className="text-sm text-gray-700 mb-1">تاریخ تحویل</label>
+              <DatePicker
+                value={deliveryDate}
+                onChange={(date) => {
+                  try {
+                    if (date) {
+                      const formattedDate = date.format("YYYY/MM/DD");
+                      setDeliveryDate(formattedDate);
+                    } else {
+                      setDeliveryDate(null);
+                    }
+                  } catch (error) {
+                    console.error("خطا در فرمت تاریخ:", error);
+                    setDeliveryDate(null);
+                  }
+                }}
+                calendar={persian}
+                locale={persian_fa}
+                format="YYYY/MM/DD"
+                inputClass="border border-gray-300 rounded-md px-3 py-2 w-full text-sm text-right"
+                disabled={!isWarehouse}
+                containerClassName="w-full"
+              />
+            </div>
 
             <Select
               label="وضعیت پرداخت"
@@ -124,22 +163,19 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
               className="w-[200px]"
               inputStyle="w-full"
               options={[
-                { label: "تسویه شده ", value: "تسویه شده" },
+                { label: "تسویه شده", value: "تسویه شده" },
                 { label: "تسویه نشده", value: "تسویه نشده" },
               ]}
               value={selectedOrder?.settlement_status}
               disabled={!isAccountant}
             />
-
           </div>
-
-
 
           <CheckBox
             label="تایید نمایندگی"
             name="dealer_approved"
             className="py-2"
-            checked={selectedOrder?.dealer_approved}
+            checked={selectedOrder?.dealer_approved || false}
             disabled={!isWarehouse}
           />
         </Form>
