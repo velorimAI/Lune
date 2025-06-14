@@ -7,13 +7,7 @@ import {
   User,
   Phone,
   CalendarPlus2,
-  PackageOpen,
-  Wrench,
-  XCircle,
-  CheckCircle,
   ShoppingCart,
-  Ban,
-  HelpCircle,
   DollarSign,
   CalendarCheck,
 } from "lucide-react";

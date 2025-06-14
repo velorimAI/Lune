@@ -65,7 +65,7 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
   return (
     <>
       <SquarePen
-        className="cursor-pointer text-gray-500 hover:text-blue-600"
+        className="cursor-pointer hover:text-blue-600"
         onClick={() => setOpen(true)}
       />
 
