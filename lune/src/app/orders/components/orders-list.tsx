@@ -1,9 +1,9 @@
 "use client";
 
 import { FC, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   CircleArrowLeft,
-  CircleArrowDown,
   User,
   Phone,
   CalendarPlus2,
@@ -24,7 +24,7 @@ import EditOrderModal from "./edit-orders-SquarePen";
 import { OrderDetails } from "./OrderDetails";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export const OrdersList: FC<OrdersListProps> = ({ data , refetch}) => {
+export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const toggleDetails = (index: number) => {
@@ -61,14 +61,11 @@ export const OrdersList: FC<OrdersListProps> = ({ data , refetch}) => {
         data.map((order, index) => {
           return (
             <div key={index} className="space-y-2">
-
               <div className="grid grid-cols-6 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center">
-
                 <div className="flex items-center gap-1.5 text-gray-800">
                   <User className="w-5 h-5" />
                   <span>{order?.customer_name}</span>
                 </div>
-
 
                 <div className="flex items-center gap-1.5 text-gray-800">
                   <Phone className="w-5 h-5" />
@@ -101,7 +98,6 @@ export const OrdersList: FC<OrdersListProps> = ({ data , refetch}) => {
                   </span>
                 </div>
 
-
                 <div className="flex items-center gap-1.5 justify-center text-gray-800">
                   <DollarSign className="w-5 h-5" />
                   <span
@@ -113,39 +109,47 @@ export const OrdersList: FC<OrdersListProps> = ({ data , refetch}) => {
                   </span>
                 </div>
 
-
                 <div className="flex gap-4 justify-center text-gray-700">
                   <DeleteOrder
                     id={String(order?.customer_id)}
                     name={order?.customer_name}
                   />
 
+                  <EditOrderModal data={order} refetch={refetch} />
 
-                  <EditOrderModal data={order} refetch={refetch}/>
-
-                  {expandedIndex === index ? (
-                    <CircleArrowDown
-                      className="w-6 h-5 cursor-pointer text-blue-600"
-                      onClick={() => toggleDetails(index)}
-                    />
-                  ) : (
-                    <CircleArrowLeft
-                      className="w-6 h-6 cursor-pointer"
-                      onClick={() => toggleDetails(index)}
-                    />
-                  )}
+                  <motion.div
+                    animate={expandedIndex === index ? "rotated" : "initial"}
+                    variants={{
+                      initial: { rotate: 0 }, // فلش به سمت چپ
+                      rotated: { rotate: -90 } // فلش به سمت پایین
+                    }}
+                    transition={{ duration: 0.2 }}
+                    onClick={() => toggleDetails(index)}
+                    className="cursor-pointer"
+                  >
+                    <CircleArrowLeft className="w-6 h-6" />
+                  </motion.div>
                 </div>
               </div>
 
-
-              {expandedIndex === index &&
-                <ScrollArea className="w-full flex flex-col justify-start items-center pr-3 h-[300px] 4xl:h-[500px] mt-2">
-                  <div dir="rtl" className="w-full">
-                    <OrderDetails order={order} id={order?.customer_id} />
-                  </div>
-                </ScrollArea>
-              }
-
+              <AnimatePresence>
+                {expandedIndex === index && (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <ScrollArea className="w-full flex flex-col justify-start items-center pr-3 h-[300px] 4xl:h-[500px] mt-2">
+                      <div dir="rtl" className="w-full">
+                        <OrderDetails order={order} id={order?.customer_id} />
+                      </div>
+                    </ScrollArea>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })
