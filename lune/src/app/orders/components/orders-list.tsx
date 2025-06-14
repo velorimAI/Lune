@@ -141,7 +141,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data , refetch}) => {
               {expandedIndex === index &&
                 <ScrollArea className="w-full flex flex-col justify-start items-center pr-3 h-[300px] 4xl:h-[500px] mt-2">
                   <div dir="rtl" className="w-full">
-                    <OrderDetails order={order} />
+                    <OrderDetails order={order} id={order?.customer_id} />
                   </div>
                 </ScrollArea>
               }

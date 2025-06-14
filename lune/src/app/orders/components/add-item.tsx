@@ -7,64 +7,77 @@ import { Select } from "@/app/components/custom-form/select-box";
 import { Modal } from "@/app/components/modal";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useForm, useFormContext } from "react-hook-form";
 import { toast } from "sonner";
+import { useAddItem } from "../hooks/use-add-item";
 
 
 
 interface AddItemModalProp {
   data?: any;
   refetch?: () => void;
+  id?: number
 }
 
-const AddItem: React.FC<AddItemModalProp> = ({ data, refetch }) => {
+const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
   const [open, setOpen] = useState(false);
-  // const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  // const [loading, setLoading] = useState(false);
-  // const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
-
-  // const orders = data.receptions?.flatMap((reception: any) => reception.orders) || [];
-
-  // const orderOptions = orders.map((order: any) => ({
-  //     label: order.piece_name,
-  //     value: order.order_id.toString(),
-  // }));
-
-  // const selectedOrder = orders.find((o: any) => o.order_id.toString() === selectedOrderId) || null;
-
-  // useEffect(() => {
-  //     if (!selectedOrderId && orders.length > 0) {
-  //         setSelectedOrderId(orders[0].order_id.toString());
-  //     }
-  // }, [orders, selectedOrderId]);
-
-  // const handlePartSelect = (value: string) => {
-  //     setSelectedOrderId(value);
-  // };
+  const [orderChannel, setOrderChannel] = useState("");
+  const { mutate, isPending } = useAddItem();
 
   const handleUpdate = async (formData: any) => {
-    // try {
-    //   if (!selectedOrderId) return;
+    const order = {
+      piece_name: formData.piece_name,
+      part_id: formData.part_id,
+      number_of_pieces: Number(formData.number_of_pieces),
+      order_number: formData.order_number,
+      order_channel: formData.order_channel,
+      ...(formData.order_channel === "بازار آزاد" && {
+        market_name: formData.market_name,
+        market_phone: formData.market_phone,
+      }),
+      estimated_arrival_days: 7,
+      status: formData.status,
+      settlement_status: formData.settlement_status,
+      description: formData.description || "",
+      dealer_approved: formData.dealer_approved || false,
+    };
 
-    //   setLoading(true);
-    //   await editOrder(selectedOrderId, formData);
-    //   refetch();
+    const payload = {
+      reception_number: formData.reception_number,
+      reception_date: formData.reception_date,
+      orders: [order],
+    };
 
-    //   toast.success(`«${selectedOrder?.piece_name}» با موفقیت ویرایش شد`);
-    //   setOpen(false);
-    // } catch (error) {
-    //   toast.error("خطا در ویرایش سفارش");
-    //   console.error(error);
-    // } finally {
-    //   setLoading(false);
-    // }
+    if (!id) return;
+
+    mutate(
+      { id, data: payload },
+      {
+        onSuccess: () => {
+          toast.success("سفارش با موفقیت اضافه شد");
+          setOpen(false);
+          refetch?.();
+        },
+        onError: () => {
+          toast.error("خطا در ارسال سفارش");
+        },
+      }
+    );
   };
+
+
+
+
+
 
   // const isAccountant = role === "حسابدار";
   // const isWarehouse = role === "انباردار";
 
   return (
     <>
-      <CirclePlus className="cursor-pointer w-5 h-5 mr-auto" onClick={() => setOpen(true)} />
+      <CirclePlus
+        className="cursor-pointer w-6 h-6 mr-auto  transition-all duration-300 hover:text-teal-500 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
+        onClick={() => setOpen(true)} />
 
       <Modal
         open={open}
@@ -75,23 +88,26 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch }) => {
       >
         <Form
           cancelText="لغو"
-          submitText="ذخیره تغییرات"
+          submitText="اضاقه کردن قطعه"
           onCancel={() => setOpen(false)}
           onSubmit={handleUpdate}
         >
-          <div className="flex flex-col gap-4 max-h-[75vh] overflow-y-auto">
+          <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto">
+
+            {/* اطلاعات پذیرش */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <Input label="شماره پذیرش" name="reception_number" />
+              <Input label="تاریخ پذیرش" name="reception_date" />
+            </div>
 
             {/* اطلاعات قطعه */}
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
               <Input label="نام قطعه" name="piece_name" />
               <Input label="کد قطعه" name="part_id" />
               <Input label="تعداد" name="number_of_pieces" type="number" isPositiveNumber />
             </div>
 
-
             {/* اطلاعات سفارش */}
-
             <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
               <Input label="شماره سفارش" name="order_number" />
               <Select
@@ -103,42 +119,53 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch }) => {
                   { label: "VIS", value: "VIS" },
                   { label: "بازار آزاد", value: "بازار آزاد" },
                 ]}
+                onChange={(data) => { setOrderChannel(data) }}
+                inputStyle="w-full"
               />
-              <Input label="نام بازار" name="market_name" />
-              <Input label="تلفن بازار" name="market_phone" />
-            </div>
-
-            {/* اطلاعات وضعیت */}
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+              {orderChannel === "بازار آزاد" && (
+                <>
+                  <Input label="نام بازار" name="market_name" />
+                  <Input label="تلفن بازار" name="market_phone" />
+                </>
+              )}
               <Select
-                label="تحویل"
-                name="status.status"
+                label="وضعیت تحویل"
+                name="status"
                 options={[
                   { label: "دریافت شده", value: "دریافت شده" },
                   { label: "دریافت نشده", value: "دریافت نشده" },
                 ]}
+                inputStyle="w-[105px]"
+                value="دریافت نشده"
               />
               <Select
-                label="پرداخت"
-                name="status.settlement_status"
+                label="وضعیت پرداخت"
+                name="settlement_status"
                 options={[
                   { label: "تسویه شده", value: "تسویه شده" },
                   { label: "تسویه نشده", value: "تسویه نشده" },
                 ]}
+                inputStyle="w-[105px]"
+                value="تسویه نشده"
+                disabled
               />
-              <Input
-                label="روزهای تحویل"
-                name="dates.estimated_arrival_days"
-                type="number"
-              />
-            </div>
-            <Input label="توضیحات (اختیاری)" name="description" />
-            <CheckBox label="تأیید نماینده" name="dealer_approved" />
 
+            </div>
+
+            {/* وضعیت‌ها */}
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> */}
+
+            {/* </div> */}
+
+            {/* توضیحات و تایید */}
+            <div className="grid grid-cols-1 gap-4">
+              <Input label="توضیحات (اختیاری)" name="description" />
+              <CheckBox label="تأیید نماینده" name="dealer_approved" />
+            </div>
 
           </div>
         </Form>
+
       </Modal>
 
 
