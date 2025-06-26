@@ -10,6 +10,12 @@ import UserInfo from "./user-info";
 const toEnglishDigits = (str: string) =>
   str.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
 
+// نقشه تبدیل مسیر به نام صفحه
+const pathToTitle: Record<string, string> = {
+  "/orders": "سفارشات",
+  "/items": "قطعات",
+};
+
 export default function TopBar() {
   const [dateTime, setDateTime] = useState<{ date: string; time: string }>({
     date: "",
@@ -56,19 +62,30 @@ export default function TopBar() {
 
   if (pathname === "/auth/login") return null;
 
+  const currentPageTitle = pathToTitle[pathname] || "بدون عنوان";
+
   return (
     <div className="flex justify-between items-center px-6 py-3 bg-gray-50 shadow-sm border-b border-blue-200 rounded-b-lg mb-1">
-      <div className="flex items-center gap-3 text-black">
-        <Clock4 className="w-5 h-5 text-black" />
-        <div className="flex flex-col text-sm leading-tight text-right">
-          <span className="font-semibold">{dateTime.date}</span>
-          <span className="text-xs text-gray-500">{dateTime.time}</span>
-        </div>
+      {/* Right section: User info */}
+      <div className="flex items-center gap-4">
+        <UserInfo />
       </div>
 
-      <UserInfo />
+      {/* Center: Page title */}
+      <div className="text-center text-black font-bold text-lg">
+        {currentPageTitle}
+      </div>
 
-      <div className="flex items-center gap-4">
+      {/* Left section: Time, Date, Notification, Logout */}
+      <div className="flex items-center gap-4 text-black">
+        <div className="flex items-center gap-2">
+          <Clock4 className="w-5 h-5 text-black" />
+          <div className="flex flex-col text-sm leading-tight text-right">
+            <span className="font-semibold">{dateTime.date}</span>
+            <span className="text-xs text-gray-500">{dateTime.time}</span>
+          </div>
+        </div>
+
         <div className="relative cursor-pointer hover:text-blue-600">
           <Bell className="w-5 h-5 text-gray-600" />
         </div>
