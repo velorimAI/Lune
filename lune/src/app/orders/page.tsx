@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { OrdersList } from "./components/orders-list";
 import { useStaticSearchDevices } from "./hooks/use-static-search-devices";
 import { SearchBox } from "../components/table/search-box";
@@ -22,9 +22,6 @@ const sortOptions = [
 const Orders: FC = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("default");
-  const [role, setRole] = useState<string | null>("");
-  const [userName, setUserName] = useState<string | null>("");
-  const [userLastname, setUserLastname] = useState<string | null>("");
   const [activeTab, setActiveTab] = useState<string>("all");
   const router = useRouter();
 

@@ -6,17 +6,14 @@ import { Input } from "@/app/components/custom-form/input";
 import { Select } from "@/app/components/custom-form/select-box";
 import { Modal } from "@/app/components/modal";
 import { CirclePlus } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useState } from "react";
 import { toast } from "sonner";
 import { useAddItem } from "../hooks/use-add-item";
-
-
 
 interface AddItemModalProp {
   data?: any;
   refetch?: () => void;
-  id?: number
+  id?: number;
 }
 
 const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
@@ -65,11 +62,6 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
     );
   };
 
-
-
-
-
-
   // const isAccountant = role === "حسابدار";
   // const isWarehouse = role === "انباردار";
 
@@ -77,7 +69,8 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
     <>
       <CirclePlus
         className="cursor-pointer w-6 h-6 mr-auto  transition-all duration-300 hover:text-teal-500 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
-        onClick={() => setOpen(true)} />
+        onClick={() => setOpen(true)}
+      />
 
       <Modal
         open={open}
@@ -92,8 +85,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
           onCancel={() => setOpen(false)}
           onSubmit={handleUpdate}
         >
-          <div className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto">
-
+          <div className="flex flex-col gap-2">
             {/* اطلاعات پذیرش */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <Input label="شماره پذیرش" name="reception_number" />
@@ -104,7 +96,12 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
               <Input label="نام قطعه" name="piece_name" />
               <Input label="کد قطعه" name="part_id" />
-              <Input label="تعداد" name="number_of_pieces" type="number" isPositiveNumber />
+              <Input
+                label="تعداد"
+                name="number_of_pieces"
+                type="number"
+                isPositiveNumber
+              />
             </div>
 
             {/* اطلاعات سفارش */}
@@ -119,7 +116,9 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                   { label: "VIS", value: "VIS" },
                   { label: "بازار آزاد", value: "بازار آزاد" },
                 ]}
-                onChange={(data) => { setOrderChannel(data) }}
+                onChange={(data) => {
+                  setOrderChannel(data);
+                }}
                 inputStyle="w-full"
               />
               {orderChannel === "بازار آزاد" && (
@@ -149,7 +148,6 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                 value="تسویه نشده"
                 disabled
               />
-
             </div>
 
             {/* وضعیت‌ها */}
@@ -160,15 +158,13 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
             {/* توضیحات و تایید */}
             <div className="grid grid-cols-1 gap-4">
               <Input label="توضیحات (اختیاری)" name="description" />
+            </div>
+            <div className="grid grid-cols-1 gap-4 ml-auto">
               <CheckBox label="تأیید نماینده" name="dealer_approved" />
             </div>
-
           </div>
         </Form>
-
       </Modal>
-
-
     </>
   );
 };

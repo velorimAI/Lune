@@ -11,7 +11,6 @@ import {
   DollarSign,
   CalendarCheck,
 } from "lucide-react";
-import { DeleteItem } from "./delete-items";
 import { DeleteOrder } from "./DeleteOrderButton";
 import { OrdersListProps } from "@/types/orders.d.type";
 import EditOrderModal from "./edit-orders-SquarePen";
@@ -114,8 +113,8 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   <motion.div
                     animate={expandedIndex === index ? "rotated" : "initial"}
                     variants={{
-                      initial: { rotate: 0 }, // فلش به سمت چپ
-                      rotated: { rotate: -90 } // فلش به سمت پایین
+                      initial: { rotate: 0 },
+                      rotated: { rotate: -90 } 
                     }}
                     transition={{ duration: 0.2 }}
                     onClick={() => toggleDetails(index)}
