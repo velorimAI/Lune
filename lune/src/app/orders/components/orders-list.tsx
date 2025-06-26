@@ -141,7 +141,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   <motion.div
                     animate={expandedIndex === index ? "rotated" : "initial"}
                     variants={{
-                      initial: { rotate: 0 }, // فلش به سمت چپ
+                      initial: { rotate: 0 }, 
                       rotated: { rotate: -90 } // فلش به سمت پایین
                     }}
                     transition={{ duration: 0.2 }}
