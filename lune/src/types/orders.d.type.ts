@@ -28,6 +28,7 @@ export interface Reception {
 
 // سفارش اصلی برای یک مشتری
 export interface Order {
+  earliest_unreceived_estimated_arrival_date: string;
   customer_id: number;
   customer_name: string;
   customer_last_name?: string;

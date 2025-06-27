@@ -36,6 +36,15 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
     }
   };
 
+  const extractMonthDay = (date: string | null | undefined): string | null => {
+    if (!date) return null;
+    const parts = date.split('/');
+    if (parts.length >= 3) {
+      return `${parts[1]}/${parts[2]}`;
+    }
+    return null;
+  };
+
   return (
     <div className="space-y-4">
       {data.length === 0 ? (
@@ -53,6 +62,24 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
         </div>
       ) : (
         data.map((order, index) => {
+          const earliestDate = order.earliest_unreceived_estimated_arrival_date;
+          const latestDate = order.latest_unreceived_estimated_arrival_date;
+          
+          const earliestMonthDay = earliestDate ? extractMonthDay(earliestDate) : null;
+          const latestMonthDay = latestDate ? extractMonthDay(latestDate) : null;
+
+          const displayDates = () => {
+            if (earliestDate && latestDate) {
+              if (earliestDate === latestDate) {
+                return earliestDate; // نمایش تاریخ کامل اگر یکسان باشند
+              }
+              return `${earliestMonthDay} - ${latestMonthDay}`; // نمایش ماه/روز اگر متفاوت باشند
+            }
+            if (earliestDate) return earliestDate;
+            if (latestDate) return latestDate;
+            return "—";
+          };
+
           return (
             <div key={index} className="space-y-2">
               <div className="grid grid-cols-6 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center">
@@ -85,11 +112,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
 
                 <div className="flex items-center gap-1.5 text-gray-800">
                   <CalendarCheck className="w-5 h-5" />
-                  <span>
-                    {order?.latest_unreceived_estimated_arrival_date
-                      ? order.latest_unreceived_estimated_arrival_date
-                      : "—"}
-                  </span>
+                  <span>{displayDates()}</span>
                 </div>
 
                 <div className="flex items-center gap-1.5 justify-center text-gray-800">
@@ -98,7 +121,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                     className={`font-semibold ${getSettlementStyle(
                       order?.settlement_status_overall || "تسویه نشده"
                     ).color}`}
-                  >
+                    >
                     {order?.settlement_status_overall || "تسویه نشده"}
                   </span>
                 </div>
@@ -114,8 +137,8 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   <motion.div
                     animate={expandedIndex === index ? "rotated" : "initial"}
                     variants={{
-                      initial: { rotate: 0 }, // فلش به سمت چپ
-                      rotated: { rotate: -90 } // فلش به سمت پایین
+                      initial: { rotate: 0 },
+                      rotated: { rotate: -90 }
                     }}
                     transition={{ duration: 0.2 }}
                     onClick={() => toggleDetails(index)}
