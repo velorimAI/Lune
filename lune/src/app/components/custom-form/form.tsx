@@ -35,6 +35,7 @@ type FormProps = {
   cancelHref?: string;
   onFormState?: (data?: OnFormStateTypes) => void;
   defaultValue?: Record<any, any>;
+  methods?: any
 };
 
 export const Form: FC<FormProps> = (props) => {
@@ -54,15 +55,19 @@ export const Form: FC<FormProps> = (props) => {
     onCancel,
     cancelHref,
     onFormState,
+    methods: injectedMethods,
   } = props;
 
   const router = useRouter();
 
-  const methods = useForm<any>({
-    defaultValues,
-    // mode: 'onBlur',
-    // reValidateMode: 'onBlur',
-  });
+  // const methods = useForm<any>({
+  //   defaultValues,
+  //   // mode: 'onBlur',
+  //   // reValidateMode: 'onBlur',
+  // });
+
+  const internalMethods = useForm<any>({ defaultValues });
+  const methods = injectedMethods || internalMethods;
 
   useEffect(() => {
     if (onFormState) {

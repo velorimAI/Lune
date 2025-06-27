@@ -51,7 +51,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
       { id, data: payload },
       {
         onSuccess: () => {
-          toast.success("سفارش با موفقیت اضافه شد");
+          toast.success("قطعه با موفقیت اضافه شد");
           setOpen(false);
           refetch?.();
         },

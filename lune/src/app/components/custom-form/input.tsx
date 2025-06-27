@@ -1,4 +1,14 @@
-import { FC, ReactNode, ChangeEvent, useState } from 'react';
+'use client';
+
+import {
+  FC,
+  ReactNode,
+  ChangeEvent,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+  ForwardRefRenderFunction,
+} from 'react';
 import { Input as InputShadcn } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Eye, EyeOff, CircleX } from 'lucide-react';
@@ -7,6 +17,10 @@ import { FormLabel } from './form-label';
 import { FormDescription } from './form-description';
 import { useFormField } from '@/app/hooks/form/useFormField';
 import { useFormFieldValidations } from '@/app/hooks/form/useFormFieldValidations';
+
+export type InputRefHandle = {
+  clear: () => void;
+};
 
 type InputProps = {
   submitButton?: {
@@ -43,14 +57,17 @@ type InputProps = {
   isPositiveNumber?: boolean;
 };
 
-export const Input: FC<InputProps> = (props) => {
+const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
+  props,
+  ref
+) => {
   const {
     submitButton = {
       status: false,
       text: '',
       className: '',
       type: 'button',
-      onClick: () => { },
+      onClick: () => {},
       isLoading: false,
     },
     className,
@@ -76,10 +93,11 @@ export const Input: FC<InputProps> = (props) => {
     tooltipTriggerIcon,
     tooltip,
     isPositiveNumber,
-    idNumber
+    idNumber,
   } = props;
 
   const [eyeOff, setEye] = useState<boolean>(true);
+  const [internalValue, setInternalValue] = useState<string>(value || '');
 
   const fieldValidation = useFormFieldValidations({
     validations: {
@@ -89,7 +107,7 @@ export const Input: FC<InputProps> = (props) => {
       ip,
       phone,
       isPositiveNumber,
-      idNumber
+      idNumber,
     },
     label,
   });
@@ -101,25 +119,28 @@ export const Input: FC<InputProps> = (props) => {
   });
 
   const handleChange = (event: ChangeEvent<{ value: string }>) => {
-    const value = event?.target?.value;
-    formField.setValueState(value);
-    onChange?.(value);
+    const val = event?.target?.value;
+    setInternalValue(val);
+    formField.setValueState(val);
+    onChange?.(val);
   };
 
   const handleType = () => {
-    let typeResult = type;
-    if (typeResult === 'password') {
-      if (!eyeOff) {
-        typeResult = 'string';
-      }
+    if (type === 'password') {
+      return eyeOff ? 'password' : 'text';
     }
-    return typeResult;
+    return type;
   };
 
   const handleClear = () => {
+    setInternalValue('');
     formField.setValueState('');
     onChange?.('');
   };
+
+  useImperativeHandle(ref, () => ({
+    clear: handleClear,
+  }));
 
   return (
     <div
@@ -129,7 +150,7 @@ export const Input: FC<InputProps> = (props) => {
       )}
     >
       <FormLabel
-        className="dark:text-zinc-400 shrink-0 mb-2 "
+        className="dark:text-zinc-400 shrink-0 mb-2"
         inValid={!!formField?.error}
         disabled={disabled}
         label={label}
@@ -145,7 +166,7 @@ export const Input: FC<InputProps> = (props) => {
         <InputShadcn
           {...formField.fieldRegister}
           className={cn(
-            `${submitButton?.status ? 'rounded-r-none dark:focus:ring-0 ' : ''}`,
+            submitButton?.status ? 'rounded-r-none dark:focus:ring-0' : '',
             inputStyle,
             type === 'number' ? 'no-spinner' : '',
             inputClassName
@@ -155,8 +176,9 @@ export const Input: FC<InputProps> = (props) => {
           placeholder={placeholder}
           readOnly={readOnly}
           type={handleType()}
-          value={formField.valueState}
+          value={internalValue}
         />
+
         {submitButton?.status && (
           <Button
             disabled={disabled}
@@ -168,35 +190,44 @@ export const Input: FC<InputProps> = (props) => {
             )}
             onClick={submitButton.onClick}
           >
-            {' '}
-            {submitButton.isLoading ? '' : submitButton.text || 'Send'}{' '}
+            {submitButton.isLoading ? '' : submitButton.text || 'Send'}
           </Button>
         )}
+
         {type === 'password' && (
           <>
-            {eyeOff && (
+            {eyeOff ? (
               <EyeOff
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-                onClick={() => setEye((prevState) => !prevState)}
+                onClick={() => setEye(false)}
               />
-            )}
-            {!eyeOff && (
+            ) : (
               <Eye
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-                onClick={() => setEye((prevState) => !prevState)}
+                onClick={() => setEye(true)}
               />
             )}
           </>
         )}
-        {clearable &&
-          formField.valueState && ( // Show clear icon if clearable and input has value
-            <CircleX
-              className="text-gray-600 absolute left-1 top-1/2 transform -translate-y-1/2 cursor-pointer"
-              onClick={handleClear}
-            />
-          )}
+
+        {clearable && internalValue && (
+          <CircleX
+            className="text-gray-600 absolute left-1 top-1/2 transform -translate-y-1/2 cursor-pointer"
+            onClick={handleClear}
+          />
+        )}
       </div>
-      <FormDescription hint={hint} error={errorMessage || formField?.error} />
+
+      <FormDescription
+        hint={hint}
+        error={
+          errorMessage ||
+          (required && internalValue === '' ? undefined : formField.error)
+        }
+      />
     </div>
   );
 };
+
+export const Input = forwardRef(InputComponent);
+Input.displayName = 'Input';
