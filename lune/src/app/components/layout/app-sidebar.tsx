@@ -14,7 +14,6 @@ import {
   ClipboardList,
   Package,
 } from "lucide-react";
-import { CustomSidebarTrigger } from "../custom-sidebar-trigger";
 import Image from "next/image";
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
@@ -35,11 +34,6 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="max-xl:w-[10rem]" collapsible="icon">
-      <div className="relative w-full">
-        <CustomSidebarTrigger
-          className="absolute top-2 left-2 z-50 text-secondaryBlue !border-1 border-secondaryBlue"
-        />
-      </div>
 
       <SidebarHeader className="flex flex-col justify-center items-center pt-10 pb-4">
         <div className="flex justify-center items-center w-full">

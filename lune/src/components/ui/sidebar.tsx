@@ -108,7 +108,7 @@ function SidebarProvider({
   }, [toggleSidebar])
 
   
-  const state = open ? "expanded" : "collapsed"
+  const state =  "collapsed"
 
   const contextValue = React.useMemo<SidebarContextProps>(
     () => ({
