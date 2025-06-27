@@ -94,3 +94,19 @@ export const addItem = async (id: number, formData: any) => {
   return response.data;
 };
 
+export const addOrder = async (formData: any) => {
+  const token = localStorage.getItem("token");
+
+  const response = await axios.post(
+    `http://localhost:3001/api/orders/add`,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return response.data;
+};

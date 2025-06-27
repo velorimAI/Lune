@@ -74,35 +74,28 @@ export const useFormFieldValidations = (params: formValidationParams) => {
 
   if (phone) {
     validationObject.validate.phone = (value?: string) =>
-      value && !/^(\+\d{1,3})\d{10}$/.test(value)
-        ? `${label} is not a valid phone number.`
+      value && !/^0\d{10}$/.test(value)
+        ? `${label} باید ۱۱ رقم و با ۰ شروع شود.`
         : undefined;
   }
-
-  if (hasHoursAndMinutes) {
-    validationObject.validate.hasHoursAndMinutes = (value?: string) =>
-      value && !/^(?:[01]?\d|2[0-3]):[0-5]\d$/.test(value)
-        ? `Value is not a valid time.`
-        : undefined;
-  }
-
-  if (isPositiveNumber) {
-    validationObject.validate.isPositiveNumber = (value?: string) =>
-      value && Number(value) < 0
-        ? `${label} must be a positive number.`
-        : undefined;
-  }
-
-  if (idNumber) {
-    validationObject.validate.idNumber = (value?: string) =>
-      value && !/^\d{9}$/.test(value)
-        ? `${label || 'شماره'} باید دقیقاً ۹ رقم باشد.`
-        : undefined;
-  }
-
 
   if (required) {
-    validationObject.required = `${label} is required.`;
+    validationObject.validate.required = (value?: string) =>
+      !value ? `${label} را وارد کنید.` : undefined;
+  }
+
+  if (email) {
+    validationObject.validate.email = (value?: string) =>
+      value && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value)
+        ? `ایمیل نامعتبر است.`
+        : undefined;
+  }
+
+  if (strongPassword) {
+    validationObject.validate.strongPassword = (value?: string) =>
+      value && !/(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/.test(value)
+        ? `رمزعبور قوی وارد کنید.`
+        : undefined;
   }
 
   return validationObject;

@@ -11,7 +11,6 @@ import {
   DollarSign,
   CalendarCheck,
 } from "lucide-react";
-import { DeleteItem } from "./delete-items";
 import { DeleteOrder } from "./DeleteOrderButton";
 import { OrdersListProps } from "@/types/orders.d.type";
 import EditOrderModal from "./edit-orders-SquarePen";
