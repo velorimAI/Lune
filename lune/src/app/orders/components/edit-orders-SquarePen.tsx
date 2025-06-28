@@ -136,7 +136,7 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
 
 
           <CheckBox
-            label="تایید نمایندگی"
+            label="تایید شرکت"
             name="dealer_approved"
             className="py-2"
             checked={selectedOrder?.dealer_approved}

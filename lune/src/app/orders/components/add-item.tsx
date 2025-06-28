@@ -116,6 +116,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                   { label: "VOR", value: "VOR" },
                   { label: "VIS", value: "VIS" },
                   { label: "بازار آزاد", value: "بازار آزاد" },
+                   { value: "شارژ انبار", label: "شارژ انبار" }
                 ]}
                 onChange={(data) => {
                   setOrderChannel(data);
