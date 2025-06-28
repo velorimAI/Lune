@@ -9,6 +9,7 @@ import { CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAddItem } from "../hooks/use-add-item";
+import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
 
 interface AddItemModalProp {
   data?: any;
@@ -89,7 +90,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
             {/* اطلاعات پذیرش */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <Input label="شماره پذیرش" name="reception_number" />
-              <Input label="تاریخ پذیرش" name="reception_date" />
+              <Input label="تاریخ پذیرش" name="reception_date" value={getTodayJalaliDate()} readOnly />
             </div>
 
             {/* اطلاعات قطعه */}
@@ -160,7 +161,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
               <Input label="توضیحات (اختیاری)" name="description" />
             </div>
             <div className="grid grid-cols-1 gap-4 ml-auto">
-              <CheckBox label="تأیید نماینده" name="dealer_approved" />
+              <CheckBox label="تأیید شرکت" name="dealer_approved" />
             </div>
           </div>
         </Form>

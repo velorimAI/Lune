@@ -21,11 +21,10 @@ import { NavSecondary } from "./nav-secondary";
 const data = {
   navMain: [
     { title: "داشبورد", url: "#", icon: ChartColumn },
-    { title: "سفارش ها", url: "/orders", icon: ClipboardList },
-    { title: " قطعات", url: "/items", icon: Package }, 
+    { title: "سفارش ها", url: "/orders", icon: ClipboardList }
   ],
   navSecondary: [
-    { title: "تنظیمات", url: "settings", icon: Settings, sidbar: true },
+    { title: "تنظیمات", url: "/settings", icon: Settings, sidbar: true },
   ],
 };
 

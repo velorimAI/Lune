@@ -1,75 +1,77 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Button } from "../components/button";
 import { Input } from "../components/custom-form/input";
 import { Form } from "../components/custom-form/form";
-import clsx from "clsx";
+import { toast } from "sonner";
+
+const ORDER_TYPES = [
+  { value: "VOR", label: "سفارش VOR (فوری)" },
+  { value: "VIS", label: "سفارش VIS (عادی)" },
+] as const;
+
+type OrderType = (typeof ORDER_TYPES)[number]["value"];
 
 export default function SettingsPage() {
-  const [orderType, setOrderType] = useState("VIS");
-  const [days, setDays] = useState({
-    VIS: 7,
-    VOR: 3,
+  const [days, setDays] = useState<Record<OrderType, number>>({
+    VIS: 10,
+    VOR: 7,
   });
 
-  const router = useRouter();
+  useEffect(() => {
+    const saved = localStorage.getItem("orderSettings");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed?.VIS && parsed?.VOR) setDays(parsed);
+      } catch (error) {
+        console.error("تنظیمات ذخیره‌شده نامعتبر است");
+      }
+    }
+  }, []);
 
   const handleSubmit = () => {
-    alert(`تنظیمات ذخیره شد:\nنوع سفارش: ${orderType}\nتعداد روز`);
-    router.push("/");
+    localStorage.setItem("orderSettings", JSON.stringify(days));
+    toast.success("تنظیمات با موفقیت ذخیره شد.");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          تنظیمات سفارش
+    <div className="max-h-screen flex items-center justify-center bg-white px-4 py-12">
+      <div className="w-full max-w-md bg-white p-6 rounded-xl border border-gray-200 mt-16">
+        <h1 className="text-xl font-semibold text-center text-gray-800 mb-5">
+          تنظیمات روز دریافت قطعه
         </h1>
 
         <Form
           onSubmit={handleSubmit}
           submitText="ذخیره تغییرات"
           cancelText="لغو"
+          className="space-y-5"
         >
-          <div className="flex flex-col gap-4 mb-6">
-            {["VIS", "VOR"].map((type) => (
-              <div
-                key={type}
-                className="flex items-center gap-4 border border-gray-200 p-3 rounded-lg"
-              >
-                {/* دکمه انتخاب نوع سفارش */}
-                <button
-                  type="button"
-                  onClick={() => setOrderType(type)}
-                  className={clsx(
-                    "px-4 py-2 rounded-md border text-sm font-semibold transition whitespace-nowrap",
-                    
-                  )}
-                >
-                  {type}
-                </button>
-
-                {/* فیلد تعداد روز */}
-                <Input
-                  label="تعداد روز"
-                  type="number"
-                  value={String(days[type as "VIS" | "VOR"])}
-                  name={`${type}-day-count`}
-                  onChange={(val?: string) =>
-                    setDays((prev) => ({
-                      ...prev,
-                      [type]: val ? Number(val) : 0,
-                    }))
-                  }
-                  className="flex-1"
-                />
-              </div>
-            ))}
-          </div>
+          {ORDER_TYPES.map((type) => (
+            <div
+              key={type.value}
+              className="flex flex-col gap-2 border border-gray-100 p-4 rounded-lg"
+            >
+              <p className="text-sm text-gray-700 font-medium">{type.label}</p>
+              <Input
+                name={`${type.value}-day-count`}
+                label="تعداد روز"
+                type="number"
+                value={String(days[type.value])}
+                onChange={(val?: string) =>
+                  setDays((prev) => ({
+                    ...prev,
+                    [type.value]: val ? Number(val) : 0,
+                  }))
+                }
+              />
+            </div>
+          ))}
         </Form>
       </div>
     </div>
+
   );
 }

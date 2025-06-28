@@ -13,7 +13,7 @@ const toEnglishDigits = (str: string) =>
 // نقشه تبدیل مسیر به نام صفحه
 const pathToTitle: Record<string, string> = {
   "/orders": "سفارشات",
-  "/items": "قطعات",
+  "/orders/new": "ثبت سفارش",
 };
 
 export default function TopBar() {
@@ -65,33 +65,28 @@ export default function TopBar() {
   const currentPageTitle = pathToTitle[pathname] || "بدون عنوان";
 
   return (
-    <div className="flex justify-between items-center px-6 py-3 bg-gray-50 shadow-sm border-b border-blue-200 rounded-b-lg mb-1">
-      {/* Right section: User info */}
-      <div className="flex items-center gap-4">
-        <UserInfo />
-      </div>
+    <div className="flex items-center justify-between px-4 py-2 bg-gray-50 shadow-sm border-b border-blue-200 rounded-b-lg mb-1 text-black text-sm">
+      {/* Right: User Info */}
+      <UserInfo />
 
-      {/* Center: Page title */}
-      <div className="text-center text-black font-bold text-lg">
-        {currentPageTitle}
-      </div>
+      {/* Center: Title */}
+      <div className="font-bold text-lg">{currentPageTitle}</div>
 
-      {/* Left section: Time, Date, Notification, Logout */}
-      <div className="flex items-center gap-4 text-black">
-        <div className="flex items-center gap-2">
-          <Clock4 className="w-5 h-5 text-black" />
-          <div className="flex flex-col text-sm leading-tight text-right">
-            <span className="font-semibold">{dateTime.date}</span>
-            <span className="text-xs text-gray-500">{dateTime.time}</span>
+      {/* Left: Date/Time, Notifications, Logout */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1">
+          <Clock4 className="w-4 h-4" />
+          <div className="leading-tight text-xs text-right">
+            <div className="font-semibold">{dateTime.date}</div>
+            <div className="text-gray-500">{dateTime.time}</div>
           </div>
         </div>
 
-        <div className="relative cursor-pointer hover:text-blue-600">
-          <Bell className="w-5 h-5 text-gray-600" />
-        </div>
+        <Bell className="w-4 h-4 text-gray-600 hover:text-blue-600 cursor-pointer" />
 
         <LogoutButton />
       </div>
     </div>
+
   );
 }

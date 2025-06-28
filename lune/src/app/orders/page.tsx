@@ -9,7 +9,6 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { CirclePlus } from "lucide-react";
 import { getOrdersList } from "../apis/orders/orderService";
 import { useQuery } from "@tanstack/react-query";
-import { Select } from "../components/custom-form/select-box";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -21,7 +20,6 @@ const sortOptions = [
 
 const Orders: FC = () => {
   const [searchText, setSearchText] = useState<string>("");
-  const [sortBy, setSortBy] = useState<string>("default");
   const [activeTab, setActiveTab] = useState<string>("all");
   const router = useRouter();
 
@@ -87,51 +85,39 @@ const Orders: FC = () => {
     });
   }, [filteredDataList, activeTab]);
 
+  console.log(filteredOrdersByTab);
+
+
   return (
-    <Card>
+    <Card contentClassName="min-h-[85vh]">
       {/* Tabs + Filters */}
-      <div className="flex flex-wrap justify-between items-center gap-2 px-4 pb-2 border-b border-gray-300">
+      <div className="flex flex-wrap justify-between items-center gap-2  pb-2 border-b border-gray-300">
         {/* Tabs */}
-        <div className="flex gap-1 flex-wrap">
+        <div className="flex gap-1">
           {tabs.map((tab) => (
             <button
               key={tab.value}
               onClick={() => setActiveTab(tab.value)}
-              className={`relative px-3 py-1 text-sm font-medium transition-all duration-200
-                ${activeTab === tab.value
-                  ? "text-primary"
-                  : "text-gray-500 hover:text-primary"
-                }
+              className={`group relative px-3 py-1 text-sm font-medium transition-colors duration-300 ease-in-out
+              ${activeTab === tab.value ? "text-primary" : "text-gray-500 hover:text-primary"}
               `}
             >
               {tab.label}
               <span
-                className={`absolute left-0 -bottom-[2px] w-full h-[2px] transition-all duration-200
-                  ${activeTab === tab.value ? "bg-primary" : "bg-gray-300"}
-                `}
+                className={`absolute left-0 -bottom-[2px] h-[2px] bg-primary transition-all duration-300 ease-in-out
+              ${activeTab === tab.value ? "w-full opacity-100 scale-x-100" : "w-full opacity-30 scale-x-90 "}
+             `}
               />
             </button>
           ))}
         </div>
-
-        {/* Search & Sort */}
-        <div className="flex items-center justify-center gap-3 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-          <div className="w-[200px]">
-            <Select
-              value={sortBy}
-              onChange={(selected) => setSortBy(selected?.value || "default")}
-              options={sortOptions}
-              className="py-1"
-            />
-          </div>
-          <div className="w-[200px]">
-            <SearchBox onSearch={handleSearch} />
-          </div>
+        <div className="flex justify-start items-start w-[300px] pb-2">
+          <SearchBox onSearch={handleSearch} className="min-h-[0px] " />
         </div>
       </div>
 
       {/* Orders List */}
-      <ScrollArea className="w-full pr-3 mt-3 h-[73vh] 4xl:h-[80vh]">
+      <ScrollArea className="w-full pr-3 mt-3  max-h-[75vh] overflow-auto">
         <div dir="rtl" className="w-full">
           {isLoading ? (
             <>
@@ -151,7 +137,7 @@ const Orders: FC = () => {
         </div>
 
         {/* Add new order button */}
-        <div className="fixed left-10 bottom-[30px]">
+        <div className="fixed left-10 bottom-[30px] bg-white rounded-lg">
           <CirclePlus
             className="w-[30px] h-[30px] cursor-pointer"
             onClick={() => router.push("/orders/new")}

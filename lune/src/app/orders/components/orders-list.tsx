@@ -16,6 +16,8 @@ import { OrdersListProps } from "@/types/orders.d.type";
 import EditOrderModal from "./edit-orders-SquarePen";
 import { OrderDetails } from "./OrderDetails";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { extractMonthDay } from "@/app/utils/extractMonthlyDay";
+import { getSettlementStyle } from "./statusStyles";
 
 export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -24,24 +26,20 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
     setExpandedIndex(index === expandedIndex ? null : index);
   };
 
-  const getSettlementStyle = (settlement: string) => {
-    switch (settlement) {
-      case "تسویه شده":
-        return { color: "text-green-600" };
-      case "تسویه نشده":
-        return { color: "text-red-500" };
-      default:
-        return { color: "text-gray-500" };
-    }
-  };
+  const displayDates = (order: any) => {
+    const earliestDate = order.earliest_unreceived_estimated_arrival_date;
+    const latestDate = order.latest_unreceived_estimated_arrival_date;
 
-  const extractMonthDay = (date: string | null | undefined): string | null => {
-    if (!date) return null;
-    const parts = date.split('/');
-    if (parts.length >= 3) {
-      return `${parts[1]}/${parts[2]}`;
+    const earliestMonthDay = earliestDate ? extractMonthDay(earliestDate) : null;
+    const latestMonthDay = latestDate ? extractMonthDay(latestDate) : null;
+
+    if (earliestDate && latestDate) {
+      if (earliestDate === latestDate) return earliestDate;
+      return `${latestMonthDay} - ${earliestMonthDay} `;
     }
-    return null;
+    if (earliestDate) return earliestDate;
+    if (latestDate) return latestDate;
+    return "—";
   };
 
   return (
@@ -51,124 +49,97 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
           <div className="bg-gray-100 rounded-full p-4 shadow-inner mb-6">
             <ShoppingCart className="w-10 h-10 text-gray-500" />
           </div>
-          <h3 className="text-xl font-bold text-gray-700 mb-2">
-            سفارشی یافت نشد
-          </h3>
+          <h3 className="text-xl font-bold text-gray-700 mb-2">سفارشی یافت نشد</h3>
           <p className="text-base text-gray-500 text-center max-w-xs">
-            در حال حاضر هیچ سفارشی برای نمایش وجود ندارد. لطفاً بعداً دوباره
-            بررسی کنید.
+            در حال حاضر هیچ سفارشی برای نمایش وجود ندارد. لطفاً بعداً دوباره بررسی کنید.
           </p>
         </div>
       ) : (
-        data.map((order, index) => {
-          const earliestDate = order.earliest_unreceived_estimated_arrival_date;
-          const latestDate = order.latest_unreceived_estimated_arrival_date;
-          
-          const earliestMonthDay = earliestDate ? extractMonthDay(earliestDate) : null;
-          const latestMonthDay = latestDate ? extractMonthDay(latestDate) : null;
-
-          const displayDates = () => {
-            if (earliestDate && latestDate) {
-              if (earliestDate === latestDate) {
-                return earliestDate; // نمایش تاریخ کامل اگر یکسان باشند
-              }
-              return `${earliestMonthDay} - ${latestMonthDay}`; // نمایش ماه/روز اگر متفاوت باشند
-            }
-            if (earliestDate) return earliestDate;
-            if (latestDate) return latestDate;
-            return "—";
-          };
-
-          return (
-            <div key={index} className="space-y-2">
-              <div className="grid grid-cols-6 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center">
-                <div className="flex items-center gap-1.5 text-gray-800">
-                  <User className="w-5 h-5" />
-                  <span>{order?.customer_name}</span>
-                </div>
-
-                <div className="flex items-center gap-1.5 text-gray-800">
-                  <Phone className="w-5 h-5" />
-                  <span>{order?.customer_phone}</span>
-                </div>
-
-                <div className="flex items-center gap-1.5 text-gray-800">
-                  <CalendarPlus2 className="w-5 h-5" />
-                  <span>
-                    {(() => {
-                      const receptions = order?.receptions || [];
-                      const sorted = receptions
-                        .filter((r) => r.reception_date)
-                        .sort((a, b) =>
-                          a.reception_date.localeCompare(b.reception_date)
-                        );
-                      return sorted.length
-                        ? sorted[0].reception_date.split(" ")[0]
-                        : "—";
-                    })()}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1.5 text-gray-800">
-                  <CalendarCheck className="w-5 h-5" />
-                  <span>{displayDates()}</span>
-                </div>
-
-                <div className="flex items-center gap-1.5 justify-center text-gray-800">
-                  <DollarSign className="w-5 h-5" />
-                  <span
-                    className={`font-semibold ${getSettlementStyle(
-                      order?.settlement_status_overall || "تسویه نشده"
-                    ).color}`}
-                    >
-                    {order?.settlement_status_overall || "تسویه نشده"}
-                  </span>
-                </div>
-
-                <div className="flex gap-4 justify-center text-gray-700">
-                  <DeleteOrder
-                    id={String(order?.customer_id)}
-                    name={order?.customer_name}
-                  />
-
-                  <EditOrderModal data={order} refetch={refetch} />
-
-                  <motion.div
-                    animate={expandedIndex === index ? "rotated" : "initial"}
-                    variants={{
-                      initial: { rotate: 0 },
-                      rotated: { rotate: -90 }
-                    }}
-                    transition={{ duration: 0.2 }}
-                    onClick={() => toggleDetails(index)}
-                    className="cursor-pointer"
-                  >
-                    <CircleArrowLeft className="w-6 h-6" />
-                  </motion.div>
-                </div>
+        data.map((order, index) => (
+          <div key={index} className="space-y-2">
+            {/* سفارش */}
+            <div
+              onClick={() => toggleDetails(index)}
+              className="grid grid-cols-6 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center cursor-pointer hover:bg-gray-100 transition"
+            >
+              <div className="flex items-center gap-1.5 text-gray-800">
+                <User className="w-5 h-5" />
+                <span>{order?.customer_name}</span>
               </div>
 
-              <AnimatePresence>
-                {expandedIndex === index && (
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="overflow-hidden"
-                  >
-                    <ScrollArea className="w-full flex flex-col justify-start items-center pr-3 h-[300px] 4xl:h-[500px] mt-2">
-                      <div dir="rtl" className="w-full">
-                        <OrderDetails order={order} id={order?.customer_id} />
-                      </div>
-                    </ScrollArea>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div className="flex items-center gap-1.5 text-gray-800">
+                <Phone className="w-5 h-5" />
+                <span>{order?.customer_phone}</span>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-gray-800">
+                <CalendarPlus2 className="w-5 h-5" />
+                <span>
+                  {(() => {
+                    const receptions = order?.receptions || [];
+                    const sorted = receptions
+                      .filter((r) => r.reception_date)
+                      .sort((a, b) => a.reception_date.localeCompare(b.reception_date));
+                    return sorted.length ? sorted[0].reception_date.split(" ")[0] : "—";
+                  })()}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-gray-800">
+                <CalendarCheck className="w-5 h-5" />
+                <span>{displayDates(order)}</span>
+              </div>
+
+              <div className="flex items-center gap-1.5 justify-center text-gray-800">
+                <DollarSign className="w-5 h-5" />
+                <span
+                  className={`font-semibold ${getSettlementStyle(order?.settlement_status_overall || "تسویه نشده").color
+                    }`}
+                >
+                  {order?.settlement_status_overall || "تسویه نشده"}
+                </span>
+              </div>
+
+              <div
+                className="flex gap-4 justify-center text-gray-700 mr-auto"
+                onClick={(e) => e.stopPropagation()} 
+              >
+                <DeleteOrder id={String(order?.customer_id)} name={order?.customer_name} />
+                <EditOrderModal data={order} refetch={refetch} />
+                <motion.div
+                  animate={expandedIndex === index ? "rotated" : "initial"}
+                  variants={{
+                    initial: { rotate: 0 },
+                    rotated: { rotate: -90 },
+                  }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <CircleArrowLeft className="w-6 h-6 cursor-pointer" />
+                </motion.div>
+              </div>
             </div>
-          );
-        })
+
+            {/* جزئیات سفارش */}
+            <AnimatePresence>
+              {expandedIndex === index && (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
+                  <ScrollArea className="w-full flex flex-col justify-start items-center pr-3 max-h-[300px] 4xl:max-h-[500px] mt-2">
+                    <div dir="rtl" className="w-full">
+                      <OrderDetails order={order} id={order?.customer_id} />
+                    </div>
+                  </ScrollArea>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        ))
       )}
     </div>
   );

@@ -3,9 +3,9 @@
 import { Card } from "@/app/components/card";
 import { CheckBox } from "@/app/components/custom-form/check-box";
 import { Form } from "@/app/components/custom-form/form";
-import { Input} from "@/app/components/custom-form/input";
+import { Input } from "@/app/components/custom-form/input";
 import { Select } from "@/app/components/custom-form/select-box";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ItemList } from "../../components/item-list";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useAddOrder } from "../../hooks/use-add-order";
@@ -14,6 +14,7 @@ import { Button } from "@/app/components/button";
 import { useForm } from "react-hook-form";
 import { useCustomerInputRefs } from "../../hooks/useCustomerInputRefs";
 import { usePartInputRefs } from "../../hooks/usePartInputRefs";
+import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
 
 export default function NewOrderPage() {
   const userForm = useForm();
@@ -22,6 +23,27 @@ export default function NewOrderPage() {
   const [userInfoSubmitted, setUserInfoSubmitted] = useState(false);
   const { refs, clearAllFields } = useCustomerInputRefs();
   const { refs: partRefs, clearPartFields } = usePartInputRefs();
+  const [orderChannel, setOrderChannel] = useState("VOR");
+  const [arrivalSettings, setArrivalSettings] = useState<{ VIS: string; VOR: string }>({
+    VIS: "10",
+    VOR: "7",
+  });
+
+
+  useEffect(() => {
+    const stored = localStorage.getItem("orderSettings");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed?.VIS && parsed?.VOR) {
+          setArrivalSettings(parsed);
+        }
+      } catch (e) {
+        console.error("تنظیمات معتبر نیست");
+      }
+    }
+  }, []);
+
 
   const [orderGroups, setOrderGroups] = useState<any[]>([]);
 
@@ -33,6 +55,7 @@ export default function NewOrderPage() {
 
   const handleSubmitItem = (data: any) => {
     setOrderGroups((prevData) => [...prevData, data]);
+    clearPartFields();
   };
 
   const handleSubmit = () => {
@@ -68,14 +91,15 @@ export default function NewOrderPage() {
         market_phone:
           item.order_channel === "بازار آزاد" ? item.market_phone : null,
         order_number: item.order_number,
-        delivery_date: item.delivary_date,
-        estimated_arrival_days: parseInt(item.prediction_delivery_date || "0", 10),
+        estimated_arrival_days: Number(item.estimated_arrival_days),
         status: item.status,
         settlement_status: item.settlement_status || "تسویه نشده",
         description: item.description || "",
         dealer_approved: !!item.dealer_approved,
       })),
     };
+    console.log(payload);
+
 
     mutate(
       { data: payload },
@@ -86,7 +110,6 @@ export default function NewOrderPage() {
           setOrderGroups([]);
           setUserInfoSubmitted(false);
           clearAllFields();
-          clearPartFields();
         },
         onError: () => {
           toast.error("خطا در ارسال سفارش");
@@ -94,6 +117,17 @@ export default function NewOrderPage() {
       }
     );
   };
+
+
+  const estimatedArrivalDays = useMemo(() => {
+    return orderChannel === "VOR"
+      ? arrivalSettings.VOR
+      : orderChannel === "VIS"
+        ? arrivalSettings.VIS
+        : undefined;
+  }, [orderChannel, arrivalSettings]);
+
+
 
   return (
     <Card className="max-h-fit">
@@ -117,7 +151,7 @@ export default function NewOrderPage() {
                   disabled={userInfoSubmitted}
                 />
                 <Input label="شماره پذیرش" name="reception_number" required readOnly={userInfoSubmitted} ref={refs.receptionNumberRef} />
-                <Input label="تاریخ پذیرش" name="reception_date" required readOnly={userInfoSubmitted} ref={refs.receptionDateRef} />
+                <Input label="تاریخ پذیرش" value={getTodayJalaliDate()} name="reception_date" required readOnly />
               </div>
             </Form>
           </Card>
@@ -137,7 +171,7 @@ export default function NewOrderPage() {
                     ref={partRefs.numberOfPiecesRef}
                   />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                <div className={`grid grid-cols-1 ${orderChannel === "بازار آزاد" ? "md:grid-cols-3" : "md:grid-cols-4"} gap-2`}>
                   <Select
                     label="کانال سفارش"
                     name="order_channel"
@@ -146,13 +180,21 @@ export default function NewOrderPage() {
                     options={[
                       { value: "VOR", label: "VOR" },
                       { value: "VIS", label: "VIS" },
-                      { value: "شارژ انبار", label: "شارز انبار" },
-                      { value: "یازاد آزاد", label: "یازاد ازاد" },
+                      { value: "شارژ انبار", label: "شارژ انبار" },
+                      { value: "بازار آزاد", label: "بازار آزاد" },
                     ]}
                     required
+                    onChange={(data) => (setOrderChannel(data))}
                   />
+                  {orderChannel === "بازار آزاد" && (
+                    <>
+                      <Input label="نام بازار" name="market_name" />
+                      <Input label="تلفن بازار" name="market_phone" />
+                    </>
+                  )}
                   <Input label="شماره سفارش" name="order_number" required ref={partRefs.orderNumberRef} />
-                  <Input label="تاریخ دریافت" name="delivary_date" required  ref={partRefs.deliveryDateRef}/>
+                  <Input label="دریافت (روز)" name="estimated_arrival_days" required value={estimatedArrivalDays} readOnly={orderChannel === "VOR" || orderChannel === "VIS"}
+                  />
                   <Select
                     label="وضعیت"
                     name="status"

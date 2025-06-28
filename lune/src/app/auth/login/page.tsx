@@ -18,7 +18,7 @@ const Login: FC = () => {
       const response = await axios.post(
         "http://localhost:3001/api/auth/login",
         {
-          code_meli: Number(data.username),
+          code_meli: data.username,
           password: data.password,
         }
       );
