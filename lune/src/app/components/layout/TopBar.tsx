@@ -10,10 +10,10 @@ import UserInfo from "./user-info";
 const toEnglishDigits = (str: string) =>
   str.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
 
-// نقشه تبدیل مسیر به نام صفحه
 const pathToTitle: Record<string, string> = {
   "/orders": "سفارشات",
   "/orders/new": "ثبت سفارش",
+  "/settings": "تنظبمات",
 };
 
 export default function TopBar() {

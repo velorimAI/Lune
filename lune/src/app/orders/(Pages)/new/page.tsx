@@ -133,7 +133,7 @@ export default function NewOrderPage() {
     <Card className="max-h-fit">
       <div className="flex gap-5">
         <div className="w-[50%]  flex flex-col gap-5">
-          <Card title="اطلاعات مشتری" >
+          <Card title="اطلاعات مشتری" className="p-0 pb-4" >
             <Form submitText="ثبت اطلاعات" cancelHide onSubmit={handleUserData} submitDisable={userInfoSubmitted} methods={userForm} >
               <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
                 <Input label="نام مشتری" name="customer_name" required readOnly={userInfoSubmitted} ref={refs.customerNameRef} />
@@ -157,11 +157,11 @@ export default function NewOrderPage() {
           </Card>
 
           <Card title="اطلاعات قطعه">
-            <Form submitText="ثبت قطعه" cancelHide onSubmit={handleSubmitItem}>
+            <Form submitText="ثبت قطعه" cancelHide onSubmit={handleSubmitItem} submitDisable={!userInfoSubmitted}>
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                  <Input label="کد فنی" name="part_id" type="number" required ref={partRefs.partIdRef} />
-                  <Input label="نام قطعه" name="piece_name" required ref={partRefs.pieceNameRef} />
+                  <Input label="کد فنی" name="part_id" type="number" required ref={partRefs.partIdRef} readOnly={!userInfoSubmitted} />
+                  <Input label="نام قطعه" name="piece_name" required ref={partRefs.pieceNameRef}readOnly={!userInfoSubmitted} />
                   <Input
                     label="تعداد"
                     type="number"
@@ -169,6 +169,7 @@ export default function NewOrderPage() {
                     name="number_of_pieces"
                     required
                     ref={partRefs.numberOfPiecesRef}
+                    readOnly={!userInfoSubmitted} 
                   />
                 </div>
                 <div className={`grid grid-cols-1 ${orderChannel === "بازار آزاد" ? "md:grid-cols-3" : "md:grid-cols-4"} gap-2`}>
@@ -185,15 +186,16 @@ export default function NewOrderPage() {
                     ]}
                     required
                     onChange={(data) => (setOrderChannel(data))}
+                    disabled={!userInfoSubmitted}
                   />
                   {orderChannel === "بازار آزاد" && (
                     <>
-                      <Input label="نام بازار" name="market_name" />
-                      <Input label="تلفن بازار" name="market_phone" />
+                      <Input label="نام فروشنده" name="market_name" />
+                      <Input label="تلفن فروشنده" name="market_phone" />
                     </>
                   )}
-                  <Input label="شماره سفارش" name="order_number" required ref={partRefs.orderNumberRef} />
-                  <Input label="دریافت (روز)" name="estimated_arrival_days" required value={estimatedArrivalDays} readOnly={orderChannel === "VOR" || orderChannel === "VIS"}
+                  <Input label="شماره سفارش" name="order_number" required ref={partRefs.orderNumberRef}  readOnly={!userInfoSubmitted}  />
+                  <Input label="زمان تخمینی دریافت (روز)" name="estimated_arrival_days" required value={estimatedArrivalDays}   readOnly={!userInfoSubmitted} 
                   />
                   <Select
                     label="وضعیت"
@@ -205,10 +207,12 @@ export default function NewOrderPage() {
                       { value: "دریافت نشده", label: "دریافت نشده" },
                     ]}
                     required
+                    disabled={!userInfoSubmitted}
                   />
                 </div>
-                <Input label="توضیحات" name="description" type="textarea" />
-                <CheckBox label="تایید شرکت" name="dealer_approved" reverse />
+                <Input label="توضیحات" name="description" type="textarea"  readOnly={!userInfoSubmitted}  />
+                {/* check box of accept of compony */}
+                {/* <CheckBox label="تایید شرکت" name="dealer_approved" reverse disabled={!userInfoSubmitted}/> */}
               </div>
             </Form>
           </Card>

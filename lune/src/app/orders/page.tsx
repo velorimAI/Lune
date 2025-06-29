@@ -59,8 +59,8 @@ const Orders: FC = () => {
 
   const tabs = [
     { label: `همه سفارش‌ها (${tabCounts.all || 0})`, value: "all" },
-    { label: `تسویه شده (${tabCounts.settled || 0})`, value: "تسویه شده" },
     { label: `تسویه نشده (${tabCounts.notSettled || 0})`, value: "تسویه نشده" },
+    { label: `تسویه شده (${tabCounts.settled || 0})`, value: "تسویه شده" },
     { label: `لغو شده (${tabCounts.canceled || 0})`, value: "لغو شده" },
     { label: `ارشیو (${tabCounts.all || 0})`, value: "ارشیو" },
   ];
