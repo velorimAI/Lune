@@ -1,76 +1,49 @@
 import React from "react";
-import { Wrench, PackageOpen, CirclePlus } from "lucide-react";
+import { Wrench, PackageOpen } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle, getPaymentStatusStyle } from "./statusStyles";
 import AddItem from "./add-item";
 
 export const OrderDetails = ({ id, order }: { id: number; order: any }) => (
-  <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-md mt-2">
-    <div className="flex items-center gap-2 mb-4 text-gray-800 font-semibold text-lg">
-      <Wrench className="w-5 h-5" />
-      <span>
-        جزئیات قطعات (
-        {order?.receptions?.flatMap((r: { orders: any }) => r.orders || [])
-          .length || 0}
-        )
-      </span>
-      {/* <CirclePlus className="w-5 h-5 mr-auto" /> */}
-      <AddItem id={id}/>
+  <div className="bg-white rounded-b-lg">
+    {/* هدر بدون هیچ فاصله پایینی */}
+    <div className="sticky top-0 z-10 bg-white px-5 pt-3">
+      <div className="flex items-center gap-2 text-gray-800 font-semibold text-lg">
+        <Wrench className="w-5 h-5" />
+        <span>
+          جزئیات قطعات (
+          {order?.receptions?.flatMap((r: { orders: any }) => r.orders || [])
+            .length || 0}
+          )
+        </span>
+        <div className="mr-auto">
+          <AddItem id={id} />
+        </div>
+      </div>
     </div>
 
-    <div className="overflow-x-auto">
-      <table className="min-w-full text-sm text-right text-gray-800">
-        <thead className="bg-gray-100 text-gray-700">
+    {/* جدول کاملاً چسبیده به هدر */}
+    <div className="overflow-x-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
+      <table className="min-w-full text-sm text-right text-gray-800 border-t border-gray-200">
+        <thead className="bg-gray-100 text-gray-700 sticky top-[76px] z-10">
           <tr>
-            <th className="px-4 py-2">نام قطعه</th>
-
-            <th className="px-4 py-2">تعداد</th>
-            <th className="px-4 py-2">نوع سفارش</th>
-            <th className="px-4 py-2">تاریخ سفارش</th>
-            <th className="px-4 py-2">شماره سفارش</th>
-            <th className="px-4 py-2">رسیدن (روز)</th>
-            <th className="px-4 py-2">وضعیت تحویل</th>
-            <th className="px-4 py-2">وضعیت پرداخت</th>
-            <th className="px-4 py-2"></th>
+            <th className="px-4 py-3 border-b border-gray-200">نام قطعه</th>
+            <th className="px-4 py-3 border-b border-gray-200">تعداد</th>
+            <th className="px-4 py-3 border-b border-gray-200">نوع سفارش</th>
+            <th className="px-4 py-3 border-b border-gray-200">تاریخ سفارش</th>
+            <th className="px-4 py-3 border-b border-gray-200">شماره سفارش</th>
+            <th className="px-4 py-3 border-b border-gray-200">رسیدن (روز)</th>
+            <th className="px-4 py-3 border-b border-gray-200">وضعیت تحویل</th>
+            <th className="px-4 py-3 border-b border-gray-200">وضعیت پرداخت</th>
+            <th className="px-4 py-3 border-b border-gray-200">عملیات</th>
           </tr>
         </thead>
+        
         <tbody>
           {order?.receptions?.map(
-            (
-              reception: {
-                reception_number:
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactElement<
-                      unknown,
-                      string | React.JSXElementConstructor<any>
-                    >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | Promise<
-                      | string
-                      | number
-                      | bigint
-                      | boolean
-                      | React.ReactPortal
-                      | React.ReactElement<
-                          unknown,
-                          string | React.JSXElementConstructor<any>
-                        >
-                      | Iterable<React.ReactNode>
-                      | null
-                      | undefined
-                    >
-                  | null
-                  | undefined;
-                orders: any[];
-              },
-              i: React.Key | null | undefined
-            ) => (
+            (reception: { reception_number: any; orders: any[] }, i: React.Key | null | undefined) => (
               <React.Fragment key={i}>
-                <tr>
+                <tr className="sticky top-[120px] z-5">
                   <td
                     colSpan={9}
                     className="bg-blue-50 text-blue-800 font-bold text-right px-4 py-2 border-y border-blue-200"
@@ -78,6 +51,7 @@ export const OrderDetails = ({ id, order }: { id: number; order: any }) => (
                     شماره پذیرش: {reception.reception_number}
                   </td>
                 </tr>
+                
                 {reception?.orders?.map((part, j) => (
                   <tr
                     key={j}
