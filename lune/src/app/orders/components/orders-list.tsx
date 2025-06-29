@@ -90,13 +90,16 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                 <span>{displayDates(order)}</span>
               </div>
 
-              <div className="flex items-center gap-1.5 justify-center text-gray-800">
+              <div className="flex items-center gap-1.5 justify-center">
                 <DollarSign className="w-5 h-5" />
                 <span
-                  className={`font-semibold ${getSettlementStyle(order?.settlement_status_overall || "تسویه نشده").color
-                    }`}
+                  className={`font-semibold ${
+                    order?.settlement_status_overall?.trim() === "تسویه‌ شده"
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
                 >
-                  {order?.settlement_status_overall || "تسویه نشده"}
+                  {order?.settlement_status_overall?.trim() || "تسویه نشده"}
                 </span>
               </div>
 
