@@ -8,7 +8,7 @@ import { Select } from "@/app/components/custom-form/select-box";
 import { Modal } from "@/app/components/modal";
 import { formatDateOnly } from "@/app/utils/formatDateOnly";
 import { SquarePen } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 interface editOrderModalProp {
@@ -59,6 +59,25 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
     }
   };
 
+  const statusOptions = useMemo(() => {
+    const basePlaceholder = [{ label: "وضعیت را مشخص کنید :", value: "", disabled: true }];
+    if (selectedOrder?.settlement_status === "تسویه شده") {
+      return [
+        ...basePlaceholder,
+        { label: "در انتظار نوبت‌دهی", value: "در انتظار نوبت‌دهی" },
+        { label: "نوبت‌دهی شد", value: "نوبت‌دهی شد" },
+        { label: "انصراف مشتری", value: "انصراف مشتری" },
+      ];
+    }
+    return [
+      ...basePlaceholder,
+      { label: "تایید شرکت", value: "تایید شرکت" },
+      { label: "تایید شرکت نشد", value: "تایید شرکت نشد" },
+    ];
+  }, [selectedOrder?.settlement_status]);
+
+
+
   const isAccountant = role === "حسابدار";
   const isWarehouse = role === "انباردار";
 
@@ -94,19 +113,16 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
               name=""
               value={selectedOrderId || ""}
             />
-
             <Select
-              label="وضعیت تحویل"
+              label="وضعیت"
               name="status"
               inputStyle="w-full"
               className="w-[200px]"
-              options={[
-                { label: "دریافت شده", value: "دریافت شده" },
-                { label: "دریافت نشده", value: "دریافت نشده" },
-              ]}
-              value={selectedOrder?.status}
+              options={statusOptions}
+              value={selectedOrder?.status || ""}
               disabled={!isWarehouse}
             />
+
           </div>
 
           <div className="flex w-full justify-between gap-3">
@@ -117,7 +133,7 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
               value={formatDateOnly(selectedOrder?.delivery_date)}
               disabled={!isWarehouse}
             />
-
+            {/* 
             <Select
               label="وضعیت پرداخت"
               name="settlement_status"
@@ -129,19 +145,33 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
               ]}
               value={selectedOrder?.settlement_status}
               disabled={!isAccountant}
+            /> */}
+
+            <Select
+              label="وضعیت پرداخت"
+              name="settlement_status"
+              className="w-[200px]"
+              inputStyle="w-full"
+              options={[
+                { label: "تسویه شده ", value: "تسویه شده" },
+                { label: "تسویه نشده", value: "تسویه نشده" },
+              ]}
+              value={selectedOrder?.settlement_status}
+              disabled={!(isAccountant && selectedOrder?.status === "تایید شرکت")}
             />
+
 
           </div>
 
 
 
-          <CheckBox
+          {/* <CheckBox
             label="تایید شرکت"
             name="dealer_approved"
             className="py-2"
             checked={selectedOrder?.dealer_approved}
             disabled={!isWarehouse}
-          />
+          /> */}
         </Form>
       </Modal>
     </>

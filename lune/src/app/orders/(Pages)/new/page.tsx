@@ -92,8 +92,8 @@ export default function NewOrderPage() {
           item.order_channel === "بازار آزاد" ? item.market_phone : null,
         order_number: item.order_number,
         estimated_arrival_days: Number(item.estimated_arrival_days),
-        status: item.status,
-        settlement_status: item.settlement_status || "تسویه نشده",
+        status: "در انتطار تایید شرکت",
+        // settlement_status: item.settlement_status || "تسویه نشده",
         description: item.description || "",
         dealer_approved: !!item.dealer_approved,
       })),
@@ -161,7 +161,7 @@ export default function NewOrderPage() {
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   <Input label="کد فنی" name="part_id" type="number" required ref={partRefs.partIdRef} readOnly={!userInfoSubmitted} />
-                  <Input label="نام قطعه" name="piece_name" required ref={partRefs.pieceNameRef}readOnly={!userInfoSubmitted} />
+                  <Input label="نام قطعه" name="piece_name" required ref={partRefs.pieceNameRef} readOnly={!userInfoSubmitted} />
                   <Input
                     label="تعداد"
                     type="number"
@@ -169,10 +169,10 @@ export default function NewOrderPage() {
                     name="number_of_pieces"
                     required
                     ref={partRefs.numberOfPiecesRef}
-                    readOnly={!userInfoSubmitted} 
+                    readOnly={!userInfoSubmitted}
                   />
                 </div>
-                <div className={`grid grid-cols-1 ${orderChannel === "بازار آزاد" ? "md:grid-cols-3" : "md:grid-cols-4"} gap-2`}>
+                <div className={`grid grid-cols-1  md:grid-cols-3 gap-2`}>
                   <Select
                     label="کانال سفارش"
                     name="order_channel"
@@ -194,10 +194,10 @@ export default function NewOrderPage() {
                       <Input label="تلفن فروشنده" name="market_phone" />
                     </>
                   )}
-                  <Input label="شماره سفارش" name="order_number" required ref={partRefs.orderNumberRef}  readOnly={!userInfoSubmitted}  />
-                  <Input label="زمان تخمینی دریافت (روز)" name="estimated_arrival_days" required value={estimatedArrivalDays}   readOnly={!userInfoSubmitted} 
+                  <Input label="شماره سفارش" name="order_number" required ref={partRefs.orderNumberRef} readOnly={!userInfoSubmitted} />
+                  <Input label="زمان تخمینی دریافت (روز)" name="estimated_arrival_days" required value={estimatedArrivalDays} readOnly={!userInfoSubmitted}
                   />
-                  <Select
+                  {/* <Select
                     label="وضعیت"
                     name="status"
                     value="دریافت نشده"
@@ -208,9 +208,9 @@ export default function NewOrderPage() {
                     ]}
                     required
                     disabled={!userInfoSubmitted}
-                  />
+                  /> */}
                 </div>
-                <Input label="توضیحات" name="description" type="textarea"  readOnly={!userInfoSubmitted}  />
+                <Input label="توضیحات" name="description" type="textarea" readOnly={!userInfoSubmitted} />
                 {/* check box of accept of compony */}
                 {/* <CheckBox label="تایید شرکت" name="dealer_approved" reverse disabled={!userInfoSubmitted}/> */}
               </div>
