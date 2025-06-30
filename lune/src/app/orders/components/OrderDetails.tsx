@@ -5,7 +5,7 @@ import { getStatusStyle, getPaymentStatusStyle } from "./statusStyles";
 import AddItem from "./add-item";
 
 export const OrderDetails = ({ id, order }: { id: number; order: any }) => (
-  <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-md mt-2">
+  <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
     <div className="flex items-center gap-2 mb-4 text-gray-800 font-semibold text-lg">
       <Wrench className="w-5 h-5" />
       <span>
@@ -19,11 +19,10 @@ export const OrderDetails = ({ id, order }: { id: number; order: any }) => (
     </div>
 
     <div className="overflow-x-auto">
-      <table className="min-w-full text-sm text-right text-gray-800">
+      <table className="min-w-full text-sm text-right text-gray-800 border-collapse">
         <thead className="bg-gray-100 text-gray-700">
           <tr>
             <th className="px-4 py-2">نام قطعه</th>
-
             <th className="px-4 py-2">تعداد</th>
             <th className="px-4 py-2">نوع سفارش</th>
             <th className="px-4 py-2">تاریخ سفارش</th>

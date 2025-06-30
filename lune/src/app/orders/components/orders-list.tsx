@@ -15,9 +15,7 @@ import { DeleteOrder } from "./DeleteOrderButton";
 import { OrdersListProps } from "@/types/orders.d.type";
 import EditOrderModal from "./edit-orders-SquarePen";
 import { OrderDetails } from "./OrderDetails";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { extractMonthDay } from "@/app/utils/extractMonthlyDay";
-import { getSettlementStyle } from "./statusStyles";
 
 export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -56,25 +54,28 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
         </div>
       ) : (
         data.map((order, index) => (
-          <div key={index} className="space-y-2">
-            {/* سفارش */}
+          <div
+            key={index}
+            className="bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden"
+          >
+            {/* هدر سفارش */}
             <div
               onClick={() => toggleDetails(index)}
-              className="grid grid-cols-6 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-2 text-center cursor-pointer hover:bg-gray-100 transition"
+              className={`grid grid-cols-6 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-50 ${
+                expandedIndex === index ? "bg-gray-50 border-b" : ""
+              }`}
             >
-              <div className="flex items-center gap-1.5 text-gray-800">
-                <User className="w-5 h-5" />
-                <span>{order?.customer_name}</span>
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-gray-500" />
+                <span className="text-gray-800">{order?.customer_name}</span>
               </div>
-
-              <div className="flex items-center gap-1.5 text-gray-800">
-                <Phone className="w-5 h-5" />
-                <span>{order?.customer_phone}</span>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-gray-500" />
+                <span className="text-gray-800">{order?.customer_phone}</span>
               </div>
-
-              <div className="flex items-center gap-1.5 text-gray-800">
-                <CalendarPlus2 className="w-5 h-5" />
-                <span>
+              <div className="flex items-center gap-2">
+                <CalendarPlus2 className="w-4 h-4 text-gray-500" />
+                <span className="text-gray-800">
                   {(() => {
                     const receptions = order?.receptions || [];
                     const sorted = receptions
@@ -84,14 +85,12 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   })()}
                 </span>
               </div>
-
-              <div className="flex items-center gap-1.5 text-gray-800">
-                <CalendarCheck className="w-5 h-5" />
-                <span>{displayDates(order)}</span>
+              <div className="flex items-center gap-2">
+                <CalendarCheck className="w-4 h-4 text-gray-500" />
+                <span className="text-gray-800">{displayDates(order)}</span>
               </div>
-
-              <div className="flex items-center gap-1.5 justify-center">
-                <DollarSign className="w-5 h-5" />
+              <div className="flex items-center justify-center">
+                <DollarSign className="w-4 h-4 text-gray-500" />
                 <span
                   className={`font-semibold ${
                     order?.settlement_status_overall?.trim() === "تسویه‌ شده"
@@ -102,10 +101,9 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   {order?.settlement_status_overall?.trim() || "تسویه نشده"}
                 </span>
               </div>
-
               <div
-                className="flex gap-4 justify-center text-gray-700 mr-auto"
-                onClick={(e) => e.stopPropagation()} 
+                className="flex gap-3 justify-center"
+                onClick={(e) => e.stopPropagation()}
               >
                 <DeleteOrder id={String(order?.customer_id)} name={order?.customer_name} />
                 <EditOrderModal data={order} refetch={refetch} />
@@ -117,27 +115,24 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   }}
                   transition={{ duration: 0.2 }}
                 >
-                  <CircleArrowLeft className="w-6 h-6 cursor-pointer" />
+                  <CircleArrowLeft className="w-6 h-6 text-gray-500" />
                 </motion.div>
               </div>
             </div>
 
-            {/* جزئیات سفارش */}
+            {/* جزئیات سفارش با اسکرول */}
             <AnimatePresence>
               {expandedIndex === index && (
                 <motion.div
-                  layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="overflow-hidden"
+                  className="border-t border-gray-100"
                 >
-                  <ScrollArea className="w-full flex flex-col justify-start items-center pr-3 max-h-[300px] 4xl:max-h-[500px] mt-2">
-                    <div dir="rtl" className="w-full">
-                      <OrderDetails order={order} id={order?.customer_id} />
-                    </div>
-                  </ScrollArea>
+                  <div className="px-3 pt-2 pb-4 max-h-[350px] overflow-y-auto rounded-b-xl scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                    <OrderDetails order={order} id={order?.customer_id} />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
