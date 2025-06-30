@@ -92,7 +92,7 @@ export default function NewOrderPage() {
           item.order_channel === "بازار آزاد" ? item.market_phone : null,
         order_number: item.order_number,
         estimated_arrival_days: Number(item.estimated_arrival_days),
-        status: "در انتطار تایید شرکت",
+        // status: "در انتطار تایید شرکت",
         // settlement_status: item.settlement_status || "تسویه نشده",
         description: item.description || "",
         dealer_approved: !!item.dealer_approved,

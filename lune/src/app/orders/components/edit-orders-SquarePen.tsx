@@ -113,7 +113,7 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
               name=""
               value={selectedOrderId || ""}
             />
-            <Select
+            {/* <Select
               label="وضعیت"
               name="status"
               inputStyle="w-full"
@@ -121,7 +121,7 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
               options={statusOptions}
               value={selectedOrder?.status || ""}
               disabled={!isWarehouse}
-            />
+            /> */}
 
           </div>
 
@@ -147,7 +147,7 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
               disabled={!isAccountant}
             /> */}
 
-            <Select
+            {/* <Select
               label="وضعیت پرداخت"
               name="settlement_status"
               className="w-[200px]"
@@ -158,7 +158,7 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
               ]}
               value={selectedOrder?.settlement_status}
               disabled={!(isAccountant && selectedOrder?.status === "تایید شرکت")}
-            />
+            /> */}
 
 
           </div>
