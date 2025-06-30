@@ -57,13 +57,13 @@ const Orders: FC = () => {
     };
   }, [data?.data]);
 
-  const tabs = [
-    { label: `همه سفارش‌ها (${tabCounts.all || 0})`, value: "all" },
-    { label: `تسویه نشده (${tabCounts.notSettled || 0})`, value: "تسویه نشده" },
-    { label: `تسویه شده (${tabCounts.settled || 0})`, value: "تسویه شده" },
-    { label: `لغو شده (${tabCounts.canceled || 0})`, value: "لغو شده" },
-    { label: `ارشیو (${tabCounts.all || 0})`, value: "ارشیو" },
-  ];
+ const tabs = [
+  { label: `همه سفارش‌ها (${tabCounts.all || 0})`, value: "all" },
+  { label: `در انتظار تائید شرکت (${tabCounts.notSettled || 0})`, value: "در انتظار تائید شرکت" },
+  { label: `در انتظار تائید حسابداری (${tabCounts.settled || 0})`, value: "در انتظار تئید حسابداری" },
+  { label: `در انتظار دریافت (${tabCounts.canceled || 0})`, value: "در انتظار دریافت" }
+];
+
 
   const filteredOrdersByTab = useMemo(() => {
     if (activeTab === "all") return filteredDataList;
