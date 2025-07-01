@@ -4,9 +4,10 @@ import { Form } from "@/app/components/custom-form/form";
 import { Input } from "@/app/components/custom-form/input";
 import Image from "next/image";
 import { FC, useState } from "react";
-import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { login } from "@/app/apis/auth/Service";
+
 
 const Login: FC = () => {
   const router = useRouter();
@@ -15,24 +16,22 @@ const Login: FC = () => {
   const onSubmit = async (data: any) => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/auth/login",
-        {
-          code_meli: data.username,
-          password: data.password,
-        }
-      );
-      const { name, last_name } = response.data;
+      const response = await login({
+        code_meli: data.username,
+        password: data.password,
+      });
+
+      const { name, last_name, token, role } = response;
 
       toast.success(`خوش آمدید، ${name} ${last_name}`, {
         action: {
           label: "بستن",
-          onClick: () => console.log("Undo"),
+          onClick: () => console.log("بستن"),
         },
       });
 
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("role", response.data.role);
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
       localStorage.setItem("name", name);
       localStorage.setItem("lastname", last_name);
       router.push("/orders");
