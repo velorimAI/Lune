@@ -63,24 +63,6 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
   const isWarehouse = role === "انباردار";
 
 
-  // const statusOptions =
-  //   selectedOrder?.status === "در انتظار تائید شرکت"
-  //     ? [
-  //       { label: "تائید شرکت شد", value: "در انتظار تائید حسابداری" },
-  //       { label: "عدم تائید شرکت", value: "عدم تائید شرکت" },
-  //     ]
-  //     : selectedOrder?.status === "در انتظار تائید حسابداری"
-  //       ? [
-  //         { label: "تسویه شد", value: "در انتظار دریافت" },
-  //         { label: "عدم تسویه", value: "عدم تسویه" },
-  //       ]
-  //       : selectedOrder?.status === "در انتظار دریافت"
-  //         ? [
-  //           { label: "دریافت شد", value: "دریافت شد" },
-  //           { label: "عدم دریافت", value: "عدم دریافت" },
-  //         ]
-  //         : [];
-
   const relatedReception = data.receptions?.find((reception: any) =>
     reception.orders?.some((order: any) => order.order_id === selectedOrder?.order_id)
   );
@@ -88,43 +70,43 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
   const carStatus = relatedReception?.car_status;
 
 
-  // console.log(data[0]?.receptions[0]?.car_status);
-
-
-  const statusOptions =
-    selectedOrder?.status === "در انتظار تائید شرکت"
-      ? [
+ const statusOptions =
+  selectedOrder?.status === "در انتظار تائید شرکت" &&
+  selectedOrder?.order_channel !== "بازار آزاد"
+    ? [
         { label: "تائید شرکت شد", value: "در انتظار تائید حسابداری" },
-        { label: "عدم تائید شرکت", value: "عدم تائید شرکت" },
+        { label: "لغو توسط شرکت", value: "لغو توسط شرکت"},
       ]
-      : selectedOrder?.status === "در انتظار تائید حسابداری"
-        ? [
-          { label: "تسویه شد", value: "در انتظار دریافت" },
-          { label: "عدم تسویه", value: "عدم تسویه" },
-        ]
-        : selectedOrder?.status === "در انتظار دریافت"
-          ? [
-            {
-              label: "دریافت شد",
-              value:
-                carStatus === "متوقع"
-                  ? "در انتظار نوبت‌دهی"
-                  : "دریافت شد",
-            },
-            { label: "عدم دریافت", value: "عدم دریافت" },
-          ]
+    : selectedOrder?.status === "در انتظار تائید شرکت" &&
+      selectedOrder?.order_channel === "بازار آزاد"
+    ? [
+        { label: "تائید بازار آزاد", value: "در انتظار تائید حسابداری" },
+      ]
+    : selectedOrder?.status === "در انتظار تائید حسابداری"
+    ? [
+        { label: "تسویه شد", value: "در انتظار دریافت" },
+        { label: "عدم پرداخت حسابداری", value: "عدم پرداخت حسابداری" },
+      ]
+    : selectedOrder?.status === "در انتظار دریافت"
+    ? [
+        {
+          label: "دریافت شد",
+          value:
+            carStatus === "متوقع"
+              ? "در انتظار نوبت دهی"
+              : "دریافت شد",
+        },
+        { label: "عدم دریافت", value: "عدم دریافت" },
+      ]
+    : selectedOrder?.status === "دریافت شد"
+    ? [{ label: "تحویل شد", value: "تحویل شد" }]
+    : selectedOrder?.status === "در انتظار نوبت دهی"
+    ? [
+        { label: "نوبت داده شد", value: "نوبت داده شد" },
+        { label: "انصراف مشتری", value: "انصراف مشتری" },
+      ]
+    : [];
 
-          : selectedOrder?.status === "دریافت شد"
-            ? [{ label: "تحویل شد", value: "تحویل شد" }]
-
-            : selectedOrder?.status === "در انتظار نوبت‌دهی"
-              ? [
-                { label: "نوبت داده شد", value: "نوبت داده شد" },
-                { label: "انصراف مشتری", value: "انصراف مشتری" },
-              ]
-              // : selectedOrder?.status === "دریافت شده"
-              //   ? [{ label: "تحویل شد", value: "تحویل شد" }]
-              : [];
 
 
 
