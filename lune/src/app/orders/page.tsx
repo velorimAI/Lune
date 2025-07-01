@@ -57,11 +57,16 @@ const Orders: FC = () => {
     };
   }, [data?.data]);
 
- const tabs = [
-  { label: `همه سفارش‌ها (${tabCounts.all || 0})`, value: "all" },
-  { label: `در انتظار تائید شرکت (${tabCounts.notSettled || 0})`, value: "در انتظار تائید شرکت" },
-  { label: `در انتظار تائید حسابداری (${tabCounts.settled || 0})`, value: "در انتظار تئید حسابداری" },
-  { label: `در انتظار دریافت (${tabCounts.canceled || 0})`, value: "در انتظار دریافت" }
+const tabs = [
+  { label: `همه سفارش‌ها`, value: "all" },
+  { label: `در انتظار تائید شرکت`, value: "در انتظار تائید شرکت" },
+  { label: `در انتظار تائید حسابداری`, value: "در انتظار تائید حسابداری" },
+  { label: `در انتظار دریافت`, value: "در انتظار دریافت" },
+  { label: `دریافت شده`, value: "دریافت شده" },
+  { label: `در انتظار نوبت‌دهی`, value: "در انتظار نوبت‌دهی" },
+  { label: `نوبت داده شده`, value: "نوبت داده شده" },
+  { label: `لغو شده`, value: "لغو شده" },
+  { label: `آرشیو `, value: "آرشیو" }
 ];
 
 
