@@ -197,7 +197,7 @@ export default function NewOrderPage() {
                   <Input label="شماره سفارش" name="order_number" required ref={partRefs.orderNumberRef}  readOnly={!userInfoSubmitted}  />
                   <Input label="زمان تخمینی دریافت (روز)" name="estimated_arrival_days" required value={estimatedArrivalDays}   readOnly={!userInfoSubmitted} 
                   />
-                  <Select
+                  {/* <Select
                     label="وضعیت"
                     name="status"
                     value="دریافت نشده"
@@ -208,7 +208,7 @@ export default function NewOrderPage() {
                     ]}
                     required
                     disabled={!userInfoSubmitted}
-                  />
+                  /> */}
                 </div>
                 <Input label="توضیحات" name="description" type="textarea"  readOnly={!userInfoSubmitted}  />
                 {/* check box of accept of compony */}

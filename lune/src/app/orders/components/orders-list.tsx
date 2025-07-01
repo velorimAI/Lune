@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   DollarSign,
   CalendarCheck,
+  Check,
 } from "lucide-react";
 import { DeleteOrder } from "./DeleteOrderButton";
 import { OrdersListProps } from "@/types/orders.d.type";
@@ -37,7 +38,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
     }
     if (earliestDate) return earliestDate;
     if (latestDate) return latestDate;
-    return "—";
+    return  <Check className="w-4 h-5 mr-1 text-gray-500"/>;
   };
 
   return (
@@ -92,17 +93,16 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
               <div className="flex items-center justify-center">
                 <DollarSign className="w-4 h-4 text-gray-500" />
                 <span
-                  className={`font-semibold ${
-                    order?.settlement_status_overall?.trim() === "تسویه‌ شده"
+                  className={`font-semibold ${order?.settlement_status_overall?.trim() === "تسویه‌ شده"
                       ? "text-green-600"
                       : "text-red-600"
-                  }`}
+                    }`}
                 >
                   {order?.settlement_status_overall?.trim() || "تسویه نشده"}
                 </span>
               </div>
               <div
-                className="flex gap-3 justify-center"
+                className="flex gap-4 justify-center text-gray-700 mr-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 <DeleteOrder id={String(order?.customer_id)} name={order?.customer_name} />

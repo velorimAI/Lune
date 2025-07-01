@@ -62,6 +62,61 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
   const isAccountant = role === "حسابدار";
   const isWarehouse = role === "انباردار";
 
+
+  const relatedReception = data.receptions?.find((reception: any) =>
+    reception.orders?.some((order: any) => order.order_id === selectedOrder?.order_id)
+  );
+
+  const carStatus = relatedReception?.car_status;
+
+
+ const statusOptions =
+  selectedOrder?.status === "در انتظار تائید شرکت" &&
+  selectedOrder?.order_channel !== "بازار آزاد"
+    ? [
+        { label: "تائید شرکت شد", value: "در انتظار تائید حسابداری" },
+        { label: "لغو توسط شرکت", value: "لغو توسط شرکت"},
+      ]
+    : selectedOrder?.status === "در انتظار تائید شرکت" &&
+      selectedOrder?.order_channel === "بازار آزاد"
+    ? [
+        { label: "تائید بازار آزاد", value: "در انتظار تائید حسابداری" },
+      ]
+    : selectedOrder?.status === "در انتظار تائید حسابداری"
+    ? [
+        { label: "تسویه شد", value: "در انتظار دریافت" },
+        { label: "عدم پرداخت حسابداری", value: "عدم پرداخت حسابداری" },
+      ]
+    : selectedOrder?.status === "در انتظار دریافت"
+    ? [
+        {
+          label: "دریافت شد",
+          value:
+            carStatus === "متوقع"
+              ? "در انتظار نوبت دهی"
+              : "دریافت شد",
+        },
+        { label: "عدم دریافت", value: "عدم دریافت" },
+      ]
+    : selectedOrder?.status === "دریافت شد"
+    ? [{ label: "تحویل شد", value: "تحویل شد" }]
+    : selectedOrder?.status === "در انتظار نوبت دهی"
+    ? [
+        { label: "نوبت داده شد", value: "نوبت داده شد" },
+        { label: "انصراف مشتری", value: "انصراف مشتری" },
+      ]
+    : [];
+
+
+
+
+
+
+  const canEditStatus =
+    (isWarehouse && selectedOrder?.status !== "در انتظار تائید حسابداری") || // انباردار می‌تونه بجز این حالت تغییر بده
+    (isAccountant && selectedOrder?.status === "در انتظار تائید حسابداری");
+
+
   return (
     <>
       <SquarePen
@@ -94,19 +149,6 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
               name=""
               value={selectedOrderId || ""}
             />
-
-            <Select
-              label="وضعیت تحویل"
-              name="status"
-              inputStyle="w-full"
-              className="w-[200px]"
-              options={[
-                { label: "دریافت شده", value: "دریافت شده" },
-                { label: "دریافت نشده", value: "دریافت نشده" },
-              ]}
-              value={selectedOrder?.status}
-              disabled={!isWarehouse}
-            />
           </div>
 
           <div className="flex w-full justify-between gap-3">
@@ -119,29 +161,20 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
             />
 
             <Select
-              label="وضعیت پرداخت"
-              name="settlement_status"
+              label="وضعیت"
+              name="status"
               className="w-[200px]"
               inputStyle="w-full"
-              options={[
-                { label: "تسویه شده ", value: "تسویه شده" },
-                { label: "تسویه نشده", value: "تسویه نشده" },
-              ]}
-              value={selectedOrder?.settlement_status}
-              disabled={!isAccountant}
+              // options={[
+              //   { label: "تسویه شده ", value: "تسویه شده" },
+              //   { label: "تسویه نشده", value: "تسویه نشده" },
+              // ]}
+              options={statusOptions}
+              placeholder={selectedOrder?.status}
+              disabled={!canEditStatus}
             />
 
           </div>
-
-
-
-          <CheckBox
-            label="تایید شرکت"
-            name="dealer_approved"
-            className="py-2"
-            checked={selectedOrder?.dealer_approved}
-            disabled={!isWarehouse}
-          />
         </Form>
       </Modal>
     </>
