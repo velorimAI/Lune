@@ -5,8 +5,8 @@ import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Modal } from "@/app/components/modal";
-import { useDeletePart } from "../hooks/use-delete-part";
-import { useDeleteOrder } from "../hooks/use-delete-order";
+import { useDeleteOrder } from "../hooks";
+
 
 interface DeleteItemProps {
   id: string;

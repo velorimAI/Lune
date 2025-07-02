@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 import { DeleteOrder } from "./DeleteOrderButton";
 import { OrdersListProps } from "@/types/orders.d.type";
-import EditOrderModal from "./edit-orders-SquarePen";
 import { OrderDetails } from "./OrderDetails";
 import { extractMonthDay } from "@/app/utils/extractMonthlyDay";
+import { EditOrderModal } from "./edit-orders-SquarePen";
 
 export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);

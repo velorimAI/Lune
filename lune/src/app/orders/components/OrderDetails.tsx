@@ -2,7 +2,8 @@ import React from "react";
 import { Wrench, PackageOpen, CirclePlus } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle, getPaymentStatusStyle } from "./statusStyles";
-import AddItem from "./add-item";
+import { AddItem } from "./add-item";
+
 
 export const OrderDetails = ({ id, order }: { id: number; order: any }) => (
   <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
