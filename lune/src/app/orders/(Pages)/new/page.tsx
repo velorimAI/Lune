@@ -210,9 +210,6 @@ export default function NewOrderPage() {
                     disabled={!userInfoSubmitted}
                   /> */}
                 </div>
-                <Input label="توضیحات" name="description" type="textarea"  readOnly={!userInfoSubmitted}  />
-                {/* check box of accept of compony */}
-                {/* <CheckBox label="تایید شرکت" name="dealer_approved" reverse disabled={!userInfoSubmitted}/> */}
               </div>
             </Form>
           </Card>
