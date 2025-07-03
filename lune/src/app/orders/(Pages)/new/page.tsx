@@ -4,14 +4,12 @@ import { Card } from "@/app/components/card";
 import { useOrderData } from "../../hooks/use-order-data";
 import PartForm from "../../components/part-form";
 import { CustomerForm } from "../../components/customer-form";
-import { OrdersList } from "../../components/orders-list";
 import OrderList from "../../components/order-list";
 
 export default function NewOrderPage() {
   const {
     userForm,
     userInfoSubmitted,
-    userData,
     orderGroups,
     orderChannel,
     isPending,

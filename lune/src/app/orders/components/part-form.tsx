@@ -9,7 +9,7 @@ interface PartFormProps {
   orderChannel: string;
   setOrderChannel: (value: string) => void;
   estimatedArrivalDays?: string | number;
-  onSubmit: (data: any) => void; // یا نوع دقیق‌تری اگه داده فرم رو مشخص کردی
+  onSubmit: (data: any) => void; 
 }
 
 export default function PartForm({
