@@ -1,4 +1,5 @@
 "use client";
+
 import { Card } from "@/app/components/card";
 import { Form } from "@/app/components/custom-form/form";
 import { Input } from "@/app/components/custom-form/input";
@@ -7,7 +8,7 @@ import { FC, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { login } from "@/app/apis/auth/Service";
-
+import LiveIcon from "./components/LiveIcon";
 
 const Login: FC = () => {
   const router = useRouter();
@@ -45,19 +46,20 @@ const Login: FC = () => {
   };
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center"
-      style={{ backgroundImage: "url('/img/background/main.jpg')" }}
-    >
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white/80">
-        <Card titleStyle="flex justify-center items-center" variant="ghost">
+    <div className="min-h-screen flex">
+      <div
+        className="w-1/2 flex flex-col items-center justify-center p-8 border-r border-gray-300 bg-gray-100"
+        style={{ minHeight: "100vh" }}
+      >
+        <Card titleStyle="flex justify-center items-center" variant="ghost" className="w-full max-w-md">
           <Image
             src="/img/logo/fix-logo.jpg"
             alt="Logo"
             width={100}
             height={100}
-            className="mx-auto object-contain mt-4 mb-4"
+            className="mx-auto object-contain mt-4 mb-6"
           />
+
           <Form
             onSubmit={onSubmit}
             submitText="ورود"
@@ -67,7 +69,7 @@ const Login: FC = () => {
             <Input
               label="نام کاربری"
               placeholder="نام کاربری خود را وارد کنید :"
-              className="w-[400px]"
+              className="w-full"
               name="username"
               idNumber
               type="number"
@@ -75,12 +77,21 @@ const Login: FC = () => {
             <Input
               label="رمز عبور"
               placeholder="رمز عبور را وارد کنید :"
-              className="w-[400px]"
+              className="w-full"
               type="password"
               name="password"
             />
           </Form>
         </Card>
+      </div>
+      <div
+        className="w-1/2 bg-gray-100 flex items-center justify-center"
+        // style={{ minHeight: "100vh" }}
+      >
+        {/* <div className="max-h-[70vh]"> */}
+        {/* <div className="max-w-lg w-full h-full flex items-center justify-center p-10"> */}
+          <LiveIcon />
+        {/* </div> */}
       </div>
     </div>
   );
