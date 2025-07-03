@@ -1,10 +1,10 @@
 import React from "react";
 import { Wrench, PackageOpen } from "lucide-react";
 import { DeleteItem } from "./delete-items";
-import { getStatusStyle, getPaymentStatusStyle } from "./statusStyles";
-import AddItem from "./add-item";
+import { getStatusStyle} from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCar, faCarCrash} from "@fortawesome/free-solid-svg-icons";
+import { AddItem } from "./add-item";
 
 export const OrderDetails = ({ id, order }: { id: number; order: any }) => {
   console.log(order);

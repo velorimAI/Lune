@@ -89,10 +89,8 @@ const Orders: FC = () => {
 
 
   return (
-    <Card contentClassName="min-h-[85vh]">
-      {/* Tabs + Filters */}
+    <Card contentClassName="min-h-[85vh]" className="lg:h-[calc(100%-55px)]">
       <div className="flex flex-wrap justify-between items-center gap-2  pb-2 border-b border-gray-300">
-        {/* Tabs */}
         <div className="flex gap-1">
           {tabs.map((tab) => (
             <button
@@ -136,8 +134,7 @@ const Orders: FC = () => {
           )}
         </div>
 
-        {/* Add new order button */}
-        <div className="fixed left-10 bottom-[30px] bg-white rounded-lg">
+        <div className="fixed left-6 bottom-[20px] bg-white rounded-lg">
           <CirclePlus
             className="w-[30px] h-[30px] cursor-pointer"
             onClick={() => router.push("/orders/new")}

@@ -2,9 +2,8 @@
 import { Modal } from "@/app/components/modal";
 import { Trash2 } from "lucide-react";
 import { FC, useState } from "react";
-import { useDeletePart } from "../hooks/use-delete-part";
 import { useRouter } from "next/navigation";
-import { useDeleteOrder } from "../hooks/use-delete-order";
+import { useDeletePart } from "../hooks";
 
 
 

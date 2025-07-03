@@ -8,8 +8,9 @@ import { Modal } from "@/app/components/modal";
 import { CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useAddItem } from "../hooks/use-add-item";
+
 import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
+import { useAddItem } from "../hooks";
 
 interface AddItemModalProp {
   data?: any;
@@ -17,7 +18,7 @@ interface AddItemModalProp {
   id?: number;
 }
 
-const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
+export const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState("");
   const { mutate, isPending } = useAddItem();
@@ -171,4 +172,4 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
   );
 };
 
-export default AddItem;
+
