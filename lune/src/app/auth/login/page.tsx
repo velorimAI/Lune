@@ -8,7 +8,7 @@ import { FC, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { login } from "@/app/apis/auth/Service";
-import LiveIcon from "@/app/components/LiveIcon";
+import LiveIcon from "./components/LiveIcon";
 
 const Login: FC = () => {
   const router = useRouter();
@@ -48,7 +48,7 @@ const Login: FC = () => {
   return (
     <div className="min-h-screen flex">
       <div
-        className="w-1/2 flex flex-col items-center justify-center p-8 border-r border-gray-300  bg-gray-300"
+        className="w-1/2 flex flex-col items-center justify-center p-8 border-r border-gray-300 bg-gray-100"
         style={{ minHeight: "100vh" }}
       >
         <Card titleStyle="flex justify-center items-center" variant="ghost" className="w-full max-w-md">
@@ -86,11 +86,12 @@ const Login: FC = () => {
       </div>
       <div
         className="w-1/2 bg-gray-100 flex items-center justify-center"
-        style={{ minHeight: "100vh" }}
+        // style={{ minHeight: "100vh" }}
       >
-        <div className="max-w-lg w-full h-full flex items-center justify-center p-10">
+        {/* <div className="max-h-[70vh]"> */}
+        {/* <div className="max-w-lg w-full h-full flex items-center justify-center p-10"> */}
           <LiveIcon />
-        </div>
+        {/* </div> */}
       </div>
     </div>
   );

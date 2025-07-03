@@ -9,7 +9,7 @@ const LiveIcon = () => {
 
   return (
     <div
-      className="w-130 h-130"
+      className="w-[700px] h-[700px]"
       dangerouslySetInnerHTML={{
         __html: `
           <lottie-player
