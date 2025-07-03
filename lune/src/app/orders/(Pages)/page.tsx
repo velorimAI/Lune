@@ -1,17 +1,17 @@
 "use client";
 
 import { FC, useState } from "react";
-import { Card } from "../components/card";
+import { Card } from "../../components/card";
 import { useRouter } from "next/navigation";
 import { CirclePlus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getOrdersList } from "../apis/orders/orderService";
-import { SearchBox } from "../components/table/search-box";
+import { getOrdersList } from "../../apis/orders/orderService";
+import { SearchBox } from "../../components/table/search-box";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useOrdersFilter } from "./hooks/use-orders-filter";
-import { Tabs } from "./components/tabs";
-import { OrdersListWrapper } from "./components/orders-list-wrapper";
+import { useOrdersFilter } from "../hooks/use-orders-filter";
+import { Tabs } from "../components/tabs";
+import { OrdersListWrapper } from "../components/orders-list-wrapper";
 
 
 
