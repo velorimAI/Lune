@@ -29,6 +29,7 @@ type NavMainTypes = {
   }[];
   title: string;
   url?: string;
+  disabled?: boolean;
 };
 
 export function NavMain({ items }: { items: NavMainTypes[] }) {
@@ -51,7 +52,6 @@ export function NavMain({ items }: { items: NavMainTypes[] }) {
       });
       return newState;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleSection = (title: string) => {
@@ -72,10 +72,9 @@ export function NavMain({ items }: { items: NavMainTypes[] }) {
            dark:data-[active=true]:bg-box-brighter data-[active=true]:text-secondaryBlue 
            dark:text-zinc-400
            dark:data-[active=true]:text-secondaryBlue dark:shadow-sm dark:hover:bg-box-brighter
-          ${
-            pathname === item.url || isOpen
-              ? 'text-secondaryBlue'
-              : 'text-darkGray'
+          ${pathname === item.url || isOpen
+            ? 'text-secondaryBlue'
+            : 'text-darkGray'
           }
           ${item?.items && item?.items?.length >= 1 && openSections[item.title] && !isOpen && 'bg-sidebar-accent dark:bg-box-brighter'}
           `}
@@ -89,9 +88,12 @@ export function NavMain({ items }: { items: NavMainTypes[] }) {
     );
 
     if (item.url) {
-      return <Link href={item.url}>{menu}</Link>;
+      return item.disabled ? (
+        <div className="pointer-events-none opacity-50">{menu}</div>
+      ) : (
+        <Link href={item.url}>{menu}</Link>
+      );
     }
-    return menu;
   };
 
   return (

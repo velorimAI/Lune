@@ -9,31 +9,42 @@ import {
 } from "@/components/ui/sidebar";
 import {
   ChartColumn,
-  Search,
   Settings,
+  ShieldUser,
   ClipboardList,
-  Package,
 } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
 
-const data = {
-  navMain: [
-    { title: "داشبورد", url: "#", icon: ChartColumn },
-    { title: "سفارش ها", url: "/orders", icon: ClipboardList }
-  ],
-  navSecondary: [
-    { title: "تنظیمات", url: "/settings", icon: Settings, sidbar: true },
-  ],
-};
-
 export function AppSidebar() {
   const { state } = useSidebar();
+  const [userRole, setUserRole] = useState("");
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("role");
+    setUserRole(storedRole || "");
+  }, []);
+
+  const data = {
+    navMain: [
+      { title: "داشبورد", url: "#", icon: ChartColumn },
+      { title: "سفارش ها", url: "/orders", icon: ClipboardList },
+      {
+        title: "مدیریت",
+        url: "/admin",
+        icon: ShieldUser,
+        disabled: userRole !== "مدیریت",
+      },
+    ],
+    navSecondary: [
+      { title: "تنظیمات", url: "/settings", icon: Settings, sidbar: true },
+    ],
+  };
 
   return (
     <Sidebar className="max-xl:w-[10rem]" collapsible="icon">
-
       <SidebarHeader className="flex flex-col justify-center items-center pt-10 pb-4">
         <div className="flex justify-center items-center w-full">
           <Image
