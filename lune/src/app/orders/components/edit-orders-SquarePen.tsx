@@ -16,7 +16,7 @@ interface editOrderModalProp {
   refetch: () => void;
 }
 
-const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
+ export const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
   const [open, setOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -181,4 +181,4 @@ const EditOrderModal: React.FC<editOrderModalProp> = ({ data, refetch }) => {
   );
 };
 
-export default EditOrderModal;
+;
