@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Input } from "@/app/components/custom-form/input";
 import { Select } from "@/app/components/custom-form/select-box";
 import { Form } from "@/app/components/custom-form/form";
@@ -21,12 +22,24 @@ export default function PartForm({
 }: PartFormProps) {
   const { refs } = usePartInputRefs();
 
+  
+  const [arrivalDays, setArrivalDays] = useState<string>("");
+
+  
+  useEffect(() => {
+    if (estimatedArrivalDays === undefined || estimatedArrivalDays === null || estimatedArrivalDays === "") {
+      setArrivalDays("1");
+    } else {
+      setArrivalDays(String(estimatedArrivalDays));
+    }
+  }, [estimatedArrivalDays]);
+
   return (
     <Card title="اطلاعات قطعه">
       <Form
         submitText="ثبت قطعه"
         cancelHide
-        onSubmit={onSubmit}
+        onSubmit={(data) => onSubmit({ ...data, estimated_arrival_days: arrivalDays })}
         submitDisable={!userInfoSubmitted}
       >
         <div>
@@ -91,17 +104,20 @@ export default function PartForm({
               ref={refs.orderNumberRef}
               readOnly={!userInfoSubmitted}
             />
-            <Input
-              label={
-                orderChannel === "بازار آزاد"
-                  ? "دریافت(روز)"
-                  : "زمان تخمینی دریافت (روز)"
-              }
-              name="estimated_arrival_days"
-              required
-              value={String(estimatedArrivalDays)}
-              readOnly={!userInfoSubmitted}
-            />
+          <Input
+  label={
+    orderChannel === "بازار آزاد"
+      ? "دریافت(روز)"
+      : "زمان تخمینی دریافت (روز)"
+  }
+  name="estimated_arrival_days"
+  required
+  value={arrivalDays}
+  onChange={(value) => setArrivalDays(value || "1")}
+  readOnly={!userInfoSubmitted}
+/>
+
+
           </div>
         </div>
       </Form>

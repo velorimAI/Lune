@@ -85,12 +85,6 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                     const receptions = order?.receptions || [];
                     console.log("receptions", receptions);
                     const sorted = receptions
-<<<<<<< HEAD
-                      .filter((r) => r.reception_date && r.reception_date !== "_") 
-                      .sort((a, b) => a.reception_date.localeCompare(b.reception_date));
-                    console.log("sorted", sorted);
-                    return sorted.length ? sorted[0].reception_date.split(" ")[0] : "—";
-=======
                       .filter((r: any) => r.reception_date)
                       .sort((a: any, b: any) =>
                         a.reception_date.localeCompare(b.reception_date)
@@ -98,7 +92,6 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                     return sorted.length
                       ? sorted[0].reception_date.split(" ")[0]
                       : "—";
->>>>>>> fix-fixing-orders-list-icon
                   })()}
 
                 </span>
@@ -110,18 +103,11 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
               <div className="flex items-center justify-center">
                 <DollarSign className="w-4 h-4 text-gray-500" />
                 <span
-<<<<<<< HEAD
-                  className={`font-semibold ${order?.settlement_status_overall?.trim() === "تسویه‌ شده"
-                    ? "text-green-600"
-                    : "text-red-600"
-                    }`}
-=======
                   className={`font-semibold ${
                     order?.settlement_status_overall?.trim() === "تسویه‌ شده"
                       ? "text-green-600"
                       : "text-red-600"
                   }`}
->>>>>>> fix-fixing-orders-list-icon
                 >
                   {order?.settlement_status_overall?.trim() || "تسویه نشده"}
                 </span>
