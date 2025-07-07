@@ -1,56 +1,75 @@
 import { FC } from "react";
 import { Trash2 } from "lucide-react";
 
+interface PartItem {
+  part_id: string;
+  piece_name: string;
+  number_of_pieces: number;
+  order_channel: string;
+  order_number: string;
+}
+
 interface ItemsListProp {
-  data: any[];
+  data: PartItem[];
   onDelete?: (index: number) => void;
 }
 
-export const ItemList: FC<ItemsListProp> = ({ data , onDelete }) => {
+export const ItemList: FC<ItemsListProp> = ({ data, onDelete }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {data.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 px-8 bg-white border border-gray-200 rounded-3xl shadow-xl h-full">
-          <h3 className="text-xl font-bold text-gray-700 mb-2">
-            قطعه ای ثبت نشده
+        <div className="flex flex-col items-center justify-center py-16 px-8 bg-gray-50 border border-gray-200 rounded-xl">
+          <h3 className="text-lg font-medium text-gray-500">
+            هیچ قطعه‌ای ثبت نشده است
           </h3>
         </div>
       ) : (
-        data?.map((item, index) => {
-          return (
-            <div key={index} className="space-y-2">
-              <div className="grid grid-cols-6 bg-gray-50 shadow-sm px-4 py-3 text-xs w-full border border-gray-300 rounded-lg items-center gap-1 text-center">
-                <div className="flex items-center gap-1.5 text-gray-800">
-                  <p className="font-bold md:text-[12px]">کد فنی :</p>
-                  <span>{item?.part_id}</span>
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm h-[400px] overflow-y-auto">
+          {/* هدر ثابت */}
+          <div className="grid grid-cols-6 bg-gray-100 px-4 py-3 text-xs font-medium text-gray-600 border-b border-gray-200 sticky top-0 z-10">
+            <div className="text-center">کد فنی</div>
+            <div className="text-center">نام قطعه</div>
+            <div className="text-center">تعداد</div>
+            <div className="text-center">کانال سفارش</div>
+            <div className="text-center">شماره سفارش</div>
+            <div className="text-center">عملیات</div>
+          </div>
+          
+          {/* آیتم‌های لیست */}
+          <div className="divide-y divide-gray-100">
+            {data.map((item, index) => (
+              <div 
+                key={index} 
+                className="grid grid-cols-6 px-4 py-3 text-sm items-center hover:bg-gray-50 transition-colors"
+              >
+                <div className="text-center text-gray-800 font-medium">
+                  {item.part_id}
                 </div>
-                <div className="flex items-center gap-1.5 text-gray-800">
-                  <p className="font-bold md:text-[12px]">نام قطعه :</p>
-                  <span>{item?.piece_name}</span>
+                <div className="text-center text-gray-600">
+                  {item.piece_name}
                 </div>
-                <div className="flex items-center gap-1.5 text-gray-800">
-                  <p className="font-bold md:text-[12px]">تعداد :</p>
-                  <span>{item?.number_of_pieces}</span>
+                <div className="text-center text-gray-600">
+                  {item.number_of_pieces.toLocaleString()}
                 </div>
-                <div className="flex items-center gap-1.5 text-gray-800">
-                  <p className="font-bold md:text-[12px]">کانال سفارش :</p>
-                  <span>{item?.order_channel}</span>
+                <div className="text-center text-gray-600">
+                  {item.order_channel}
                 </div>
-                <div className="flex items-center gap-1.5 text-gray-800">
-                  <p className="font-bold md:text-[12px]">شماره سفارش :</p>
-                  <span>{item?.order_number}</span>
+                <div className="text-center text-gray-600">
+                  {item.order_number}
                 </div>
-                <div className="flex items-center justify-center">
-                  <Trash2
-                    size={18}
-                    className="text-red-500 cursor-pointer hover:text-red-700 transition"
+                <div className="flex justify-center">
+                  <button 
                     onClick={() => onDelete?.(index)}
-                  />
+                    className="text-red-500 hover:text-red-700 transition-colors p-1 rounded-full hover:bg-red-50"
+                    aria-label="حذف قطعه"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </div>
-            </div>
-          );
-        })
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
