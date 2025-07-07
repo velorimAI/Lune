@@ -62,12 +62,12 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
         data.map((order, index) => (
           <div
             key={order.customer_id ?? index}
-            className="bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden"
+            className="bg-gray-50 border border-gray-200 rounded-xl shadow-md overflow-hidden"
           >
 
             <div
               onClick={() => toggleDetails(index)}
-              className={`grid grid-cols-6 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-50 ${expandedIndex === index ? "bg-gray-50 border-b" : ""
+              className={`grid grid-cols-6 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-100 ${expandedIndex === index ? "bg-gray-100 border-b" : ""
                 }`}
             >
               <div className="flex items-center gap-2">
