@@ -73,6 +73,7 @@ const Login: FC = () => {
               name="username"
               idNumber
               type="number"
+              required
             />
             <Input
               label="رمز عبور"
@@ -80,6 +81,7 @@ const Login: FC = () => {
               className="w-full"
               type="password"
               name="password"
+              required
             />
           </Form>
         </Card>

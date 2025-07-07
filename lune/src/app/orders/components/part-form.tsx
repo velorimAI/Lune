@@ -81,7 +81,7 @@ export default function PartForm({
             {orderChannel === "بازار آزاد" && (
               <>
                 <Input label="نام فروشنده" name="market_name" />
-                <Input label="تلفن فروشنده" name="market_phone" />
+                <Input label="تلفن فروشنده" name="market_phone" phone/>
               </>
             )}
             <Input

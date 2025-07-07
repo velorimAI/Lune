@@ -8,15 +8,20 @@ interface TabsProps {
 
 export const Tabs: FC<TabsProps> = ({ activeTab, setActiveTab, tabCounts }) => {
   const tabs = [
-    { label: `همه سفارش‌ها (${tabCounts.all || 0})`, value: "all" },
-    { label: `تسویه نشده (${tabCounts.notSettled || 0})`, value: "تسویه نشده" },
-    { label: `تسویه شده (${tabCounts.settled || 0})`, value: "تسویه شده" },
-    { label: `لغو شده (${tabCounts.canceled || 0})`, value: "لغو شده" },
-    { label: `ارشیو (${tabCounts.all || 0})`, value: "ارشیو" },
+    { label: `همه سفارش‌ها `, value: "all" },
+    { label: `در انتظار تایید شرکت`, value: "در انتظار تائید شرکت" },
+    { label: `در انتظار تایید حسابداری `, value: "در انتظار تائید حسابداری" },
+    { label: `در انتظار دریافت `, value: "در انتظار دریافت" },
+    { label: `دریافت شده `, value: "دریافت شد" },
+    { label: `در انتظار نوبت‌دهی `, value: "در انتظار نوبت‌دهی" },
+    { label: `نوبت داده شد `, value: "نوبت داده شد" },
+    { label: "لغو شده", value: "canceled" },
+    { label: `تحویل شده `, value: "تحویل شد" },
   ];
 
+
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-1 flex-wrap">
       {tabs.map((tab) => (
         <button
           key={tab.value}
@@ -25,10 +30,10 @@ export const Tabs: FC<TabsProps> = ({ activeTab, setActiveTab, tabCounts }) => {
             ${activeTab === tab.value ? "text-primary" : "text-gray-500 hover:text-primary"}
           `}
         >
-          {tab.label}
+          {tab.label} ({tabCounts[tab.value] || 0})
           <span
             className={`absolute left-0 -bottom-[2px] h-[2px] bg-primary transition-all duration-300 ease-in-out
-              ${activeTab === tab.value ? "w-full opacity-100 scale-x-100" : "w-full opacity-30 scale-x-90 "}
+              ${activeTab === tab.value ? "w-full opacity-100 scale-x-100" : "w-full opacity-30 scale-x-90"}
             `}
           />
         </button>

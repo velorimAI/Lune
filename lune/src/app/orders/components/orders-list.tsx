@@ -38,7 +38,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
     }
     if (earliestDate) return earliestDate;
     if (latestDate) return latestDate;
-    return  <Check className="w-4 h-5 mr-1 text-gray-500"/>;
+    return <Check className="w-4 h-5 mr-1 text-gray-500" />;
   };
 
   return (
@@ -62,9 +62,8 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
             {/* هدر سفارش */}
             <div
               onClick={() => toggleDetails(index)}
-              className={`grid grid-cols-6 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-50 ${
-                expandedIndex === index ? "bg-gray-50 border-b" : ""
-              }`}
+              className={`grid grid-cols-6 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-50 ${expandedIndex === index ? "bg-gray-50 border-b" : ""
+                }`}
             >
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-gray-500" />
@@ -79,11 +78,14 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                 <span className="text-gray-800">
                   {(() => {
                     const receptions = order?.receptions || [];
+                    console.log("receptions", receptions);
                     const sorted = receptions
-                      .filter((r) => r.reception_date)
+                      .filter((r) => r.reception_date && r.reception_date !== "_") 
                       .sort((a, b) => a.reception_date.localeCompare(b.reception_date));
+                    console.log("sorted", sorted);
                     return sorted.length ? sorted[0].reception_date.split(" ")[0] : "—";
                   })()}
+
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -94,8 +96,8 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                 <DollarSign className="w-4 h-4 text-gray-500" />
                 <span
                   className={`font-semibold ${order?.settlement_status_overall?.trim() === "تسویه‌ شده"
-                      ? "text-green-600"
-                      : "text-red-600"
+                    ? "text-green-600"
+                    : "text-red-600"
                     }`}
                 >
                   {order?.settlement_status_overall?.trim() || "تسویه نشده"}

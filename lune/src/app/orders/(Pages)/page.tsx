@@ -32,6 +32,9 @@ const Orders: FC = () => {
     handleSearch
   } = useOrdersFilter(data?.data || [], searchText, activeTab, setSearchText);
 
+  console.log(data?.data );
+  
+
   return (
     <Card contentClassName="min-h-[85vh]" className="lg:h-[calc(100%-55px)]">
       <div className="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-gray-300">
