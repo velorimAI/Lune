@@ -1,6 +1,5 @@
 "use client";
 
-import { CheckBox } from "@/app/components/custom-form/check-box";
 import { Form } from "@/app/components/custom-form/form";
 import { Input } from "@/app/components/custom-form/input";
 import { Select } from "@/app/components/custom-form/select-box";
@@ -8,9 +7,8 @@ import { Modal } from "@/app/components/modal";
 import { CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-
+import { useAddItem } from "../hooks/use-add-item";
 import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
-import { useAddItem } from "../hooks";
 
 interface AddItemModalProp {
   data?: any;
@@ -18,9 +16,9 @@ interface AddItemModalProp {
   id?: number;
 }
 
-export const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
+const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
   const [open, setOpen] = useState(false);
-  const [orderChannel, setOrderChannel] = useState("");
+  const [orderChannel, setOrderChannel] = useState<string>("VOR");
   const { mutate, isPending } = useAddItem();
 
   const handleUpdate = async (formData: any) => {
@@ -44,6 +42,7 @@ export const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
     const payload = {
       reception_number: formData.reception_number,
       reception_date: formData.reception_date,
+      car_status: formData.car_status,
       orders: [order],
     };
 
@@ -64,13 +63,10 @@ export const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
     );
   };
 
-  // const isAccountant = role === "حسابدار";
-  // const isWarehouse = role === "انباردار";
-
   return (
     <>
       <CirclePlus
-        className="cursor-pointer w-6 h-6 mr-auto  transition-all duration-300 hover:text-teal-500 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
+        className="cursor-pointer w-6 h-6 mr-auto transition-all duration-300 hover:text-teal-500 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
         onClick={() => setOpen(true)}
       />
 
@@ -83,88 +79,82 @@ export const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
       >
         <Form
           cancelText="لغو"
-          submitText="اضاقه کردن قطعه"
+          submitText="اضافه کردن قطعه"
           onCancel={() => setOpen(false)}
           onSubmit={handleUpdate}
         >
-          <div className="flex flex-col gap-2">
-            {/* اطلاعات پذیرش */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <Input label="شماره پذیرش" name="reception_number" />
-              <Input label="تاریخ پذیرش" name="reception_date" value={getTodayJalaliDate()} readOnly />
-            </div>
+          <div
+            className="
+              p-4 bg-white rounded-lg shadow
+              grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4
+            "
+          >
+            {/* 1. شماره پذیرش */}
+            <Input label="شماره پذیرش" name="reception_number" />
 
-            {/* اطلاعات قطعه */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              <Input label="نام قطعه" name="piece_name" />
-              <Input label="کد قطعه" name="part_id" />
-              <Input
-                label="تعداد"
-                name="number_of_pieces"
-                type="number"
-                isPositiveNumber
-              />
-            </div>
+            {/* 2. تاریخ پذیرش */}
+            <Input
+              label="تاریخ پذیرش"
+              name="reception_date"
+              value={getTodayJalaliDate()}
+              readOnly
+            />
 
-            {/* اطلاعات سفارش */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-              <Input label="شماره سفارش" name="order_number" />
-              <Select
-                label="کانال"
-                name="order_channel"
-                value="VOR"
-                options={[
-                  { label: "VOR", value: "VOR" },
-                  { label: "VIS", value: "VIS" },
-                  { label: "بازار آزاد", value: "بازار آزاد" },
-                   { value: "شارژ انبار", label: "شارژ انبار" }
-                ]}
-                onChange={(data) => {
-                  setOrderChannel(data);
-                }}
-                inputStyle="w-full"
-              />
-              {orderChannel === "بازار آزاد" && (
-                <>
+            {/* 3. شماره سفارش */}
+            <Input label="شماره سفارش" name="order_number" />
+
+            {/* 4. وضعیت خودرو */}
+            <Select
+              label="وضعیت خودرو"
+              name="car_status"
+              value="متوقع"
+              options={[
+                { label: "متوقع", value: "متوقع" },
+                { label: "متوقف", value: "متوقف" },
+              ]}
+              inputStyle="w-full"
+            />
+
+            {/* 5. کد فنی */}
+            <Input label="کد فنی" name="part_id" />
+
+            {/* 6. نام قطعه */}
+            <Input label="نام قطعه" name="piece_name" />
+
+            {/* 7. تعداد */}
+            <Input
+              label="تعداد"
+              name="number_of_pieces"
+              type="number"
+              isPositiveNumber
+            />
+
+            {/* 8. کانال سفارش */}
+            <Select
+              label="کانال"
+              name="order_channel"
+              value={orderChannel}
+              options={[
+                { label: "VOR", value: "VOR" },
+                { label: "VIS", value: "VIS" },
+                { label: "بازار آزاد", value: "بازار آزاد" },
+                { label: "شارژ انبار", value: "شارژ انبار" },
+              ]}
+              onChange={(val) => setOrderChannel(val)}
+              inputStyle="w-full"
+            />
+
+            {/* فیلدهای اضافی در صورت بازار آزاد */}
+            {orderChannel === "بازار آزاد" && (
+              <>
+                <div className="col-span-1 sm:col-span-2 md:col-span-2">
                   <Input label="نام بازار" name="market_name" />
+                </div>
+                <div className="col-span-1 sm:col-span-2 md:col-span-2">
                   <Input label="تلفن بازار" name="market_phone" />
-                </>
-              )}
-              <Select
-                label="وضعیت تحویل"
-                name="status"
-                options={[
-                  { label: "دریافت شده", value: "دریافت شده" },
-                  { label: "دریافت نشده", value: "دریافت نشده" },
-                ]}
-                inputStyle="w-[105px]"
-                value="دریافت نشده"
-              />
-              <Select
-                label="وضعیت پرداخت"
-                name="settlement_status"
-                options={[
-                  { label: "تسویه شده", value: "تسویه شده" },
-                  { label: "تسویه نشده", value: "تسویه نشده" },
-                ]}
-                inputStyle="w-[105px]"
-                value="تسویه نشده"
-                disabled
-              />
-            </div>
-
-            {/* وضعیت‌ها */}
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> */}
-
-            {/* </div> */}
-
-            {/* توضیحات و تایید */}
-            <div className="grid grid-cols-1 gap-4">
-              <Input label="توضیحات (اختیاری)" name="description" />
-            </div>
-            <div className="grid grid-cols-1 gap-4 ml-auto">
-              <CheckBox label="تأیید شرکت" name="dealer_approved" />
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </Form>
       </Modal>
@@ -172,4 +162,4 @@ export const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
   );
 };
 
-
+export default AddItem;
