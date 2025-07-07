@@ -22,7 +22,12 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const toggleDetails = (index: number) => {
-    setExpandedIndex(index === expandedIndex ? null : index);
+    setExpandedIndex((prev) => (prev === index ? null : index));
+  };
+
+  const handleArrowClick = (e: React.MouseEvent, index: number) => {
+    e.stopPropagation();
+    toggleDetails(index);
   };
 
   const displayDates = (order: any) => {
@@ -34,11 +39,11 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
 
     if (earliestDate && latestDate) {
       if (earliestDate === latestDate) return earliestDate;
-      return `${latestMonthDay} - ${earliestMonthDay} `;
+      return `${latestMonthDay} - ${earliestMonthDay}`;
     }
     if (earliestDate) return earliestDate;
     if (latestDate) return latestDate;
-    return  <Check className="w-4 h-5 mr-1 text-gray-500"/>;
+    return <Check className="w-4 h-5 mr-1 text-gray-500" />;
   };
 
   return (
@@ -56,10 +61,10 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
       ) : (
         data.map((order, index) => (
           <div
-            key={index}
+            key={order.customer_id ?? index}
             className="bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden"
           >
-            {/* هدر سفارش */}
+
             <div
               onClick={() => toggleDetails(index)}
               className={`grid grid-cols-6 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-50 ${
@@ -80,9 +85,13 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   {(() => {
                     const receptions = order?.receptions || [];
                     const sorted = receptions
-                      .filter((r) => r.reception_date)
-                      .sort((a, b) => a.reception_date.localeCompare(b.reception_date));
-                    return sorted.length ? sorted[0].reception_date.split(" ")[0] : "—";
+                      .filter((r: any) => r.reception_date)
+                      .sort((a: any, b: any) =>
+                        a.reception_date.localeCompare(b.reception_date)
+                      );
+                    return sorted.length
+                      ? sorted[0].reception_date.split(" ")[0]
+                      : "—";
                   })()}
                 </span>
               </div>
@@ -93,10 +102,11 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
               <div className="flex items-center justify-center">
                 <DollarSign className="w-4 h-4 text-gray-500" />
                 <span
-                  className={`font-semibold ${order?.settlement_status_overall?.trim() === "تسویه‌ شده"
+                  className={`font-semibold ${
+                    order?.settlement_status_overall?.trim() === "تسویه‌ شده"
                       ? "text-green-600"
                       : "text-red-600"
-                    }`}
+                  }`}
                 >
                   {order?.settlement_status_overall?.trim() || "تسویه نشده"}
                 </span>
@@ -108,6 +118,9 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                 <DeleteOrder id={String(order?.customer_id)} name={order?.customer_name} />
                 <EditOrderModal data={order} refetch={refetch} />
                 <motion.div
+                  className="cursor-pointer"
+                  onClick={(e) => handleArrowClick(e, index)}
+                  whileHover={{ scale: 1.1 }}
                   animate={expandedIndex === index ? "rotated" : "initial"}
                   variants={{
                     initial: { rotate: 0 },
@@ -115,12 +128,17 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   }}
                   transition={{ duration: 0.2 }}
                 >
-                  <CircleArrowLeft className="w-6 h-6 text-gray-500" />
+                  <CircleArrowLeft
+                    className={`w-6 h-6 transition-colors duration-200 ${
+                      expandedIndex === index
+                        ? "text-blue-500"
+                        : "text-gray-500"
+                    } hover:text-blue-500`}
+                  />
                 </motion.div>
               </div>
             </div>
 
-            {/* جزئیات سفارش با اسکرول */}
             <AnimatePresence>
               {expandedIndex === index && (
                 <motion.div
