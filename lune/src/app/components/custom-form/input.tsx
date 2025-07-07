@@ -8,6 +8,7 @@ import {
   useImperativeHandle,
   forwardRef,
   ForwardRefRenderFunction,
+  useEffect,
 } from 'react';
 import { Input as InputShadcn } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -67,7 +68,7 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
       text: '',
       className: '',
       type: 'button',
-      onClick: () => {},
+      onClick: () => { },
       isLoading: false,
     },
     className,
@@ -141,6 +142,13 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
   useImperativeHandle(ref, () => ({
     clear: handleClear,
   }));
+
+  useEffect(() => {
+    if (value !== internalValue) {
+      setInternalValue(value || '');
+    }
+  }, [value]);
+
 
   return (
     <div
