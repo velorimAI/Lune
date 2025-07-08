@@ -66,7 +66,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
   return (
     <>
       <CirclePlus
-        className="cursor-pointer w-6 h-6 mr-auto transition-all duration-300 hover:text-teal-500 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
+        className="cursor-pointer w-6 h-6 mr-auto transition-all duration-300 hover:text-gray-700 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
         onClick={() => setOpen(true)}
       />
 
@@ -89,21 +89,14 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
               grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4
             "
           >
-            {/* 1. شماره پذیرش */}
             <Input label="شماره پذیرش" name="reception_number" />
-
-            {/* 2. تاریخ پذیرش */}
             <Input
               label="تاریخ پذیرش"
               name="reception_date"
               value={getTodayJalaliDate()}
               readOnly
             />
-
-            {/* 3. شماره سفارش */}
             <Input label="شماره سفارش" name="order_number" />
-
-            {/* 4. وضعیت خودرو */}
             <Select
               label="وضعیت خودرو"
               name="car_status"
@@ -114,22 +107,14 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
               ]}
               inputStyle="w-full"
             />
-
-            {/* 5. کد فنی */}
             <Input label="کد فنی" name="part_id" />
-
-            {/* 6. نام قطعه */}
             <Input label="نام قطعه" name="piece_name" />
-
-            {/* 7. تعداد */}
             <Input
               label="تعداد"
               name="number_of_pieces"
               type="number"
               isPositiveNumber
             />
-
-            {/* 8. کانال سفارش */}
             <Select
               label="کانال"
               name="order_channel"
@@ -143,8 +128,6 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
               onChange={(val) => setOrderChannel(val)}
               inputStyle="w-full"
             />
-
-            {/* فیلدهای اضافی در صورت بازار آزاد */}
             {orderChannel === "بازار آزاد" && (
               <>
                 <div className="col-span-1 sm:col-span-2 md:col-span-2">

@@ -4,6 +4,7 @@ import { FC, useState } from "react";
 import { Card } from "../../components/card";
 import { useRouter } from "next/navigation";
 import { CirclePlus } from "lucide-react";
+import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { getOrdersList } from "../../apis/orders/orderService";
 import { SearchBox } from "../../components/table/search-box";
@@ -12,9 +13,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useOrdersFilter } from "../hooks/use-orders-filter";
 import { Tabs } from "../components/tabs";
 import { OrdersListWrapper } from "../components/orders-list-wrapper";
-
-
-
 
 const Orders: FC = () => {
   const router = useRouter();
@@ -26,19 +24,17 @@ const Orders: FC = () => {
     queryFn: getOrdersList,
   });
 
-  const {
-    filteredOrdersByTab,
-    tabCounts,
-    handleSearch
-  } = useOrdersFilter(data?.data || [], searchText, activeTab, setSearchText);
-
-  console.log(data?.data );
-  
+  const { filteredOrdersByTab, tabCounts, handleSearch } =
+    useOrdersFilter(data?.data || [], searchText, activeTab, setSearchText);
 
   return (
     <Card contentClassName="min-h-[85vh]" className="lg:h-[calc(100%-55px)]">
       <div className="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-gray-300">
-        <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabCounts={tabCounts} />
+        <Tabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          tabCounts={tabCounts}
+        />
         <div className="flex justify-start items-start w-[300px] pb-2">
           <SearchBox onSearch={handleSearch} className="min-h-[0px]" />
         </div>
@@ -48,7 +44,10 @@ const Orders: FC = () => {
         <div dir="rtl" className="w-full">
           {isLoading ? (
             [...Array(5)].map((_, i) => (
-              <div key={i} className="p-3 mb-2 border rounded-[10px] animate-pulse bg-white border-gray-200">
+              <div
+                key={i}
+                className="p-3 mb-2 border rounded-[10px] animate-pulse bg-white border-gray-200"
+              >
                 <Skeleton className="h-4 w-full mb-2" />
                 <Skeleton className="h-2 w-2/4" />
               </div>
@@ -57,12 +56,18 @@ const Orders: FC = () => {
             <OrdersListWrapper orders={filteredOrdersByTab} refetch={refetch} />
           )}
         </div>
-
-        <div className="fixed left-6 bottom-[20px] bg-white rounded-lg">
-          <CirclePlus className="w-[30px] h-[30px] cursor-pointer" onClick={() => router.push("/orders/new")} />
-        </div>
         <ScrollBar />
       </ScrollArea>
+      <motion.div
+        className="fixed left-6 bottom-[20px] cursor-pointer"
+        whileHover={{ scale: 1.2}}
+        transition={{ type: "spring", stiffness: 300 }}
+        onClick={() => router.push("/orders/new")}
+        role="button"
+        aria-label="Add new order"
+      >
+        <CirclePlus className="w-8 h-8 text-gray-700 hover:text-gray-700" />
+      </motion.div>
     </Card>
   );
 };
