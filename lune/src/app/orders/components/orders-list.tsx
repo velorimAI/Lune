@@ -8,7 +8,6 @@ import {
   Phone,
   CalendarPlus2,
   ShoppingCart,
-  DollarSign,
   CalendarCheck,
   Check,
 } from "lucide-react";
@@ -64,11 +63,11 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
             key={order.customer_id ?? index}
             className="bg-gray-50 border border-gray-200 rounded-xl shadow-md overflow-hidden"
           >
-
             <div
               onClick={() => toggleDetails(index)}
-              className={`grid grid-cols-6 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-100 ${expandedIndex === index ? "bg-gray-100 border-b" : ""
-                }`}
+              className={`grid grid-cols-5 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-100 ${
+                expandedIndex === index ? "bg-gray-100 border-b" : ""
+              }`}
             >
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-gray-500" />
@@ -83,7 +82,6 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                 <span className="text-gray-800">
                   {(() => {
                     const receptions = order?.receptions || [];
-                    console.log("receptions", receptions);
                     const sorted = receptions
                       .filter((r: any) => r.reception_date)
                       .sort((a: any, b: any) =>
@@ -93,30 +91,20 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                       ? sorted[0].reception_date.split(" ")[0]
                       : "—";
                   })()}
-
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <CalendarCheck className="w-4 h-4 text-gray-500" />
                 <span className="text-gray-800">{displayDates(order)}</span>
               </div>
-              <div className="flex items-center justify-center">
-                <DollarSign className="w-4 h-4 text-gray-500" />
-                <span
-                  className={`font-semibold ${
-                    order?.settlement_status_overall?.trim() === "تسویه‌ شده"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {order?.settlement_status_overall?.trim() || "تسویه نشده"}
-                </span>
-              </div>
               <div
                 className="flex gap-4 justify-center text-gray-700 mr-auto"
                 onClick={(e) => e.stopPropagation()}
               >
-                <DeleteOrder id={String(order?.customer_id)} name={order?.customer_name} />
+                <DeleteOrder
+                  id={String(order?.customer_id)}
+                  name={order?.customer_name}
+                />
                 <EditOrderModal data={order} refetch={refetch} />
                 <motion.div
                   className="cursor-pointer"
@@ -150,7 +138,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   className="border-t border-gray-100"
                 >
                   <div className="px-3 pt-2 pb-4 max-h-[350px] overflow-y-auto rounded-b-xl scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                    <OrderDetails order={order} id={order?.customer_id} />
+                    <OrderDetails order={order} id={order.customer_id} />
                   </div>
                 </motion.div>
               )}

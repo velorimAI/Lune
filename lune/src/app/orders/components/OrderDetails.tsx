@@ -1,13 +1,18 @@
 import React from "react";
 import { Wrench, PackageOpen } from "lucide-react";
 import { DeleteItem } from "./delete-items";
-import { getStatusStyle} from "./statusStyles";
+import { getStatusStyle } from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCar, faCarCrash} from "@fortawesome/free-solid-svg-icons";
+import { faCar, faCarCrash } from "@fortawesome/free-solid-svg-icons";
 import AddItem from "./add-item";
 
-
-export const OrderDetails = ({ id, order }: { id: number; order: any }) => {
+export const OrderDetails = ({
+  id,
+  order,
+}: {
+  id: number;
+  order: any;
+}) => {
   console.log(order);
 
   return (
@@ -16,7 +21,8 @@ export const OrderDetails = ({ id, order }: { id: number; order: any }) => {
         <Wrench className="w-5 h-5" />
         <span>
           جزئیات قطعات (
-          {order?.receptions?.flatMap((r: { orders: any }) => r.orders || [])
+          {order?.receptions
+            ?.flatMap((r: { orders: any[] }) => r.orders || [])
             .length || 0}
           )
         </span>
@@ -34,7 +40,7 @@ export const OrderDetails = ({ id, order }: { id: number; order: any }) => {
               <th className="px-4 py-2">شماره سفارش</th>
               <th className="px-4 py-2">رسیدن (روز)</th>
               <th className="px-4 py-2">انحراف</th>
-              <th className="px-4 py-2">وضعیت </th>
+              <th className="px-4 py-2">وضعیت</th>
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
@@ -42,8 +48,9 @@ export const OrderDetails = ({ id, order }: { id: number; order: any }) => {
             {order?.receptions?.map(
               (
                 reception: {
-                  reception_number: any;
-                  car_status: any
+                  reception_number: string;
+                  car_status: string;
+                  settlement_status: string;
                   orders: any[];
                 },
                 i: React.Key | null | undefined
@@ -52,49 +59,60 @@ export const OrderDetails = ({ id, order }: { id: number; order: any }) => {
                   <tr>
                     <td
                       colSpan={9}
-                      className="bg-blue-50 text-blue-800 font-bold text-right px-4 py-2 border-y border-blue-200"
+                      className="bg-blue-50 text-blue-800 font-bold px-4 py-2 border-y border-blue-200"
                     >
-                      <span>
-                        شماره پذیرش: {reception.reception_number} (
-                        {reception?.car_status || "-"}{" "}
-                        {reception?.car_status === "متوقف" ? (
-                          <>
-                            <FontAwesomeIcon icon={faCarCrash} className="text-gray-500 ml-1 text-[17px]" />
-                          </>
-                        ) : reception?.car_status === "متوقع" ? (
-                          <FontAwesomeIcon icon={faCar} className="text-gray-500 ml-1" />
-                        ) : null}
-                        )
-                      </span>
+                      <div className="flex justify-between items-center">
+                        <div className="text-right">
+                          شماره پذیرش: {reception.reception_number} (
+                          {reception.car_status}{" "}
+                          {reception.car_status === "متوقف" ? (
+                            <FontAwesomeIcon
+                              icon={faCarCrash}
+                              className="text-gray-500 ml-1 text-[17px]"
+                            />
+                          ) : reception.car_status === "متوقع" ? (
+                            <FontAwesomeIcon
+                              icon={faCar}
+                              className="text-gray-500 ml-1"
+                            />
+                          ) : null}
+                          )
+                        </div>
+                        <div className="text-left">
+                          وضعیت تسویه:{" "}
+                          <span className="font-normal text-gray-800">
+                            {reception.settlement_status || "-"}
+                          </span>
+                        </div>
+                      </div>
                     </td>
                   </tr>
-                  {reception?.orders?.map((part, j) => (
+                  {reception.orders.map((part, j) => (
                     <tr
                       key={j}
-                      className={`border-b ${j % 2 === 0 ? "bg-gray-50" : "bg-white"
-                        }`}
+                      className={`border-b ${
+                        j % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }`}
                     >
                       <td className="px-4 py-3 flex items-center gap-1.5 font-medium text-gray-800">
                         <PackageOpen className="w-5 h-5 text-gray-600" />
-                        {part?.piece_name}
+                        {part.piece_name}
                       </td>
-                      <td className="px-4 py-3">{part?.number_of_pieces}</td>
+                      <td className="px-4 py-3">{part.number_of_pieces}</td>
                       <td className="px-4 py-3 font-semibold">
-                        {part?.order_channel}
+                        {part.order_channel}
                       </td>
                       <td className="px-4 py-3">
-                        {part?.order_date?.split(" ")[0]}
+                        {part.order_date?.split(" ")[0]}
                       </td>
-                      <td className="px-4 py-3">{part?.order_number}</td>
-                      <td className="px-4 py-3">
-                        {part?.estimated_arrival_days}
-                      </td>
+                      <td className="px-4 py-3">{part.order_number}</td>
+                      <td className="px-4 py-3">{part.estimated_arrival_days}</td>
                       <td className="px-4 py-3 font-semibold">
                         <div className="flex items-center gap-1.5">
                           {part.arrive_length_time != null ? (
-                            <>
-                              <span className="text-gray-800">{part.arrive_length_time}</span>
-                            </>
+                            <span className="text-gray-800">
+                              {part.arrive_length_time}
+                            </span>
                           ) : (
                             <span className="text-gray-400">-</span>
                           )}
@@ -115,8 +133,8 @@ export const OrderDetails = ({ id, order }: { id: number; order: any }) => {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <DeleteItem
-                          id={String(part?.order_id)}
-                          name={part?.piece_name}
+                          id={String(part.order_id)}
+                          name={part.piece_name}
                         />
                       </td>
                     </tr>
