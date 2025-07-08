@@ -24,16 +24,11 @@ export default function PartForm({
   const { refs } = usePartInputRefs();
   const [formKey, setFormKey] = useState(0);
   const [arrivalDays, setArrivalDays] = useState<string>("1");
-
-<<<<<<< HEAD
-  const [arrivalDays, setArrivalDays] = useState<string>("");
   const [formValues, setFormValues] = useState({
     part_id: '',
     piece_name: '',
   });
 
-=======
->>>>>>> editing-orders-deatail
   useEffect(() => {
     if (
       estimatedArrivalDays === undefined ||
