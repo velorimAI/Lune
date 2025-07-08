@@ -105,7 +105,8 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   id={String(order?.customer_id)}
                   name={order?.customer_name}
                 />
-                <EditOrderModal data={order} refetch={refetch} />
+                {/* Don't forget Delete the component */}
+                {/* <EditOrderModal data={order} refetch={refetch} /> */}
                 <motion.div
                   className="cursor-pointer"
                   onClick={(e) => handleArrowClick(e, index)}
