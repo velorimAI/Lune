@@ -39,7 +39,7 @@ export const OrderDetails = ({
               <th className="px-4 py-2">تاریخ سفارش</th>
               <th className="px-4 py-2">شماره سفارش</th>
               <th className="px-4 py-2">رسیدن (روز)</th>
-              <th className="px-4 py-2">انحراف</th>
+              <th className="px-4 py-2">تاریخ تحویل</th>
               <th className="px-4 py-2">وضعیت</th>
               <th className="px-4 py-2"></th>
             </tr>
@@ -103,20 +103,16 @@ export const OrderDetails = ({
                         {part.order_channel}
                       </td>
                       <td className="px-4 py-3">
-                        {part.order_date?.split(" ")[0]}
+                        {part.order_date
+                          ? part.order_date.split("T")[0]
+                          : "-"}
                       </td>
                       <td className="px-4 py-3">{part.order_number}</td>
                       <td className="px-4 py-3">{part.estimated_arrival_days}</td>
-                      <td className="px-4 py-3 font-semibold">
-                        <div className="flex items-center gap-1.5">
-                          {part.arrive_length_time != null ? (
-                            <span className="text-gray-800">
-                              {part.arrive_length_time}
-                            </span>
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
-                        </div>
+                      <td className="px-4 py-3">
+                        {part.delivery_date
+                          ? part.delivery_date.split("T")[0]
+                          : "-"}
                       </td>
                       <td className="px-4 py-3 font-semibold">
                         <div className="flex items-center gap-1.5">
