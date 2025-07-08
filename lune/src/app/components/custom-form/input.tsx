@@ -120,11 +120,18 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
   });
 
   const handleChange = (event: ChangeEvent<{ value: string }>) => {
-    const val = event?.target?.value;
-    setInternalValue(val);
-    formField.setValueState(val);
-    onChange?.(val);
-  };
+  let val = event?.target?.value;
+  
+  // اگر فیلد تلفن باشد
+  if (phone) {
+    // فقط اعداد را نگه دار و به 11 رقم محدود کن
+    val = val.replace(/\D/g, '').slice(0, 11);
+  }
+  
+  setInternalValue(val);
+  formField.setValueState(val);
+  onChange?.(val);
+};
 
   const handleType = () => {
     if (type === 'password') {
