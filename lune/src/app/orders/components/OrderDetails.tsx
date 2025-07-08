@@ -34,6 +34,7 @@ export const OrderDetails = ({
           <thead className="bg-gray-100 text-gray-700">
             <tr>
               <th className="px-4 py-2">نام قطعه</th>
+              <th className="px-4 py-2">کد فنی</th>
               <th className="px-4 py-2">تعداد</th>
               <th className="px-4 py-2">نوع سفارش</th>
               <th className="px-4 py-2">تاریخ سفارش</th>
@@ -58,7 +59,7 @@ export const OrderDetails = ({
                 <React.Fragment key={i}>
                   <tr>
                     <td
-                      colSpan={9}
+                      colSpan={10}
                       className="bg-blue-50 text-blue-800 font-bold px-4 py-2 border-y border-blue-200"
                     >
                       <div className="flex justify-between items-center">
@@ -81,7 +82,7 @@ export const OrderDetails = ({
                         <div className="text-left">
                           وضعیت تسویه:{" "}
                           <span className="font-normal text-gray-800">
-                            {reception.settlement_status || "-"}
+                            {reception.settlement_status ?? "-"}
                           </span>
                         </div>
                       </div>
@@ -98,6 +99,7 @@ export const OrderDetails = ({
                         <PackageOpen className="w-5 h-5 text-gray-600" />
                         {part.piece_name}
                       </td>
+                      <td className="px-4 py-3">{part.part_id}</td>
                       <td className="px-4 py-3">{part.number_of_pieces}</td>
                       <td className="px-4 py-3 font-semibold">
                         {part.order_channel}
@@ -117,7 +119,9 @@ export const OrderDetails = ({
                       <td className="px-4 py-3 font-semibold">
                         <div className="flex items-center gap-1.5">
                           {(() => {
-                            const { color, icon } = getStatusStyle(part.status);
+                            const { color, icon } = getStatusStyle(
+                              part.status
+                            );
                             return (
                               <>
                                 {icon}
