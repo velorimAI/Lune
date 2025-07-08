@@ -23,21 +23,18 @@ export default function PartForm({
 }: PartFormProps) {
   const { refs } = usePartInputRefs();
 
-
   const [arrivalDays, setArrivalDays] = useState<string>("");
   const [formValues, setFormValues] = useState({
     part_id: '',
     piece_name: '',
   });
 
-
-  console.log(formValues);
-
-
-
-
   useEffect(() => {
-    if (estimatedArrivalDays === undefined || estimatedArrivalDays === null || estimatedArrivalDays === "") {
+    if (
+      estimatedArrivalDays === undefined ||
+      estimatedArrivalDays === null ||
+      estimatedArrivalDays === ""
+    ) {
       setArrivalDays("1");
     } else {
       setArrivalDays(String(estimatedArrivalDays));
@@ -49,23 +46,21 @@ export default function PartForm({
       <Form
         submitText="ثبت قطعه"
         cancelHide
-        onSubmit={(data) => onSubmit({ ...data, estimated_arrival_days: arrivalDays })}
+        onSubmit={(data) =>
+          onSubmit({ ...data, estimated_arrival_days: arrivalDays })
+        }
         submitDisable={!userInfoSubmitted}
       >
         <div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {/* <Input
-              label="کد فنی"
-              name="part_id"
-              type="number"
-              required
-              ref={refs.partIdRef}
-              readOnly={!userInfoSubmitted}
-            /> */}
             <PartIdInput
               value={formValues.part_id}
               onChange={(val) => {
-                setFormValues((prev) => ({ ...prev, part_id: val }));
+                setFormValues((prev) => ({
+                  ...prev,
+                  part_id: val,
+                  piece_name: val ? prev.piece_name : "", // ← این خط اضافه شده
+                }));
               }}
               setPieceName={(name) => {
                 setFormValues((prev) => ({ ...prev, piece_name: name }));
@@ -79,13 +74,6 @@ export default function PartForm({
               required
               readOnly
             />
-            {/* <Input
-              label="نام قطعه"
-              name="piece_name"
-              required
-              ref={refs.pieceNameRef}
-              readOnly={!userInfoSubmitted}
-            /> */}
             <Input
               label="تعداد"
               type="number"
@@ -96,11 +84,13 @@ export default function PartForm({
               readOnly={!userInfoSubmitted}
             />
           </div>
+
           <div
-            className={`grid grid-cols-1 ${orderChannel === "بازار آزاد"
-              ? "md:grid-cols-5"
-              : "md:grid-cols-3"
-              } gap-2`}
+            className={`grid grid-cols-1 ${
+              orderChannel === "بازار آزاد"
+                ? "md:grid-cols-5"
+                : "md:grid-cols-3"
+            } gap-2`}
           >
             <Select
               label="کانال سفارش"
@@ -142,8 +132,6 @@ export default function PartForm({
               onChange={(value) => setArrivalDays(value || "1")}
               readOnly={!userInfoSubmitted}
             />
-
-
           </div>
         </div>
       </Form>
