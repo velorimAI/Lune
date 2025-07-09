@@ -5,15 +5,48 @@ import { getStatusStyle } from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCar, faCarCrash } from "@fortawesome/free-solid-svg-icons";
 import AddItem from "./add-item";
+import { ConfirmCircle } from "./check-confrim";
+import { CancelCircle } from "./cancel-circle";
+import { editOrder } from "@/app/apis/orders/orderService";
+import { getStatusOptions } from "@/lib/getStatusOptions";
+import { toast } from "sonner";
+
+// interface Order {
+//   receptions: Reception[];
+// }
+
+// interface Reception {
+//   reception_number: string;
+//   car_status: string;
+//   settlement_status: string;
+//   orders: OrderItem[];
+// }
+
+// interface OrderItem {
+//   order_id: string;
+//   piece_name: string;
+//   number_of_pieces: number;
+//   order_channel: string;
+//   order_date: string;
+//   order_number: string;
+//   estimated_arrival_days: number;
+//   delivery_date: string | null;
+//   status: string;
+// }
 
 export const OrderDetails = ({
   id,
   order,
+  refetch
 }: {
   id: number;
   order: any;
+  refetch: () => void;
 }) => {
-  console.log(order);
+  const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
+
+  const isAccountant = role === "حسابدار";
+  const isWarehouse = role === "انباردار";
 
   return (
     <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
@@ -21,10 +54,7 @@ export const OrderDetails = ({
         <Wrench className="w-5 h-5" />
         <span>
           جزئیات قطعات (
-          {order?.receptions
-            ?.flatMap((r: { orders: any[] }) => r.orders || [])
-            .length || 0}
-          )
+          {order?.receptions?.flatMap((r: { orders: any; }) => r.orders || []).length || 0})
         </span>
         <AddItem id={id} />
       </div>
@@ -45,74 +75,69 @@ export const OrderDetails = ({
             </tr>
           </thead>
           <tbody>
-            {order?.receptions?.map(
-              (
-                reception: {
-                  reception_number: string;
-                  car_status: string;
-                  settlement_status: string;
-                  orders: any[];
-                },
-                i: React.Key | null | undefined
-              ) => (
-                <React.Fragment key={i}>
-                  <tr>
-                    <td
-                      colSpan={9}
-                      className="bg-blue-50 text-blue-800 font-bold px-4 py-2 border-y border-blue-200"
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="text-right">
-                          شماره پذیرش: {reception.reception_number} (
-                          {reception.car_status}{" "}
-                          {reception.car_status === "متوقف" ? (
-                            <FontAwesomeIcon
-                              icon={faCarCrash}
-                              className="text-gray-500 ml-1 text-[17px]"
-                            />
-                          ) : reception.car_status === "متوقع" ? (
-                            <FontAwesomeIcon
-                              icon={faCar}
-                              className="text-gray-500 ml-1"
-                            />
-                          ) : null}
-                          )
-                        </div>
-                        <div className="text-left">
-                          وضعیت تسویه:{" "}
-                          <span className="font-normal text-gray-800">
-                            {reception.settlement_status || "-"}
-                          </span>
-                        </div>
+            {order?.receptions?.map((reception : any, i: any) => (
+              <React.Fragment key={i}>
+                <tr>
+                  <td
+                    colSpan={9}
+                    className="bg-blue-50 text-blue-800 font-bold px-4 py-2 border-y border-blue-200"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="text-right">
+                        شماره پذیرش: {reception.reception_number} (
+                        {reception.car_status}{" "}
+                        {reception.car_status === "متوقف" ? (
+                          <FontAwesomeIcon
+                            icon={faCarCrash}
+                            className="text-gray-500 ml-1 text-[17px]"
+                          />
+                        ) : reception.car_status === "متوقع" ? (
+                          <FontAwesomeIcon
+                            icon={faCar}
+                            className="text-gray-500 ml-1"
+                          />
+                        ) : null}
+                        )
                       </div>
-                    </td>
-                  </tr>
-                  {reception.orders.map((part, j) => (
+                      <div className="text-left">
+                        وضعیت تسویه:{" "}
+                        <span className="font-normal text-gray-800">
+                          {reception.settlement_status || "-"}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                {reception.orders.map((part: any, j: any) => {
+                  const options = getStatusOptions(
+                    part.status,
+                    part.order_channel,
+                    reception.car_status
+                  );
+
+                  const canEdit =
+                    (isAccountant && part.status === "در انتظار تائید حسابداری") ||
+                    (isWarehouse && part.status !== "در انتظار تائید حسابداری");
+
+                  return (
                     <tr
                       key={j}
-                      className={`border-b ${
-                        j % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      }`}
+                      className={`border-b ${j % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
                     >
                       <td className="px-4 py-3 flex items-center gap-1.5 font-medium text-gray-800">
                         <PackageOpen className="w-5 h-5 text-gray-600" />
                         {part.piece_name}
                       </td>
                       <td className="px-4 py-3">{part.number_of_pieces}</td>
-                      <td className="px-4 py-3 font-semibold">
-                        {part.order_channel}
-                      </td>
+                      <td className="px-4 py-3 font-semibold">{part.order_channel}</td>
                       <td className="px-4 py-3">
-                        {part.order_date
-                          ? part.order_date.split("T")[0]
-                          : "-"}
+                        {part.order_date ? part.order_date.split("T")[0] : "-"}
                       </td>
                       <td className="px-4 py-3">{part.order_number}</td>
                       <td className="px-4 py-3">{part.estimated_arrival_days}</td>
                       <td className="px-4 py-3">
-                        {part.delivery_date
-                          ? part.delivery_date.split("T")[0]
-                          : "-"}
+                        {part.delivery_date ? part.delivery_date.split("T")[0] : "-"}
                       </td>
                       <td className="px-4 py-3 font-semibold">
                         <div className="flex items-center gap-1.5">
@@ -127,17 +152,65 @@ export const OrderDetails = ({
                           })()}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-4 py-3 text-center flex gap-3 justify-center items-center">
+                        <div className="flex justify-center items-center gap-1">
+                          {options[0] && canEdit && (
+                            <ConfirmCircle
+                              onConfirm={async () => {
+                                const previousStatus = part.status;
+                                const newStatus = options[0].value;
+
+                                try {
+                                  await editOrder(part.order_id, { status: newStatus });
+                                  toast.success(
+                                    `وضعیت «${part.piece_name}» از «${previousStatus}» به «${newStatus}» تغییر کرد`,
+                                    {
+                                      duration: 2500,
+                                      dismissible: true,
+                                      // onClick: (t) => toast.dismiss(t.id),
+                                    }
+                                  );
+                                  refetch();
+                                } catch (error) {
+                                  toast.error("خطا در تغییر وضعیت قطعه", {
+                                    duration: 3000,
+                                  });
+                                }
+                              }}
+                            />
+                          )}
+
+                          {options[1] && canEdit && (
+                            <CancelCircle
+                              onCancel={async () => {
+                                try {
+                                  await editOrder(part.order_id, {
+                                    status: options[1].value,
+                                  });
+                                  toast.success(`وضعیت «${part.piece_name}» لغو شد`, {
+                                    duration: 2000,
+                                    dismissible: true,
+                                    // onClick: (t) => toast.dismiss(t.id),
+                                  });
+                                  refetch();
+                                } catch {
+                                  toast.error("خطا در لغو وضعیت");
+                                }
+                              }}
+                            />
+                          )}
+                        </div>
+
                         <DeleteItem
                           id={String(part.order_id)}
                           name={part.piece_name}
                         />
                       </td>
                     </tr>
-                  ))}
-                </React.Fragment>
-              )
-            )}
+                  );
+                })}
+              </React.Fragment>
+            ))}
           </tbody>
         </table>
       </div>

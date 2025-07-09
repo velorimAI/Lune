@@ -65,9 +65,8 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
           >
             <div
               onClick={() => toggleDetails(index)}
-              className={`grid grid-cols-5 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-100 ${
-                expandedIndex === index ? "bg-gray-100 border-b" : ""
-              }`}
+              className={`grid grid-cols-5 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-100 ${expandedIndex === index ? "bg-gray-100 border-b" : ""
+                }`}
             >
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-gray-500" />
@@ -119,11 +118,10 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   transition={{ duration: 0.2 }}
                 >
                   <CircleArrowLeft
-                    className={`w-6 h-6 transition-colors duration-200 ${
-                      expandedIndex === index
+                    className={`w-6 h-6 transition-colors duration-200 ${expandedIndex === index
                         ? "text-blue-500"
                         : "text-gray-500"
-                    } hover:text-blue-500`}
+                      } hover:text-blue-500`}
                   />
                 </motion.div>
               </div>
@@ -139,7 +137,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch }) => {
                   className="border-t border-gray-100"
                 >
                   <div className="px-3 pt-2 pb-4 max-h-[350px] overflow-y-auto rounded-b-xl scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                    <OrderDetails order={order} id={order.customer_id} />
+                    <OrderDetails order={order} id={order.customer_id} refetch={refetch} />
                   </div>
                 </motion.div>
               )}
