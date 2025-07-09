@@ -58,10 +58,11 @@ const Orders: FC = () => {
             placeholder="انتخاب فیلد"
             hiddenSearch
             inputStyle="w-32"
+            className="min-h-[0px] mt-2"
           />
           <SearchBox
             onSearch={handleSearch}
-            className="min-h-[0px] flex-1"
+            className="min-h-[0px] flex-1"            
           />
         </div>
       </div>

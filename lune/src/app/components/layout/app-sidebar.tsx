@@ -31,14 +31,14 @@ export function AppSidebar() {
     navMain: [
       { title: "داشبورد", url: "#", icon: ChartColumn },
       { title: "سفارش ها", url: "/orders", icon: ClipboardList },
+    ],
+    navSecondary: [
       {
         title: "مدیریت",
         url: "/admin",
         icon: ShieldUser,
         disabled: userRole !== "مدیریت",
       },
-    ],
-    navSecondary: [
       { title: "تنظیمات", url: "/settings", icon: Settings, sidbar: true },
     ],
   };
