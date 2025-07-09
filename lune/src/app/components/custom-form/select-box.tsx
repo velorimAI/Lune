@@ -148,6 +148,7 @@ export const Select: FC<SelectBoxProps> = (props) => {
           inValid={!!formField?.error}
           tooltipTriggerIcon={tooltipTriggerIcon}
           tooltip={tooltip}
+          disabled={disabled}
         />
       )}
 

@@ -5,6 +5,8 @@ import { Form } from "@/app/components/custom-form/form";
 import { Card } from "@/app/components/card";
 import { usePartInputRefs } from "../hooks";
 import { PartIdInput } from "./part-id-input";
+import { TextArea } from "@/app/components/custom-form/text-area";
+
 
 interface PartFormProps {
   userInfoSubmitted: boolean;
@@ -40,17 +42,16 @@ export default function PartForm({
       setArrivalDays(String(estimatedArrivalDays));
     }
   }, [estimatedArrivalDays, formKey]);
+
   const handleFormSubmit = (data: any) => {
     onSubmit({ ...data, estimated_arrival_days: arrivalDays });
     setFormKey((prev) => prev + 1);
     setOrderChannel("VOR");
     setArrivalDays("7");
-
-
   };
 
   return (
-    <Card title="اطلاعات قطعه">
+    <Card title="اطلاعات قطعه" className="p-0 pb-4">
       <Form
         key={formKey}
         submitText="ثبت قطعه"
@@ -59,6 +60,7 @@ export default function PartForm({
           onSubmit({ ...data, estimated_arrival_days: arrivalDays })
         }
         submitDisable={!userInfoSubmitted}
+        className="mt-1"
       >
         <div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -74,7 +76,7 @@ export default function PartForm({
               setPieceName={(name) => {
                 setFormValues((prev) => ({ ...prev, piece_name: name }));
               }}
-              readOnly={!userInfoSubmitted}
+              disabled={!userInfoSubmitted}
             />
             <Input
               label="نام قطعه"
@@ -82,6 +84,7 @@ export default function PartForm({
               value={formValues.piece_name}
               required
               readOnly
+              disabled={!userInfoSubmitted}
             />
             <Input
               label="تعداد"
@@ -90,16 +93,15 @@ export default function PartForm({
               name="number_of_pieces"
               required
               ref={refs.numberOfPiecesRef}
-              readOnly={!userInfoSubmitted}
+              disabled={!userInfoSubmitted}
             />
           </div>
 
           <div
-            className={`grid grid-cols-1 ${
-              orderChannel === "بازار آزاد"
-                ? "md:grid-cols-5"
-                : "md:grid-cols-3"
-            } gap-2`}
+            className={`grid grid-cols-1 ${orderChannel === "بازار آزاد"
+              ? "md:grid-cols-5"
+              : "md:grid-cols-3"
+              } gap-2`}
           >
             <Select
               label="کانال سفارش"
@@ -115,6 +117,7 @@ export default function PartForm({
               required
               onChange={(data) => setOrderChannel(data)}
               disabled={!userInfoSubmitted}
+              hiddenSearch
             />
             {orderChannel === "بازار آزاد" && (
               <>
@@ -127,7 +130,7 @@ export default function PartForm({
               name="order_number"
               required
               ref={refs.orderNumberRef}
-              readOnly={!userInfoSubmitted}
+              disabled={!userInfoSubmitted}
             />
             <Input
               label={
@@ -139,8 +142,21 @@ export default function PartForm({
               required
               value={arrivalDays}
               onChange={(value) => setArrivalDays(value || "1")}
-              readOnly={!userInfoSubmitted}
+              disabled={!userInfoSubmitted}
             />
+          </div>
+
+          <div className="mt-2">
+
+            <div className="col-span-1 sm:col-span-2 md:col-span-4">
+              <TextArea
+                label="توضیحات"
+                name="all_description"
+                placeholder="توضیحاتی درباره سفارش وارد کنید..."
+                className="mb-6 w-full col-span-1 sm:col-span-2 md:col-span-4"
+              />
+
+            </div>
           </div>
         </div>
       </Form>

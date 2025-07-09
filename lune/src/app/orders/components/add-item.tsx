@@ -9,6 +9,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useAddItem } from "../hooks/use-add-item";
 import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
+import { TextArea } from "@/app/components/custom-form/text-area";
 
 interface AddItemModalProp {
   data?: any;
@@ -35,7 +36,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
       estimated_arrival_days: 7,
       status: formData.status,
       settlement_status: formData.settlement_status,
-      description: formData.description || "",
+      all_description: formData.all_description || "",
       dealer_approved: formData.dealer_approved || false,
     };
 
@@ -83,11 +84,12 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
           onCancel={() => setOpen(false)}
           onSubmit={handleUpdate}
         >
+          {/* بخش فیلدها با grid */}
           <div
             className="
-              p-4 bg-white rounded-lg shadow
-              grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4
-            "
+          bg-white rounded-lg
+          grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4
+          "
           >
             <Input label="شماره پذیرش" name="reception_number" />
             <Input
@@ -128,6 +130,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
               onChange={(val) => setOrderChannel(val)}
               inputStyle="w-full"
             />
+
             {orderChannel === "بازار آزاد" && (
               <>
                 <div className="col-span-1 sm:col-span-2 md:col-span-2">
@@ -139,7 +142,17 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
               </>
             )}
           </div>
+
+          <div className="flex flex-col w-full mb-4">
+            <TextArea
+              label="توضیحات"
+              name="all_description"
+              placeholder="توضیحاتی درباره سفارش وارد کنید..."
+              className="w-full"
+            />
+          </div>
         </Form>
+
       </Modal>
     </>
   );
