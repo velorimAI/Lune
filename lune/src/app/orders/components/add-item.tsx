@@ -35,7 +35,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
       estimated_arrival_days: 7,
       status: formData.status,
       settlement_status: formData.settlement_status,
-      description: formData.description || "",
+      description: formData.description || "", // اینجا از فیلد توضیحات استفاده می‌شود
       dealer_approved: formData.dealer_approved || false,
     };
 
@@ -155,6 +155,17 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                 </div>
               </>
             )}
+
+            {/* فیلد توضیحات - اضافه شده */}
+            <div className="col-span-full">
+              <Input
+                label="توضیحات"
+                name="description"
+                placeholder="توضیحات اختیاری..."
+                type="textArea"
+                
+              />
+            </div>
           </div>
         </Form>
       </Modal>

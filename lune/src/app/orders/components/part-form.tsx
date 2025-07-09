@@ -5,6 +5,7 @@ import { Form } from "@/app/components/custom-form/form";
 import { Card } from "@/app/components/card";
 import { usePartInputRefs } from "../hooks";
 import { PartIdInput } from "./part-id-input";
+import { Textarea } from "@/components/ui/textarea"; // Import Textarea component
 
 interface PartFormProps {
   userInfoSubmitted: boolean;
@@ -40,13 +41,16 @@ export default function PartForm({
       setArrivalDays(String(estimatedArrivalDays));
     }
   }, [estimatedArrivalDays, formKey]);
+
   const handleFormSubmit = (data: any) => {
-    onSubmit({ ...data, estimated_arrival_days: arrivalDays });
+    onSubmit({ 
+      ...data, 
+      estimated_arrival_days: arrivalDays,
+      description: data.description || "" // اضافه کردن توضیحات به داده‌های ارسالی
+    });
     setFormKey((prev) => prev + 1);
     setOrderChannel("VOR");
     setArrivalDays("7");
-
-
   };
 
   return (
@@ -55,9 +59,7 @@ export default function PartForm({
         key={formKey}
         submitText="ثبت قطعه"
         cancelHide
-        onSubmit={(data) =>
-          onSubmit({ ...data, estimated_arrival_days: arrivalDays })
-        }
+        onSubmit={handleFormSubmit}
         submitDisable={!userInfoSubmitted}
       >
         <div>
@@ -68,7 +70,7 @@ export default function PartForm({
                 setFormValues((prev) => ({
                   ...prev,
                   part_id: val,
-                  piece_name: val ? prev.piece_name : "", // ← این خط اضافه شده
+                  piece_name: val ? prev.piece_name : "",
                 }));
               }}
               setPieceName={(name) => {
@@ -140,6 +142,22 @@ export default function PartForm({
               value={arrivalDays}
               onChange={(value) => setArrivalDays(value || "1")}
               readOnly={!userInfoSubmitted}
+            />
+          </div>
+
+          {/* فیلد توضیحات جدید */}
+          <div className="mt-4">
+            <Textarea
+              aria-label="توضیحات"
+              name="description"
+              placeholder="توضیحات اختیاری (مثلاً محل دقیق قطعه یا نکات فنی)"
+              className="min-h-[100px]"
+              readOnly={!userInfoSubmitted}
+              onInput={(e) => {
+                const target = e.currentTarget;
+                target.style.height = 'auto';
+                target.style.height = `${target.scrollHeight}px`;
+              }}
             />
           </div>
         </div>
