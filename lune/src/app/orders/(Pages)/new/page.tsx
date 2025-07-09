@@ -1,12 +1,15 @@
 "use client";
 
+import { useRouter } from 'next/navigation';
 import { Card } from "@/app/components/card";
 import { useOrderData } from "../../hooks/use-order-data";
 import PartForm from "../../components/part-form";
 import { CustomerForm } from "../../components/customer-form";
 import OrderList from "../../components/order-list";
+import { ArrowLeft } from "lucide-react";
 
 export default function NewOrderPage() {
+  const router = useRouter();
   const {
     userForm,
     userInfoSubmitted,
@@ -22,8 +25,15 @@ export default function NewOrderPage() {
   } = useOrderData();
 
   return (
-    <Card className="max-h-fit">
-      <div className="flex gap-5">
+    <Card className="max-h-fit relative">
+      <button
+        onClick={() => router.back()}
+        className="absolute top-4 left-4 flex items-center text-gray-800 hover:text-gray-1000 transition"
+      >
+        <ArrowLeft className="mr-2" size={20} />
+      </button>
+
+      <div className="flex gap-5 pt-10">
         <div className="w-[50%] flex flex-col gap-5">
           <CustomerForm
             userForm={userForm}
