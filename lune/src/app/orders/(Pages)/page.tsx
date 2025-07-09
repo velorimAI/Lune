@@ -4,6 +4,7 @@ import { FC, useState } from "react";
 import { Card } from "../../components/card";
 import { useRouter } from "next/navigation";
 import { CirclePlus } from "lucide-react";
+import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { getOrdersList } from "../../apis/orders/orderService";
 import { SearchBox } from "../../components/table/search-box";
@@ -85,15 +86,25 @@ const Orders: FC = () => {
           )}
         </div>
 
-        <div className="fixed left-6 bottom-[20px] bg-white rounded-lg">
+        {/* <div className="fixed left-6 bottom-[20px] bg-white rounded-lg">
           <CirclePlus
             className="w-[30px] h-[30px] cursor-pointer"
             onClick={() => router.push("/orders/new")}
           />
-        </div>
+        </div> */}
 
         <ScrollBar />
       </ScrollArea>
+      <motion.div
+        className="fixed left-6 bottom-[20px] cursor-pointer"
+        whileHover={{ scale: 1.2}}
+        transition={{ type: "spring", stiffness: 300 }}
+        onClick={() => router.push("/orders/new")}
+        role="button"
+        aria-label="Add new order"
+      >
+        <CirclePlus className="w-8 h-8 text-gray-700 hover:text-gray-700" />
+      </motion.div>
     </Card>
   );
 };
