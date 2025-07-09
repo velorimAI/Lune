@@ -68,7 +68,7 @@ export default function PartForm({
                 setFormValues((prev) => ({
                   ...prev,
                   part_id: val,
-                  piece_name: val ? prev.piece_name : "", // ← این خط اضافه شده
+                  piece_name: val ? prev.piece_name : "",
                 }));
               }}
               setPieceName={(name) => {

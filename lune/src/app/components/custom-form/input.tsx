@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  FC,
   ReactNode,
   ChangeEvent,
   useState,
@@ -120,11 +119,17 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
   });
 
   const handleChange = (event: ChangeEvent<{ value: string }>) => {
-    const val = event?.target?.value;
-    setInternalValue(val);
-    formField.setValueState(val);
-    onChange?.(val);
-  };
+  let val = event?.target?.value;
+  
+ 
+  if (phone) {
+    val = val.replace(/\D/g, '').slice(0, 11);
+  }
+  
+  setInternalValue(val);
+  formField.setValueState(val);
+  onChange?.(val);
+};
 
   const handleType = () => {
     if (type === 'password') {
