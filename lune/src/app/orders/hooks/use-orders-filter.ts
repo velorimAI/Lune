@@ -3,6 +3,7 @@ import { useMemo } from "react";
 export const useOrdersFilter = (
   customers: any[],
   searchText: string,
+  searchField: string,
   activeTab: string,
   setSearchText: (val: string) => void
 ) => {
@@ -18,8 +19,10 @@ export const useOrdersFilter = (
           customer_id: customer.customer_id,
           customer_name: customer.customer_name,
           customer_phone: customer.customer_phone,
-          earliest_unreceived_estimated_arrival_date: customer.earliest_unreceived_estimated_arrival_date,
-          latest_unreceived_estimated_arrival_date: customer.latest_unreceived_estimated_arrival_date,
+          earliest_unreceived_estimated_arrival_date:
+            customer.earliest_unreceived_estimated_arrival_date,
+          latest_unreceived_estimated_arrival_date:
+            customer.latest_unreceived_estimated_arrival_date,
         }))
       )
     );
@@ -28,89 +31,126 @@ export const useOrdersFilter = (
   const filteredPieces = useMemo(() => {
     let filtered = allPieces;
 
+    // فیلتر بر اساس تب
     if (activeTab !== "all") {
-      if (activeTab === "canceled") {
-        const canceledStatuses = ["انصراف مشتری", "لغو توسط شرکت", "عدم پرداخت حسابداری", "عدم دریافت"];
-        filtered = filtered.filter(piece => canceledStatuses.includes(piece.status));
-      } else {
-        filtered = filtered.filter(piece => piece.status === activeTab);
-      }
+      const canceledStatuses = [
+        "انصراف مشتری",
+        "لغو توسط شرکت",
+        "عدم پرداخت حسابداری",
+        "عدم دریافت",
+      ];
+      filtered =
+        activeTab === "canceled"
+          ? filtered.filter(p => canceledStatuses.includes(p.status))
+          : filtered.filter(p => p.status === activeTab);
     }
 
+    // فیلتر جستجو بر اساس searchField
     if (searchText) {
-      const lowerSearch = searchText.toLowerCase();
-      filtered = filtered.filter(piece =>
-        piece.piece_name.toLowerCase().includes(lowerSearch) ||
-        piece.customer_name.includes(searchText)
-      );
+      const lower = searchText.toLowerCase();
+      filtered = filtered.filter(piece => {
+        switch (searchField) {
+          case "order_number":
+            return piece.order_number
+              ?.toString()
+              .toLowerCase()
+              .includes(lower);
+          case "customer_name":
+            return piece.customer_name
+              .toLowerCase()
+              .includes(lower);
+          case "customer_phone":
+            return piece.customer_phone
+              .toLowerCase()
+              .includes(lower);
+          case "piece_name":
+            return piece.piece_name
+              .toLowerCase()
+              .includes(lower);
+          case "part_id":
+            return piece.part_id.toLowerCase().includes(lower);
+          case "reception_number":
+            return piece.reception_number
+              .toLowerCase()
+              .includes(lower);
+          case "all":
+          default:
+            return (
+              piece.piece_name.toLowerCase().includes(lower) ||
+              piece.customer_name.toLowerCase().includes(lower) ||
+              piece.customer_phone.toLowerCase().includes(lower) ||
+              piece.part_id.toLowerCase().includes(lower) ||
+              piece.reception_number.toLowerCase().includes(lower) ||
+              piece.order_number
+                ?.toString()
+                .toLowerCase()
+                .includes(lower)
+            );
+        }
+      });
     }
 
     return filtered;
-  }, [activeTab, searchText, allPieces]);
-
+  }, [activeTab, searchText, searchField, allPieces]);
 
   const filteredOrdersByTab = useMemo(() => {
-    const groupedByCustomer: Record<string, any> = {};
-
+    const grouped: Record<string, any> = {};
     filteredPieces.forEach(piece => {
-      const customerKey = piece.customer_id;
-      const receptionKey = piece.reception_id;
+      const cKey = piece.customer_id;
+      const rKey = piece.reception_id;
 
-      if (!groupedByCustomer[customerKey]) {
-        groupedByCustomer[customerKey] = {
+      if (!grouped[cKey]) {
+        grouped[cKey] = {
           customer_id: piece.customer_id,
           customer_name: piece.customer_name,
           customer_phone: piece.customer_phone,
-          earliest_unreceived_estimated_arrival_date: piece.earliest_unreceived_estimated_arrival_date,
-          latest_unreceived_estimated_arrival_date: piece.latest_unreceived_estimated_arrival_date,
+          earliest_unreceived_estimated_arrival_date:
+            piece.earliest_unreceived_estimated_arrival_date,
+          latest_unreceived_estimated_arrival_date:
+            piece.latest_unreceived_estimated_arrival_date,
           receptions: [],
         };
       }
 
-      let reception = groupedByCustomer[customerKey].receptions.find(
-        (r: any) => r.reception_id === receptionKey
+      let rec = grouped[cKey].receptions.find(
+        (r: any) => r.reception_id === rKey
       );
-
-      if (!reception) {
-        reception = {
+      if (!rec) {
+        rec = {
           reception_id: piece.reception_id,
           reception_date: piece.reception_date,
           reception_number: piece.reception_number,
           car_status: piece.reception_car_status,
           orders: [],
         };
-        groupedByCustomer[customerKey].receptions.push(reception);
+        grouped[cKey].receptions.push(rec);
       }
-
-      reception.orders.push(piece);
+      rec.orders.push(piece);
     });
 
-
-    return Object.values(groupedByCustomer);
+    return Object.values(grouped);
   }, [filteredPieces]);
 
   const tabCounts = useMemo(() => {
     const counts: Record<string, number> = { all: allPieces.length };
-
-    allPieces.forEach(piece => {
-      const status = piece.status || "نامشخص";
-      counts[status] = (counts[status] || 0) + 1;
+    allPieces.forEach(p => {
+      const st = p.status || "نامشخص";
+      counts[st] = (counts[st] || 0) + 1;
     });
-
-    // تعداد تب لغو شده را مجموع وضعیت‌های مختلف حساب می‌کنیم
-    const canceledStatuses = ["انصراف مشتری", "لغو توسط شرکت", "عدم پرداخت حسابداری", "عدم دریافت"];
+    const canceledStatuses = [
+      "انصراف مشتری",
+      "لغو توسط شرکت",
+      "عدم پرداخت حسابداری",
+      "عدم دریافت",
+    ];
     counts["canceled"] = canceledStatuses.reduce(
-      (sum, status) => sum + (counts[status] || 0),
+      (sum, s) => sum + (counts[s] || 0),
       0
     );
-
     return counts;
   }, [allPieces]);
 
-
-  const handleSearch = (value?: string) => {
-    setSearchText(value ?? "");
-  };
+  const handleSearch = (value?: string) => setSearchText(value ?? "");
 
   return { filteredOrdersByTab, tabCounts, handleSearch };
 };

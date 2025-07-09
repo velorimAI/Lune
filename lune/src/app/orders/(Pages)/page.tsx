@@ -12,13 +12,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useOrdersFilter } from "../hooks/use-orders-filter";
 import { Tabs } from "../components/tabs";
 import { OrdersListWrapper } from "../components/orders-list-wrapper";
-
-
-
+import { Select } from "@/app/components/custom-form/select-box";
 
 const Orders: FC = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState<string>("");
+  const [searchField, setSearchField] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("all");
 
   const { data, isLoading, refetch } = useQuery({
@@ -26,21 +25,43 @@ const Orders: FC = () => {
     queryFn: getOrdersList,
   });
 
-  const {
-    filteredOrdersByTab,
-    tabCounts,
-    handleSearch
-  } = useOrdersFilter(data?.data || [], searchText, activeTab, setSearchText);
-
-  console.log(data?.data );
-  
+  const { filteredOrdersByTab, tabCounts, handleSearch } = useOrdersFilter(
+    data?.data || [],
+    searchText,
+    searchField,
+    activeTab,
+    setSearchText
+  );
 
   return (
     <Card contentClassName="min-h-[85vh]" className="lg:h-[calc(100%-55px)]">
       <div className="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-gray-300">
-        <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabCounts={tabCounts} />
-        <div className="flex justify-start items-start w-[300px] pb-2">
-          <SearchBox onSearch={handleSearch} className="min-h-[0px]" />
+        <Tabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          tabCounts={tabCounts}
+        />
+        <div className="flex justify-start items-center w-full max-w-md gap-2 pb-2">
+          <Select
+            options={[
+              { value: "all", label: "همه" },
+              { value: "customer_name", label: "نام مشتری" },
+              { value: "customer_phone", label: "تلفن مشتری" },
+              { value: "piece_name", label: "نام قطعه" },
+              { value: "part_id", label: "کد فنی" },
+              { value: "reception_number", label: "شماره پذیرش" },
+              { value: "order_number", label: "شماره سفارش" },
+            ]}
+            value={searchField}
+            onChange={(val) => setSearchField(val ?? "all")}
+            placeholder="انتخاب فیلد"
+            hiddenSearch
+            inputStyle="w-32"
+          />
+          <SearchBox
+            onSearch={handleSearch}
+            className="min-h-[0px] flex-1"
+          />
         </div>
       </div>
 
@@ -48,19 +69,29 @@ const Orders: FC = () => {
         <div dir="rtl" className="w-full">
           {isLoading ? (
             [...Array(5)].map((_, i) => (
-              <div key={i} className="p-3 mb-2 border rounded-[10px] animate-pulse bg-white border-gray-200">
+              <div
+                key={i}
+                className="p-3 mb-2 border rounded-[10px] animate-pulse bg-white border-gray-200"
+              >
                 <Skeleton className="h-4 w-full mb-2" />
                 <Skeleton className="h-2 w-2/4" />
               </div>
             ))
           ) : (
-            <OrdersListWrapper orders={filteredOrdersByTab} refetch={refetch} />
+            <OrdersListWrapper
+              orders={filteredOrdersByTab}
+              refetch={refetch}
+            />
           )}
         </div>
 
         <div className="fixed left-6 bottom-[20px] bg-white rounded-lg">
-          <CirclePlus className="w-[30px] h-[30px] cursor-pointer" onClick={() => router.push("/orders/new")} />
+          <CirclePlus
+            className="w-[30px] h-[30px] cursor-pointer"
+            onClick={() => router.push("/orders/new")}
+          />
         </div>
+
         <ScrollBar />
       </ScrollArea>
     </Card>

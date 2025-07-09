@@ -64,6 +64,7 @@ export const OrderDetails = ({
           <thead className="bg-gray-100 text-gray-700">
             <tr>
               <th className="px-4 py-2">نام قطعه</th>
+              <th className="px-4 py-2">کد فنی</th>
               <th className="px-4 py-2">تعداد</th>
               <th className="px-4 py-2">نوع سفارش</th>
               <th className="px-4 py-2">تاریخ سفارش</th>
@@ -129,6 +130,7 @@ export const OrderDetails = ({
                         <PackageOpen className="w-5 h-5 text-gray-600" />
                         {part.piece_name}
                       </td>
+                      <td className="px-4 py-3">{part.part_id}</td>
                       <td className="px-4 py-3">{part.number_of_pieces}</td>
                       <td className="px-4 py-3 font-semibold">{part.order_channel}</td>
                       <td className="px-4 py-3">
@@ -142,7 +144,9 @@ export const OrderDetails = ({
                       <td className="px-4 py-3 font-semibold">
                         <div className="flex items-center gap-1.5">
                           {(() => {
-                            const { color, icon } = getStatusStyle(part.status);
+                            const { color, icon } = getStatusStyle(
+                              part.status
+                            );
                             return (
                               <>
                                 {icon}
