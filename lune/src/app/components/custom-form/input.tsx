@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  FC,
   ReactNode,
   ChangeEvent,
   useState,
@@ -122,9 +121,8 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
   const handleChange = (event: ChangeEvent<{ value: string }>) => {
   let val = event?.target?.value;
   
-  // اگر فیلد تلفن باشد
+ 
   if (phone) {
-    // فقط اعداد را نگه دار و به 11 رقم محدود کن
     val = val.replace(/\D/g, '').slice(0, 11);
   }
   
