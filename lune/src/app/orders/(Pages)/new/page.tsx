@@ -6,7 +6,8 @@ import { useOrderData } from "../../hooks/use-order-data";
 import PartForm from "../../components/part-form";
 import { CustomerForm } from "../../components/customer-form";
 import OrderList from "../../components/order-list";
-import { ArrowLeft } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { Button } from '@/app/components/button';
 
 export default function NewOrderPage() {
   const router = useRouter();
@@ -26,12 +27,13 @@ export default function NewOrderPage() {
 
   return (
     <Card className="max-h-fit relative">
-      <button
-        onClick={() => router.back()}
-        className="absolute top-4 left-4 flex items-center text-gray-800 hover:text-gray-1000 transition"
+      <Button
+        onClick={() => router.push("/orders")}
+        variant={"outline"}
+        className="absolute top-4 right-4 flex items-center text-gray-800 hover:text-gray-1000 transition cursor-pointer"
       >
-        <ArrowLeft className="mr-2" size={20} />
-      </button>
+        <ArrowRight size={20} />
+      </Button>
 
       <div className="flex gap-5 pt-10">
         <div className="w-[50%] flex flex-col gap-5">
