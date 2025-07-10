@@ -1,4 +1,28 @@
+
 import { useMemo } from "react";
+
+
+const mapStatusToTabValue = (status: string): string => {
+  if (/نوبت\s*-?\s*دهی/.test(status)) {
+    return "در انتظار نوبت‌دهی";
+  }
+
+  if (/نوبت\s*-?\s*داده/.test(status)) {
+    return "نوبت داده شد";
+  }
+
+  const canceledStatuses = [
+    "انصراف مشتری",
+    "لغو توسط شرکت",
+    "عدم پرداخت حسابداری",
+    "عدم دریافت",
+  ];
+  if (canceledStatuses.includes(status)) {
+    return "canceled";
+  }
+
+  return status;
+};
 
 export const useOrdersFilter = (
   customers: any[],
@@ -31,21 +55,22 @@ export const useOrdersFilter = (
   const filteredPieces = useMemo(() => {
     let filtered = allPieces;
 
-    // فیلتر بر اساس تب
     if (activeTab !== "all") {
-      const canceledStatuses = [
-        "انصراف مشتری",
-        "لغو توسط شرکت",
-        "عدم پرداخت حسابداری",
-        "عدم دریافت",
-      ];
-      filtered =
-        activeTab === "canceled"
-          ? filtered.filter(p => canceledStatuses.includes(p.status))
-          : filtered.filter(p => p.status === activeTab);
+      if (activeTab === "canceled") {
+        const canceledStatuses = [
+          "انصراف مشتری",
+          "لغو توسط شرکت",
+          "عدم پرداخت حسابداری",
+          "عدم دریافت",
+        ];
+        filtered = filtered.filter(p => canceledStatuses.includes(p.status));
+      } else {
+        filtered = filtered.filter(
+          p => mapStatusToTabValue(p.status) === activeTab
+        );
+      }
     }
 
-    // فیلتر جستجو بر اساس searchField
     if (searchText) {
       const lower = searchText.toLowerCase();
       filtered = filtered.filter(piece => {
@@ -56,23 +81,15 @@ export const useOrdersFilter = (
               .toLowerCase()
               .includes(lower);
           case "customer_name":
-            return piece.customer_name
-              .toLowerCase()
-              .includes(lower);
+            return piece.customer_name.toLowerCase().includes(lower);
           case "customer_phone":
-            return piece.customer_phone
-              .toLowerCase()
-              .includes(lower);
+            return piece.customer_phone.toLowerCase().includes(lower);
           case "piece_name":
-            return piece.piece_name
-              .toLowerCase()
-              .includes(lower);
+            return piece.piece_name.toLowerCase().includes(lower);
           case "part_id":
             return piece.part_id.toLowerCase().includes(lower);
           case "reception_number":
-            return piece.reception_number
-              .toLowerCase()
-              .includes(lower);
+            return piece.reception_number.toLowerCase().includes(lower);
           case "all":
           default:
             return (
@@ -91,7 +108,7 @@ export const useOrdersFilter = (
     }
 
     return filtered;
-  }, [activeTab, searchText, searchField, allPieces]);
+  }, [allPieces, activeTab, searchText, searchField]);
 
   const filteredOrdersByTab = useMemo(() => {
     const grouped: Record<string, any> = {};
@@ -134,19 +151,9 @@ export const useOrdersFilter = (
   const tabCounts = useMemo(() => {
     const counts: Record<string, number> = { all: allPieces.length };
     allPieces.forEach(p => {
-      const st = p.status || "نامشخص";
-      counts[st] = (counts[st] || 0) + 1;
+      const key = mapStatusToTabValue(p.status || "");
+      counts[key] = (counts[key] || 0) + 1;
     });
-    const canceledStatuses = [
-      "انصراف مشتری",
-      "لغو توسط شرکت",
-      "عدم پرداخت حسابداری",
-      "عدم دریافت",
-    ];
-    counts["canceled"] = canceledStatuses.reduce(
-      (sum, s) => sum + (counts[s] || 0),
-      0
-    );
     return counts;
   }, [allPieces]);
 
