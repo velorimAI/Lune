@@ -11,29 +11,6 @@ import { editOrder } from "@/app/apis/orders/orderService";
 import { getStatusOptions } from "@/lib/getStatusOptions";
 import { toast } from "sonner";
 
-// interface Order {
-//   receptions: Reception[];
-// }
-
-// interface Reception {
-//   reception_number: string;
-//   car_status: string;
-//   settlement_status: string;
-//   orders: OrderItem[];
-// }
-
-// interface OrderItem {
-//   order_id: string;
-//   piece_name: string;
-//   number_of_pieces: number;
-//   order_channel: string;
-//   order_date: string;
-//   order_number: string;
-//   estimated_arrival_days: number;
-//   delivery_date: string | null;
-//   status: string;
-// }
-
 export const OrderDetails = ({
   id,
   order,
@@ -48,6 +25,21 @@ export const OrderDetails = ({
   const isAccountant = role === "حسابدار";
   const isWarehouse = role === "انباردار";
 
+  // لیست وضعیت‌هایی که باعث غیرفعال شدن AddItem می‌شوند
+  const DISABLED_STATUSES = [
+    'در انتظار تائید شرکت',
+    'در انتظار تائید حسابداری',
+    'در انتظار دریافت',
+    'در انتظار نوبت دهی',
+    'نوبت داده شد',
+    'دریافت شد'
+  ];
+
+  // بررسی اینکه آیا هیچ سفارشی در وضعیت غیرمجاز وجود دارد
+  const isAddItemDisabled = order?.receptions?.some((r: any) =>
+    r.orders?.some((o: any) => DISABLED_STATUSES.includes(o.status))
+  );
+
   return (
     <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
       <div className="flex items-center gap-2 mb-4 text-gray-800 font-semibold text-lg">
@@ -56,7 +48,7 @@ export const OrderDetails = ({
           جزئیات قطعات (
           {order?.receptions?.flatMap((r: { orders: any; }) => r.orders || []).length || 0})
         </span>
-        <AddItem id={id} />
+        <AddItem id={id} disabled={isAddItemDisabled} />
       </div>
 
       <div className="overflow-x-auto">
@@ -89,7 +81,7 @@ export const OrderDetails = ({
                 <React.Fragment key={i}>
                   <tr>
                     <td
-                      colSpan={10} // چون جدول شما 10 ستون دارد
+                      colSpan={10}
                       className="bg-blue-50 text-blue-800 font-bold px-4 py-2 border-y border-blue-300"
                     >
                       <div className="flex flex-col gap-2">
@@ -116,11 +108,10 @@ export const OrderDetails = ({
                               {reception.settlement_status || "-"}
                             </span>
                           </div>
-                          <CirclePlus className="text-gray-800 cursor-pointer w-5 h-5 transition-all duration-300 hover:text-gray-900 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg" />
+                          <CirclePlus className="text-gray-300 w-5 h-5" />
                         </div>
                       </div>
                     </td>
-
                   </tr>
 
                   {reception.orders.map((part: any, j: any) => {
@@ -150,18 +141,14 @@ export const OrderDetails = ({
                           {part.order_date ? part.order_date.split("T")[0] : "-"}
                         </td>
                         <td className="px-4 py-3">{part.order_number}</td>
-                        <td className="px-4 py-3">
-                          {part.estimated_arrival_days}
-                        </td>
+                        <td className="px-4 py-3">{part.estimated_arrival_days}</td>
                         <td className="px-4 py-3">
                           {part.delivery_date ? part.delivery_date.split("T")[0] : "-"}
                         </td>
                         <td className="px-4 py-3 font-semibold">
                           <div className="flex items-center gap-1.5">
                             {(() => {
-                              const { color, icon } = getStatusStyle(
-                                part.status
-                              );
+                              const { color, icon } = getStatusStyle(part.status);
                               return (
                                 <>
                                   {icon}
@@ -178,7 +165,6 @@ export const OrderDetails = ({
                                 onConfirm={async () => {
                                   const previousStatus = part.status;
                                   const newStatus = options[0].value;
-
                                   try {
                                     await editOrder(part.order_id, { status: newStatus });
                                     toast.success(
@@ -186,7 +172,6 @@ export const OrderDetails = ({
                                       {
                                         duration: 2500,
                                         dismissible: true,
-                                        // onClick: (t) => toast.dismiss(t.id),
                                       }
                                     );
                                     refetch();
@@ -198,7 +183,6 @@ export const OrderDetails = ({
                                 }}
                               />
                             )}
-
                             {options[1] && canEdit && (
                               <CancelCircle
                                 onCancel={async () => {
@@ -209,7 +193,6 @@ export const OrderDetails = ({
                                     toast.success(`وضعیت «${part.piece_name}» لغو شد`, {
                                       duration: 2000,
                                       dismissible: true,
-                                      // onClick: (t) => toast.dismiss(t.id),
                                     });
                                     refetch();
                                   } catch {
@@ -219,17 +202,14 @@ export const OrderDetails = ({
                               />
                             )}
                           </div>
-
-                          <DeleteItem
-                            id={String(part.order_id)}
-                            name={part.piece_name}
-                          />
+                          <DeleteItem id={String(part.order_id)} name={part.piece_name} />
                         </td>
                       </tr>
                     );
                   })}
                 </React.Fragment>
-              ))}
+              )
+            )}
           </tbody>
         </table>
       </div>

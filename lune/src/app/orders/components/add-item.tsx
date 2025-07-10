@@ -14,9 +14,10 @@ interface AddItemModalProp {
   data?: any;
   refetch?: () => void;
   id?: number;
+  disabled?: boolean;
 }
 
-const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
+const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id, disabled = false }) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState<string>("VOR");
   const { mutate, isPending } = useAddItem();
@@ -66,8 +67,13 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
   return (
     <>
       <CirclePlus
-        className="cursor-pointer w-6 h-6 mr-auto transition-all duration-300 hover:text-gray-700 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
-        onClick={() => setOpen(true)}
+        className={`w-6 h-6 mr-auto transition-all duration-300 
+          ${disabled ? "text-gray-400 cursor-not-allowed" : "cursor-pointer hover:text-gray-700 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"}`}
+        onClick={() => {
+          if (!disabled) {
+            setOpen(true);
+          }
+        }}
       />
 
       <Modal
@@ -84,10 +90,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
           onSubmit={handleUpdate}
         >
           <div
-            className="
-              p-4 bg-white rounded-lg shadow
-              grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4
-            "
+            className="p-4 bg-white rounded-lg shadow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
           >
             <Input label="شماره پذیرش" name="reception_number" />
             <Input
