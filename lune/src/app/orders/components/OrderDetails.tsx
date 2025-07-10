@@ -201,25 +201,28 @@ export const OrderDetails = ({
 
                             {options[1] && canEdit && (
                               <CancelCircle
-                                onCancel={async () => {
+                                onCancel={async (description: string) => {
                                   try {
                                     await editOrder(part.order_id, {
                                       status: options[1].value,
+                                      description: description, // ⬅ توضیح وارد شده از مودال
                                     });
-                                    toast.success(`وضعیت «${part.piece_name}» لغو شد`, {
-                                      duration: 2000,
-                                      dismissible: true,
-                                      // onClick: (t) => toast.dismiss(t.id),
-                                    });
+                                    toast.success(
+                                      `وضعیت «${part.piece_name}» لغو شد با توضیح: «${description || "بدون توضیح"}»`,
+                                      {
+                                        duration: 2000,
+                                        dismissible: true,
+                                      }
+                                    );
                                     refetch();
                                   } catch {
                                     toast.error("خطا در لغو وضعیت");
                                   }
                                 }}
                               />
+
                             )}
                           </div>
-
                           <DeleteItem
                             id={String(part.order_id)}
                             name={part.piece_name}

@@ -55,6 +55,7 @@ export function CustomerForm({
             ]}
             required
             disabled={userInfoSubmitted}
+            hiddenSearch
           />
           <Input
             label="شماره پذیرش"

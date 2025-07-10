@@ -11,6 +11,7 @@ interface ArrivalSettings {
 }
 
 interface OrderItem {
+  all_description: string;
   part_id: string;
   piece_name: string;
   number_of_pieces: number;
@@ -110,7 +111,7 @@ export function useOrderData() {
         estimated_arrival_days: Number(item.estimated_arrival_days),
         status: item.status,
         settlement_status: item.settlement_status || "تسویه نشده",
-        description: item.description || "",
+        all_description: item.all_description || "",
         dealer_approved: !!item.dealer_approved,
       })),
     };

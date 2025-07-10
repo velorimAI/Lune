@@ -16,6 +16,7 @@ interface PartIdInputProps {
   onChange: (val: string) => void;
   setPieceName: (name: string) => void;
   readOnly?: boolean;
+  disabled?: boolean;
 }
 
 export const PartIdInput: FC<PartIdInputProps> = ({
@@ -23,6 +24,7 @@ export const PartIdInput: FC<PartIdInputProps> = ({
   onChange,
   setPieceName,
   readOnly,
+  disabled
 }) => {
   const [suggestions, setSuggestions] = useState<PartSuggestion[]>([]);
   const [showList, setShowList] = useState(false);
@@ -132,6 +134,7 @@ export const PartIdInput: FC<PartIdInputProps> = ({
         onChange={handleChange}
         required
         readOnly={readOnly}
+        disabled={disabled}
         clearable
       />
 
