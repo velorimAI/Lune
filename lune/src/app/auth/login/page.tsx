@@ -73,6 +73,10 @@ const Login: FC = () => {
               name="username"
               idNumber
               type="number"
+              inputClassName="w-full 
+              [appearance:textfield] 
+              [&::-webkit-inner-spin-button]:appearance-none 
+              [&::-webkit-outer-spin-button]:appearance-none"
               required
             />
             <Input
@@ -88,11 +92,11 @@ const Login: FC = () => {
       </div>
       <div
         className="w-1/2 bg-gray-100 flex items-center justify-center"
-        // style={{ minHeight: "100vh" }}
+      // style={{ minHeight: "100vh" }}
       >
         {/* <div className="max-h-[70vh]"> */}
         {/* <div className="max-w-lg w-full h-full flex items-center justify-center p-10"> */}
-          <LiveIcon />
+        <LiveIcon />
         {/* </div> */}
       </div>
     </div>
