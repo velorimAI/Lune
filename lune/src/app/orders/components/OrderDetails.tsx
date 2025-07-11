@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Wrench, PackageOpen, DollarSign, PlusCircle as CirclePlus } from "lucide-react";
+import { Wrench, PackageOpen, DollarSign, PlusCircle as CirclePlus, InfoIcon, MessageCircleMore } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle } from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -148,6 +148,7 @@ export const OrderDetails = ({
                           {part.piece_name}
                         </td>
                         <td className="px-4 py-3">{part.part_id}</td>
+
                         <td className="px-4 py-3">{part.number_of_pieces}</td>
                         <td className="px-4 py-3 font-semibold">{part.order_channel}</td>
                         <td className="px-4 py-3">
@@ -175,7 +176,7 @@ export const OrderDetails = ({
                             })()}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-center flex gap-3 justify-center items-center">
+                        <td className="px-4 py-3 text-center flex gap-3 justify-end items-center">
                           <div className="flex justify-center items-center gap-1">
                             {options[0] && canEdit && (
                               <ToolTip hint={`${options[0].value}`}>
@@ -235,10 +236,37 @@ export const OrderDetails = ({
                             )}
 
                           </div>
-                          <DeleteItem
-                            id={String(part.order_id)}
-                            name={part.piece_name}
-                          />
+                          <div className="flex gap-1">
+                            <DeleteItem
+                              id={String(part.order_id)}
+                              name={part.piece_name}
+                            />
+                            {(part.description || part.all_description) && (
+                              <ToolTip
+                                hintClassName="ml-4"
+                                hint={
+                                  <div className="space-y-2 text-sm leading-6 text-gray-100 max-w-[400px]">
+                                    {part.all_description && (
+                                      <div>
+                                        <div className="font-semibold text-white  mb-1">توضیحات کلی :</div>
+                                        <p className="text-gray-300 ">{part.all_description}</p>
+                                      </div>
+                                    )}
+                                    {part.description && (
+                                      <div>
+                                        <div className="font-semibold text-red-600 dark:text-red-400 mb-1">علت لغو :</div>
+                                        <p className="text-gray-300">{part.description}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                }
+                              >
+                                <MessageCircleMore className="w-6 h-6 text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white cursor-pointer" />
+                              </ToolTip>
+                            )}
+                          </div>
+
+
                         </td>
                       </tr>
                     );

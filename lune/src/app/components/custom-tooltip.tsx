@@ -16,10 +16,11 @@ interface ToolTipProps {
   tooltipTriggerIcon?: any;
   style?: any;
   children?: React.ReactNode;
+  hintClassName?: string;
 }
 
 function ToolTip(props: ToolTipProps) {
-  const { hint, className, tooltipTriggerIcon, style, children } = props;
+  const { hint, className, tooltipTriggerIcon, style, children , hintClassName } = props;
 
   return (
     <TooltipProvider>
@@ -48,7 +49,7 @@ function ToolTip(props: ToolTipProps) {
           className={cn(
             "z-50 rounded-md bg-black text-white px-3 py-2 text-xs",
             "shadow-lg backdrop-blur-sm",
-            "dark:bg-white/90 dark:text-black"
+            "dark:bg-white/90 dark:text-black", hintClassName
           )}
         >
           {hint || ""}
