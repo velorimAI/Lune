@@ -1,3 +1,6 @@
+// customer-form.tsx
+"use client";
+
 import { Input } from "@/app/components/custom-form/input";
 import { Select } from "@/app/components/custom-form/select-box";
 import { Form } from "@/app/components/custom-form/form";

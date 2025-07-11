@@ -1,13 +1,13 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { Card } from "@/app/components/card";
 import { useOrderData } from "../../hooks/use-order-data";
 import PartForm from "../../components/part-form";
 import { CustomerForm } from "../../components/customer-form";
 import OrderList from "../../components/order-list";
 import { ArrowRight } from "lucide-react";
-import { Button } from '@/app/components/button';
+import { Button } from "@/app/components/button";
 
 export default function NewOrderPage() {
   const router = useRouter();
@@ -23,6 +23,7 @@ export default function NewOrderPage() {
     handleSubmitItem,
     handleSubmit,
     setOrderGroups,
+    resetUserForm,
   } = useOrderData();
 
   return (
@@ -60,6 +61,7 @@ export default function NewOrderPage() {
             }}
             onSubmit={handleSubmit}
             isPending={isPending}
+            resetCustomerForm={resetUserForm}
           />
         </div>
       </div>

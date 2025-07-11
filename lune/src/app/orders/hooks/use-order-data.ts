@@ -4,6 +4,7 @@ import { usePartInputRefs } from "./usePartInputRefs";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAddOrder } from "./use-add-order";
+import { getTodayJalaliDate } from "@/app/utils/getTodayJalali"; // ✅ اضافه شد
 
 interface ArrivalSettings {
   VIS: string;
@@ -27,9 +28,18 @@ interface OrderItem {
 }
 
 export function useOrderData() {
-  const userForm = useForm();
-  const { mutate, isPending } = useAddOrder();
+  const userForm = useForm({
+    defaultValues: {
+      customer_name: "",
+      phone_number: "",
+      car_status: "متوقف",
+      reception_number: "",
+      reception_date: getTodayJalaliDate(),
+      order_code: "",
+    },
+  });
 
+  const { mutate, isPending } = useAddOrder();
   const [userData, setUserData] = useState<any>({});
   const [userInfoSubmitted, setUserInfoSubmitted] = useState(false);
   const { refs, clearAllFields } = useCustomerInputRefs();
@@ -61,8 +71,8 @@ export function useOrderData() {
     return orderChannel === "VOR"
       ? arrivalSettings.VOR
       : orderChannel === "VIS"
-        ? arrivalSettings.VIS
-        : undefined;
+      ? arrivalSettings.VIS
+      : undefined;
   }, [orderChannel, arrivalSettings]);
 
   const handleUserData = (data: any) => {
@@ -125,6 +135,7 @@ export function useOrderData() {
           setOrderGroups([]);
           setUserInfoSubmitted(false);
           clearAllFields();
+          resetUserForm(); // ✅ ریست فرم مشتری بعد از ثبت موفق
         },
         onError: () => {
           toast.error("خطا در ارسال سفارش");
@@ -132,6 +143,18 @@ export function useOrderData() {
       }
     );
   };
+
+  const resetUserForm = () => {
+    userForm.reset({
+      customer_name: "",
+      phone_number: "",
+      car_status: "متوقف",
+      reception_number: "",
+      reception_date: getTodayJalaliDate(),
+      order_code: "",
+    });
+  };
+
 
   return {
     userForm,
@@ -148,5 +171,7 @@ export function useOrderData() {
     isPending,
     refs,
     partRefs,
+    resetUserForm, 
   };
 }
+
