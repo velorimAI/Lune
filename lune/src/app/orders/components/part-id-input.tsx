@@ -1,15 +1,83 @@
 "use client";
 
-import { FC, useEffect, useState, useCallback, useRef } from "react";
+import { FC, useEffect, useState, useCallback, useRef, forwardRef } from "react";
 import axios, { CancelTokenSource } from "axios";
 import { Input } from "@/app/components/custom-form/input";
-import { SuggestionsList } from "./suggestions-list";
 import { useDebounce } from "@/lib/useDebounce";
 
 interface PartSuggestion {
   technical_code: string;
   part_name: string;
 }
+
+interface SuggestionsListProps {
+  show: boolean;
+  loading: boolean;
+  error: string | null;
+  suggestions: PartSuggestion[];
+  onSelect: (item: PartSuggestion) => void;
+  selectedIndex: number;
+}
+
+const SuggestionsList = forwardRef<HTMLDivElement, SuggestionsListProps>(
+  ({ show, loading, error, suggestions, onSelect, selectedIndex }, ref) => {
+    if (!show) return null;
+
+    if (loading) {
+      return (
+        <div
+          ref={ref}
+          className="absolute z-10  w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-2"
+        >
+          در حال بارگذاری...
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div
+          ref={ref}
+          className="absolute z-10 w-full mt-1 bg-white border border-red-300 rounded-md shadow-lg p-2 text-red-500"
+        >
+          {error}
+        </div>
+      );
+    }
+
+    if (suggestions.length === 0) {
+      return (
+        <div
+          ref={ref}
+          className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-2 text-gray-500"
+        >
+          موردی یافت نشد
+        </div>
+      );
+    }
+
+    return (
+      <div
+        ref={ref}
+        className="absolute z-10 top-15 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
+      >
+        {suggestions.map((item, index) => (
+          <div
+            key={item.technical_code}
+            className={`p-2 hover:bg-gray-100 cursor-pointer ${
+              index === selectedIndex ? "bg-gray-200" : ""
+            }`}
+            onClick={() => onSelect(item)}
+          >
+            <div className="font-medium">{item.technical_code}</div>
+            <div className="text-sm text-gray-600">{item.part_name}</div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+);
+SuggestionsList.displayName = "SuggestionsList";
 
 interface PartIdInputProps {
   value: string;
@@ -24,7 +92,7 @@ export const PartIdInput: FC<PartIdInputProps> = ({
   onChange,
   setPieceName,
   readOnly,
-  disabled
+  disabled,
 }) => {
   const [suggestions, setSuggestions] = useState<PartSuggestion[]>([]);
   const [showList, setShowList] = useState(false);
@@ -34,10 +102,20 @@ export const PartIdInput: FC<PartIdInputProps> = ({
   const [hasSelected, setHasSelected] = useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
   const debouncedValue = useDebounce(value, 500);
 
+  const scrollIntoView = (index: number) => {
+    if (suggestionsRef.current && suggestionsRef.current.children[index]) {
+      suggestionsRef.current.children[index].scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  };
+
   useEffect(() => {
-    if (hasSelected) return; 
+    if (hasSelected) return;
     if (!debouncedValue || debouncedValue.length < 5) {
       setSuggestions([]);
       setShowList(false);
@@ -87,7 +165,7 @@ export const PartIdInput: FC<PartIdInputProps> = ({
       setShowList(false);
       setSuggestions([]);
       setSelectedIndex(-1);
-      setHasSelected(true); 
+      setHasSelected(true);
     },
     [onChange, setPieceName]
   );
@@ -106,14 +184,15 @@ export const PartIdInput: FC<PartIdInputProps> = ({
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setSelectedIndex((prev) =>
-        prev < suggestions.length - 1 ? prev + 1 : 0
-      );
+      const newIndex =
+        selectedIndex < suggestions.length - 1 ? selectedIndex + 1 : 0;
+      setSelectedIndex(newIndex);
+      scrollIntoView(newIndex);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setSelectedIndex((prev) =>
-        prev > 0 ? prev - 1 : suggestions.length - 1
-      );
+      const newIndex = selectedIndex > 0 ? selectedIndex - 1 : suggestions.length - 1;
+      setSelectedIndex(newIndex);
+      scrollIntoView(newIndex);
     } else if (e.key === "Enter" && selectedIndex >= 0) {
       e.preventDefault();
       handleSelect(suggestions[selectedIndex]);
@@ -145,6 +224,7 @@ export const PartIdInput: FC<PartIdInputProps> = ({
         suggestions={suggestions}
         onSelect={handleSelect}
         selectedIndex={selectedIndex}
+        ref={suggestionsRef}
       />
     </div>
   );
