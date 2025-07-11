@@ -33,6 +33,7 @@ const Orders: FC = () => {
     activeTab,
     setSearchText
   );
+  
 
   return (
     <Card contentClassName="min-h-[85vh]" className="lg:h-[calc(100%-55px)]">
