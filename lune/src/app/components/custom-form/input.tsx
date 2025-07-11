@@ -197,6 +197,10 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
           readOnly={readOnly}
           type={handleType()}
           value={internalValue}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
         />
 
         {submitButton?.status && (
