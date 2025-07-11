@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Wrench, PackageOpen, DollarSign, PlusCircle as CirclePlus } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle } from "./statusStyles";
@@ -10,6 +10,8 @@ import { CancelCircle } from "./cancel-circle";
 import { editOrder } from "@/app/apis/orders/orderService";
 import { getStatusOptions } from "@/lib/getStatusOptions";
 import { toast } from "sonner";
+import { InsertDate } from "./insert-date";
+import ToolTip from "@/app/components/custom-tooltip";
 
 // interface Order {
 //   receptions: Reception[];
@@ -44,6 +46,8 @@ export const OrderDetails = ({
   refetch: () => void;
 }) => {
   const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
+  const [openDateModal, setOpenDateModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   const isAccountant = role === "حسابدار";
   const isWarehouse = role === "انباردار";
@@ -174,54 +178,62 @@ export const OrderDetails = ({
                         <td className="px-4 py-3 text-center flex gap-3 justify-center items-center">
                           <div className="flex justify-center items-center gap-1">
                             {options[0] && canEdit && (
-                              <ConfirmCircle
-                                onConfirm={async () => {
-                                  const previousStatus = part.status;
-                                  const newStatus = options[0].value;
+                              <ToolTip hint={`${options[0].value}`}>
+                                <div>
+                                  <ConfirmCircle
+                                    onConfirm={async () => {
+                                      const previousStatus = part.status;
+                                      const newStatus = options[0].value;
 
-                                  try {
-                                    await editOrder(part.order_id, { status: newStatus });
-                                    toast.success(
-                                      `وضعیت «${part.piece_name}» از «${previousStatus}» به «${newStatus}» تغییر کرد`,
-                                      {
-                                        duration: 2500,
-                                        dismissible: true,
-                                        // onClick: (t) => toast.dismiss(t.id),
+                                      if (newStatus === "نوبت داده شد") {
+                                        setSelectedOrder({ id: part.order_id, name: part.piece_name });
+                                        setOpenDateModal(true);
+                                        return;
                                       }
-                                    );
-                                    refetch();
-                                  } catch (error) {
-                                    toast.error("خطا در تغییر وضعیت قطعه", {
-                                      duration: 3000,
-                                    });
-                                  }
-                                }}
-                              />
+
+                                      try {
+                                        await editOrder(part.order_id, { status: newStatus });
+                                        toast.success(
+                                          `وضعیت «${part.piece_name}» از «${previousStatus}» به «${newStatus}» تغییر کرد`,
+                                          { duration: 2500 }
+                                        );
+                                        refetch();
+                                      } catch (error) {
+                                        toast.error("خطا در تغییر وضعیت قطعه", { duration: 3000 });
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              </ToolTip>
                             )}
 
                             {options[1] && canEdit && (
-                              <CancelCircle
-                                onCancel={async (description: string) => {
-                                  try {
-                                    await editOrder(part.order_id, {
-                                      status: options[1].value,
-                                      description: description, // ⬅ توضیح وارد شده از مودال
-                                    });
-                                    toast.success(
-                                      `وضعیت «${part.piece_name}» لغو شد با توضیح: «${description || "بدون توضیح"}»`,
-                                      {
-                                        duration: 2000,
-                                        dismissible: true,
+                              <ToolTip hint={`لغو`}>
+                                <div>
+                                  <CancelCircle
+                                    onCancel={async (description: string) => {
+                                      try {
+                                        await editOrder(part.order_id, {
+                                          status: options[1].value,
+                                          description: description,
+                                        });
+                                        toast.success(
+                                          `وضعیت «${part.piece_name}» لغو شد با توضیح: «${description || "بدون توضیح"}»`,
+                                          {
+                                            duration: 2000,
+                                            dismissible: true,
+                                          }
+                                        );
+                                        refetch();
+                                      } catch {
+                                        toast.error("خطا در لغو وضعیت");
                                       }
-                                    );
-                                    refetch();
-                                  } catch {
-                                    toast.error("خطا در لغو وضعیت");
-                                  }
-                                }}
-                              />
-
+                                    }}
+                                  />
+                                </div>
+                              </ToolTip>
                             )}
+
                           </div>
                           <DeleteItem
                             id={String(part.order_id)}
@@ -236,6 +248,34 @@ export const OrderDetails = ({
           </tbody>
         </table>
       </div>
+      <InsertDate
+        open={openDateModal}
+        onClose={() => {
+          setOpenDateModal(false);
+          setSelectedOrder(null);
+        }}
+        onSubmit={async (data) => {
+          if (!selectedOrder) return;
+
+          try {
+            await editOrder(selectedOrder.id, {
+              status: "نوبت داده شد",
+              appointment_date: data.Date,
+              appointment_time: data.time,
+            });
+
+            toast.success(`نوبت برای «${selectedOrder.name}» با موفقیت ثبت شد`);
+            refetch();
+          } catch (error) {
+            toast.error("خطا در ثبت نوبت");
+          } finally {
+            setOpenDateModal(false);
+            setSelectedOrder(null);
+          }
+        }}
+      />
+
+
     </div>
   );
 };

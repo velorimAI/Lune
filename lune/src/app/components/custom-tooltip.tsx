@@ -10,41 +10,46 @@ import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 import { InfoIcon } from "lucide-react";
 
-interface ToolTopTypes {
+interface ToolTipProps {
   hint?: string | ReactNode;
   className?: string;
   tooltipTriggerIcon?: any;
   style?: any;
+  children?: React.ReactNode;
 }
-function ToolTip(props: ToolTopTypes) {
-  const { hint, className, tooltipTriggerIcon, style } = props;
+
+function ToolTip(props: ToolTipProps) {
+  const { hint, className, tooltipTriggerIcon, style, children } = props;
+
   return (
     <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger
-          style={style}
-          className={cn(
-            !tooltipTriggerIcon &&
-              // 'bg-neutral-800 dark:bg-neutral-200 rounded-full dark:text-black w-4 text-white text-xs',
-              className
+      <Tooltip delayDuration={150}>
+        <TooltipTrigger asChild>
+          {children ? (
+            <div style={style} className={cn("cursor-pointer", className)}>
+              {children}
+            </div>
+          ) : tooltipTriggerIcon ? (
+            tooltipTriggerIcon
+          ) : (
+            <InfoIcon
+              onClick={(e) => e.stopPropagation()}
+              size={14}
+              className={cn("text-muted-foreground cursor-pointer", className)}
+              style={style}
+            />
           )}
-        >
-          <div className={`text-muted-foreground`}>
-            {tooltipTriggerIcon ? (
-              tooltipTriggerIcon
-            ) : (
-              <InfoIcon
-                onClick={(e) => e.stopPropagation()}
-                size={14}
-                className={`text-muted-foreground`}
-              />
-            )}
-          </div>
         </TooltipTrigger>
+
         <TooltipContent
-          side="right"
+          side="top"
           align="center"
-          className="max-w-[550px] p-2 text-xs"
+          sideOffset={6}
+          className={cn(
+            "z-50 rounded-md bg-black text-white px-3 py-2 text-xs",
+            "shadow-lg backdrop-blur-sm",
+            "dark:bg-white/90 dark:text-black"
+          )}
         >
           {hint || ""}
         </TooltipContent>

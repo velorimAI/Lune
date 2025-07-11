@@ -26,6 +26,11 @@ export const getStatusOptions = (status: string, order_channel: string, car_stat
       { label: "نوبت داده شد", value: "نوبت داده شد" },
       { label: "انصراف مشتری", value: "انصراف مشتری" },
     ];
+  } else if (status === "نوبت داده شد") {
+    return [
+      { label: "تحویل شد", value: "تحویل شد" },
+      { label: "تحویل نشد", value: "تحویل نشد" },
+    ];
   } else {
     return [];
   }
