@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   ReactNode,
@@ -8,15 +8,15 @@ import {
   forwardRef,
   ForwardRefRenderFunction,
   useEffect,
-} from 'react';
-import { Input as InputShadcn } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { Eye, EyeOff, CircleX } from 'lucide-react';
-import { Button } from '../button';
-import { FormLabel } from './form-label';
-import { FormDescription } from './form-description';
-import { useFormField } from '@/app/hooks/form/useFormField';
-import { useFormFieldValidations } from '@/app/hooks/form/useFormFieldValidations';
+} from "react";
+import { Input as InputShadcn } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Eye, EyeOff, CircleX } from "lucide-react";
+import { Button } from "../button";
+import { FormLabel } from "./form-label";
+import { FormDescription } from "./form-description";
+import { useFormField } from "@/app/hooks/form/useFormField";
+import { useFormFieldValidations } from "@/app/hooks/form/useFormFieldValidations";
 
 export type InputRefHandle = {
   clear: () => void;
@@ -64,10 +64,10 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
   const {
     submitButton = {
       status: false,
-      text: '',
-      className: '',
-      type: 'button',
-      onClick: () => { },
+      text: "",
+      className: "",
+      type: "button",
+      onClick: () => {},
       isLoading: false,
     },
     className,
@@ -87,7 +87,7 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     required,
     strongPassword,
     type,
-    value = '',
+    value = "",
     phone,
     inputClassName,
     tooltipTriggerIcon,
@@ -97,7 +97,7 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
   } = props;
 
   const [eyeOff, setEye] = useState<boolean>(true);
-  const [internalValue, setInternalValue] = useState<string>(value || '');
+  const [internalValue, setInternalValue] = useState<string>(value || "");
 
   const fieldValidation = useFormFieldValidations({
     validations: {
@@ -115,33 +115,39 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
   const formField = useFormField({
     name,
     validations: fieldValidation,
-    initialValue: value === null ? '' : value,
+    initialValue: value === null ? "" : value,
   });
 
   const handleChange = (event: ChangeEvent<{ value: string }>) => {
-  let val = event?.target?.value;
-  
- 
-  if (phone) {
-    val = val.replace(/\D/g, '').slice(0, 11);
-  }
-  
-  setInternalValue(val);
-  formField.setValueState(val);
-  onChange?.(val);
-};
+    let val = event?.target?.value;
+
+    if (phone) {
+      val = val.replace(/\D/g, "").slice(0, 11);
+    }
+    if (isPositiveNumber) {
+      val = val.replace(/[^0-9]/g, "");
+
+      if (val !== "" && val !== "0") {
+        val = val.replace(/^0+/, "");
+      }
+    }
+
+    setInternalValue(val);
+    formField.setValueState(val);
+    onChange?.(val);
+  };
 
   const handleType = () => {
-    if (type === 'password') {
-      return eyeOff ? 'password' : 'text';
+    if (type === "password") {
+      return eyeOff ? "password" : "text";
     }
     return type;
   };
 
   const handleClear = () => {
-    setInternalValue('');
-    formField.setValueState('');
-    onChange?.('');
+    setInternalValue("");
+    formField.setValueState("");
+    onChange?.("");
   };
 
   useImperativeHandle(ref, () => ({
@@ -150,15 +156,16 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
 
   useEffect(() => {
     if (value !== internalValue) {
-      setInternalValue(value || '');
+      setInternalValue(value || "");
     }
   }, [value]);
-
 
   return (
     <div
       className={cn(
-        `min-h-[80px] ${inline && 'flex w-full justify-start gap-3 items-center'}`,
+        `min-h-[80px] ${
+          inline && "flex w-full justify-start gap-3 items-center"
+        }`,
         className
       )}
     >
@@ -172,16 +179,16 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
         tooltip={tooltip}
       />
       <div
-        className={cn('w-full flex', {
-          relative: type === 'password' || clearable,
+        className={cn("w-full flex", {
+          relative: type === "password" || clearable,
         })}
       >
         <InputShadcn
           {...formField.fieldRegister}
           className={cn(
-            submitButton?.status ? 'rounded-r-none dark:focus:ring-0' : '',
+            submitButton?.status ? "rounded-r-none dark:focus:ring-0" : "",
             inputStyle,
-            type === 'number' ? 'no-spinner' : '',
+            type === "number" ? "no-spinner" : "",
             inputClassName
           )}
           disabled={disabled}
@@ -195,19 +202,19 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
         {submitButton?.status && (
           <Button
             disabled={disabled}
-            type={submitButton?.type || 'button'}
+            type={submitButton?.type || "button"}
             isLoading={submitButton?.isLoading}
             className={cn(
               submitButton.className,
-              'rounded-l-none dark:bg-box-brighter'
+              "rounded-l-none dark:bg-box-brighter"
             )}
             onClick={submitButton.onClick}
           >
-            {submitButton.isLoading ? '' : submitButton.text || 'Send'}
+            {submitButton.isLoading ? "" : submitButton.text || "Send"}
           </Button>
         )}
 
-        {type === 'password' && (
+        {type === "password" && (
           <>
             {eyeOff ? (
               <EyeOff
@@ -235,7 +242,7 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
         hint={hint}
         error={
           errorMessage ||
-          (required && internalValue === '' ? undefined : formField.error)
+          (required && internalValue === "" ? undefined : formField.error)
         }
       />
     </div>
@@ -243,4 +250,4 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
 };
 
 export const Input = forwardRef(InputComponent);
-Input.displayName = 'Input';
+Input.displayName = "Input";

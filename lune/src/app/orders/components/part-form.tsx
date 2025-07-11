@@ -89,11 +89,11 @@ export default function PartForm({
             <Input
               label="تعداد"
               type="number"
-              isPositiveNumber
               name="number_of_pieces"
               required
               ref={refs.numberOfPiecesRef}
               disabled={!userInfoSubmitted}
+              isPositiveNumber={true}
             />
           </div>
 
