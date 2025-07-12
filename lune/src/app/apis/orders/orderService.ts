@@ -21,14 +21,12 @@ export const getItemsList = async (token: string) => {
       },
     });
 
-    // Check if response status is not 200
     if (res.status !== 200) {
       throw new Error(`API request failed with status ${res.status}`);
     }
 
     return res.data;
   } catch (error) {
-    // Re-throw error with more context
     throw new Error(`Failed to fetch items:`);
   }
 };
@@ -100,6 +98,23 @@ export const addOrder = async (formData: any) => {
   const response = await axios.post(
     `http://localhost:3001/api/orders/add`,
     formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const addItemToReception = async (receptionId: number, formData: any) => {
+  const token = localStorage.getItem("token");
+
+  const response = await axios.post(
+    `http://localhost:3001/api/orders/add-pieces-to-reception/${receptionId}`,
+    { orders: formData.orders },
     {
       headers: {
         Authorization: `Bearer ${token}`,

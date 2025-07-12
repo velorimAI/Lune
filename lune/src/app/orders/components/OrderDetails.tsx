@@ -12,39 +12,20 @@ import { getStatusOptions } from "@/lib/getStatusOptions";
 import { toast } from "sonner";
 import { InsertDate } from "./insert-date";
 import ToolTip from "@/app/components/custom-tooltip";
+import AddItemToReception from "./add-item-to-reception";
 
-// interface Order {
-//   receptions: Reception[];
-// }
-
-// interface Reception {
-//   reception_number: string;
-//   car_status: string;
-//   settlement_status: string;
-//   orders: OrderItem[];
-// }
-
-// interface OrderItem {
-//   order_id: string;
-//   piece_name: string;
-//   number_of_pieces: number;
-//   order_channel: string;
-//   order_date: string;
-//   order_number: string;
-//   estimated_arrival_days: number;
-//   delivery_date: string | null;
-//   status: string;
-// }
 
 export const OrderDetails = ({
   id,
   order,
   refetch
 }: {
+
   id: number;
   order: any;
   refetch: () => void;
 }) => {
+  const [openReceptionIndex, setOpenReceptionIndex] = useState<number | null>(null);
   const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
   const [openDateModal, setOpenDateModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
@@ -87,13 +68,14 @@ export const OrderDetails = ({
                   car_status: string;
                   settlement_status: string;
                   orders: any[];
+                  reception_id : number
                 },
-                i: React.Key | null | undefined
+                i: number
               ) => (
                 <React.Fragment key={i}>
                   <tr>
                     <td
-                      colSpan={10} // چون جدول شما 10 ستون دارد
+                      colSpan={10}
                       className="bg-blue-50 text-blue-800 font-bold px-4 py-2 border-y border-blue-300"
                     >
                       <div className="flex flex-col gap-2">
@@ -120,11 +102,15 @@ export const OrderDetails = ({
                               {reception.settlement_status || "-"}
                             </span>
                           </div>
-                          <CirclePlus className="text-gray-800 cursor-pointer w-5 h-5 transition-all duration-300 hover:text-gray-900 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg" />
+                          <AddItemToReception
+                            id={reception.reception_id}
+                            data={order.receptions}
+                            refetch={refetch}
+                            onClose={() => setOpenReceptionIndex(null)}
+                          />
                         </div>
                       </div>
                     </td>
-
                   </tr>
 
                   {reception.orders.map((part: any, j: any) => {
@@ -137,6 +123,7 @@ export const OrderDetails = ({
                     const canEdit =
                       (isAccountant && part.status === "در انتظار تائید حسابداری") ||
                       (isWarehouse && part.status !== "در انتظار تائید حسابداری");
+
 
                     return (
                       <tr

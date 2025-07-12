@@ -7,27 +7,27 @@ import { Modal } from "@/app/components/modal";
 import { CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useAddItem } from "../hooks/use-add-item";
+import { useAddItemToReception } from "../hooks/use-add-item-to-reception";
 import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
 import { TextArea } from "@/app/components/custom-form/text-area";
 import { PartIdInput } from "./part-id-input";
 
 
-interface AddItemModalProp {
+interface AddItemToReceptionProps {
   data?: any;
   refetch?: () => void;
   id?: number;
+  onClose?: () => void;
 }
 
-const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
+const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, id, onClose }) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState<string>("VOR");
-  const { mutate, isPending } = useAddItem();
+  const { mutate, isPending } = useAddItemToReception();
   const [formValues, setFormValues] = useState({
     part_id: "",
     piece_name: "",
   });
-
 
   const handleUpdate = async (formData: any) => {
     const order = {
@@ -60,8 +60,9 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
       { id, data: payload },
       {
         onSuccess: () => {
-          toast.success("قطعه با موفقیت اضافه شد");
+          toast.success(`قطعه "${order.piece_name}" با موفقیت اضافه شد`);
           setOpen(false);
+          onClose?.();
           setFormValues({ part_id: "", piece_name: "" });
           refetch?.();
         },
@@ -81,30 +82,24 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
 
       <Modal
         open={open}
-        title="ثبت پذیرش جدید"
+        title="افزودن سفارش جدید"
         onCancel={() => setOpen(false)}
         hideCancel
         hideConfirm
       >
         <Form
           cancelText="لغو"
-          submitText="اضافه کردن قطعه"
-          onCancel={() => setOpen(false)}
+          submitText="افزودن سفارش جدید"
+          onCancel={() => {
+            setOpen(false);
+            onClose?.();
+          }}
           onSubmit={handleUpdate}
         >
           <div className="bg-white rounded-lg space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input label="شماره پذیرش" name="reception_number" />
-              <Input
-                label="تاریخ پذیرش"
-                name="reception_date"
-                value={getTodayJalaliDate()}
-                readOnly
-              />
-              <Input label="شماره سفارش" name="order_number" />
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Input label="شماره سفارش" name="order_number" />
               <Select
                 label="وضعیت خودرو"
                 name="car_status"
@@ -114,37 +109,6 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                   { label: "متوقف", value: "متوقف" },
                 ]}
                 inputStyle="w-full"
-              />
-              <PartIdInput
-                value={formValues.part_id}
-                onChange={(val) =>
-                  setFormValues((prev) => ({
-                    ...prev,
-                    part_id: val,
-                    piece_name: val ? prev.piece_name : "",
-                  }))
-                }
-                setPieceName={(name) =>
-                  setFormValues((prev) => ({
-                    ...prev,
-                    piece_name: name,
-                  }))
-                }
-              />
-              <Input
-                label="نام قطعه"
-                name="piece_name"
-                value={formValues.piece_name}
-                readOnly
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="تعداد"
-                name="number_of_pieces"
-                type="number"
-                isPositiveNumber
               />
               <Select
                 label="کانال"
@@ -168,14 +132,45 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
               </div>
             )}
 
-            <div className="mb-4">
-              
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <PartIdInput
+                value={formValues.part_id}
+                onChange={(val) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    part_id: val,
+                    piece_name: val ? prev.piece_name : "",
+                  }))
+                }
+                setPieceName={(name) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    piece_name: name,
+                  }))
+                }
+              />
+              <Input
+                label="نام قطعه"
+                name="piece_name"
+                value={formValues.piece_name}
+                readOnly
+              />
+              <Input
+                label="تعداد"
+                name="number_of_pieces"
+                type="number"
+                isPositiveNumber
+              />
+            </div>
+
+            <div>
               <TextArea
                 label="توضیحات"
                 name="all_description"
                 placeholder="توضیحاتی درباره سفارش وارد کنید..."
                 className="w-full"
               />
+              <div className="mb-4"></div>
             </div>
           </div>
         </Form>
@@ -184,4 +179,4 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
   );
 };
 
-export default AddItem;
+export default AddItemToReception;
