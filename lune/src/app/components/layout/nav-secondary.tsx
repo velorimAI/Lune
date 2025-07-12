@@ -47,7 +47,9 @@ export function NavSecondary({
                 <Link
                   href={item.url}
                   aria-disabled={item.disabled}
-                  className={`${item.disabled ? 'pointer-events-none text-gray-600' : ''}`}
+                  className={`flex items-center gap-2 ${
+                    item.disabled ? 'pointer-events-none text-gray-500 opacity-60' : ''
+                  }`}
                   onClick={(e) => item?.disabled && e.preventDefault()}
                 >
                   {item.icon && (
@@ -56,10 +58,11 @@ export function NavSecondary({
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>
+
               {pathname === item.url && (
                 <div
                   className={`rounded-r-[3px] absolute z-50 -left-2 top-0 w-1 bg-secondaryBlue 
-      ${state === 'expanded' ? 'h-11' : 'h-8'}`}
+                    ${state === 'expanded' ? 'h-11' : 'h-8'}`}
                 ></div>
               )}
             </SidebarMenuItem>
