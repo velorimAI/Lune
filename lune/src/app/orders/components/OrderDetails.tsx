@@ -12,6 +12,9 @@ import { getStatusOptions } from "@/lib/getStatusOptions";
 import { toast } from "sonner";
 import { InsertDate } from "./insert-date";
 import ToolTip from "@/app/components/custom-tooltip";
+import { CheckBox } from "@/app/components/custom-form/check-box";
+import { Button } from "@/app/components/button";
+import InsertDescription from "./insert-description";
 
 // interface Order {
 //   receptions: Reception[];
@@ -39,18 +42,108 @@ import ToolTip from "@/app/components/custom-tooltip";
 export const OrderDetails = ({
   id,
   order,
-  refetch
+  refetch,
+  selectable = false,
+  currentTab
 }: {
   id: number;
   order: any;
   refetch: () => void;
+  selectable?: boolean;
+  currentTab: string;
 }) => {
   const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
   const [openDateModal, setOpenDateModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
-
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [openDescriptionModal, setOpenDescriptionModal] = useState(false);
+  const [itemsToCancel, setItemsToCancel] = useState<any[]>([]);
   const isAccountant = role === "حسابدار";
   const isWarehouse = role === "انباردار";
+  const isSelectableTab = !["تحویل شد", "canceled", "all"].includes(currentTab);
+
+
+  const canShowSelectUI =
+    isSelectableTab &&
+    (isAccountant || (isWarehouse && currentTab !== "در انتظار تائید حسابداری"));
+
+
+
+  const canSelectItem = (part: any) => {
+    if (isWarehouse && isSelectableTab && currentTab !== "در انتظار تائید حسابداری") return true;
+    if (isAccountant && part.status === "در انتظار تائید حسابداری") return true;
+    return false;
+  };
+
+
+
+
+
+  const accountantPendingParts = order?.receptions
+    ?.flatMap((r: any) => r.orders || [])
+    .filter((o: any) => o.status === "در انتظار تائید حسابداری");
+
+
+
+  const isSelected = (id: string) => selectedItems.includes(id);
+
+  const toggleSelect = (id: string) => {
+    setSelectedItems((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    const allSelectableIds =
+      order?.receptions?.flatMap((r: any) => r.orders || []).filter(canSelectItem).map((o: any) => o.order_id) || [];
+
+    if (selectedItems.length === allSelectableIds.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(allSelectableIds);
+    }
+  };
+
+
+  const handleMultiConfirm = async () => {
+    const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
+    const selectedOrders = allOrders.filter((order: any) =>
+      selectedItems.includes(order.order_id)
+    );
+
+    if (selectedOrders.length === 0) {
+      toast.warning("هیچ قطعه‌ای انتخاب نشده است");
+      return;
+    }
+
+    let successCount = 0;
+
+    await Promise.all(
+      selectedOrders.map(async (part: any) => {
+        const options = getStatusOptions(part.status, part.order_channel, part.car_status || "");
+        if (options.length > 0) {
+          const nextStatus = options[0].value;
+          if (nextStatus === "نوبت داده شد") return;
+          try {
+            await editOrder(part.order_id, { status: nextStatus });
+            successCount++;
+          } catch (error) {
+            console.error(`خطا در بروزرسانی قطعه ${part.piece_name}`, error);
+          }
+        }
+      })
+    );
+
+    toast.success(`${successCount} قطعه تایید شدند`);
+    refetch();
+    setSelectedItems([]);
+  };
+
+
+
+
+
+
 
   return (
     <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
@@ -62,11 +155,62 @@ export const OrderDetails = ({
         </span>
         <AddItem id={id} />
       </div>
+      {selectedItems.length > 0 && (
+        <div className="flex gap-2 mb-3">
+          {(isWarehouse && isSelectableTab) || isAccountant ? (
+            <Button
+              className="bg-green-600 text-white hover:bg-green-700"
+              onClick={handleMultiConfirm}
+            >
+              تایید همه
+            </Button>
+          ) : null}
+          {isAccountant && (
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
+                const cancellableOrders = allOrders.filter(
+                  (order: any) =>
+                    selectedItems.includes(order.order_id) &&
+                    order.status === "در انتظار تائید حسابداری"
+                );
+                if (cancellableOrders.length === 0) {
+                  toast.warning("هیچ قطعه‌ای برای لغو وجود ندارد");
+                  return;
+                }
+                setItemsToCancel(cancellableOrders);
+                setOpenDescriptionModal(true);
+              }}
+            >
+              عدم تایید
+            </Button>
+          )}
+        </div>
+      )}
+
+
 
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-right text-gray-800 border-collapse">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
+              {canShowSelectUI && (
+                <th className="px-4 py-2">
+                  <CheckBox
+                    checked={
+                      selectedItems.length ===
+                      order?.receptions
+                        ?.flatMap((r: any) => r.orders || [])
+                        .filter(canSelectItem).length
+                    }
+                    onChange={toggleSelectAll}
+                  />
+                </th>
+              )}
+
+
+
               <th className="px-4 py-2">نام قطعه</th>
               <th className="px-4 py-2">کد فنی</th>
               <th className="px-4 py-2">تعداد</th>
@@ -93,12 +237,12 @@ export const OrderDetails = ({
                 <React.Fragment key={i}>
                   <tr>
                     <td
-                      colSpan={10} // چون جدول شما 10 ستون دارد
+                      colSpan={11}
                       className="bg-blue-50 text-blue-800 font-bold px-4 py-2 border-y border-blue-300"
                     >
                       <div className="flex flex-col gap-2">
                         <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-2 text-left">
+                          <div className="flex items-center gap-2 text-left mr-4">
                             <span>شماره پذیرش: {reception.reception_number}</span>
                             <span className="flex items-center gap-1">
                               (<span>{reception.car_status}</span>
@@ -136,13 +280,22 @@ export const OrderDetails = ({
 
                     const canEdit =
                       (isAccountant && part.status === "در انتظار تائید حسابداری") ||
-                      (isWarehouse && part.status !== "در انتظار تائید حسابداری");
+                      (isWarehouse && part.status !== "در انتظار تائید حسابداری" && currentTab !== "در انتظار تائید حسابداری");
 
                     return (
                       <tr
                         key={j}
                         className={`border-b ${j % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
                       >
+                        {canShowSelectUI && canSelectItem(part) && (
+                          <td className="px-4 py-3 text-center">
+                            <CheckBox
+                              checked={isSelected(part.order_id)}
+                              onChange={() => toggleSelect(part.order_id)}
+                            />
+                          </td>
+                        )}
+
                         <td className="px-4 py-3 flex items-center gap-1.5 font-medium text-gray-800">
                           <PackageOpen className="w-5 h-5 text-gray-600" />
                           {part.piece_name}
@@ -303,7 +456,40 @@ export const OrderDetails = ({
         }}
       />
 
+      <InsertDescription
+        open={openDescriptionModal}
+        onClose={() => {
+          setOpenDescriptionModal(false);
+          setItemsToCancel([]);
+        }}
+        onSubmit={async (description) => {
+          if (itemsToCancel.length === 0) {
+            toast.warning("هیچ قطعه‌ای برای لغو انتخاب نشده است");
+            return;
+          }
 
+          let successCount = 0;
+          await Promise.all(
+            itemsToCancel.map(async (part) => {
+              try {
+                await editOrder(part.order_id, {
+                  status: "عدم پرداخت حسابداری",
+                  description,
+                });
+                successCount++;
+              } catch (error) {
+                console.error(`خطا در لغو قطعه ${part.piece_name}`, error);
+              }
+            })
+          );
+
+          toast.success(`${successCount} قطعه با وضعیت "عدم تایید حسابداری" رد شدند`);
+          refetch();
+          setSelectedItems([]);
+          setItemsToCancel([]);
+          setOpenDescriptionModal(false);
+        }}
+      />
     </div>
   );
 };

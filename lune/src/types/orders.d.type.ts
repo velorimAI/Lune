@@ -43,6 +43,7 @@ export interface Order {
 export interface OrdersListProps {
   refetch : () => void;
   data: Order[];
+  currentTab : string;
 }
 // هر قطعه‌ای که در یک پذیرش وجود داره
 export interface OrderItem {

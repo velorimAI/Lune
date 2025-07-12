@@ -86,6 +86,7 @@ const Orders: FC = () => {
             <OrdersListWrapper
               orders={filteredOrdersByTab}
               refetch={refetch}
+              currentTab={activeTab}
             />
           )}
         </div>
