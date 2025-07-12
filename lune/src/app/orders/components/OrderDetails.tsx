@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Wrench, PackageOpen, DollarSign, PlusCircle as CirclePlus, InfoIcon, MessageCircleMore } from "lucide-react";
 import { DeleteItem } from "./delete-items";
@@ -15,29 +17,6 @@ import ToolTip from "@/app/components/custom-tooltip";
 import { CheckBox } from "@/app/components/custom-form/check-box";
 import { Button } from "@/app/components/button";
 import InsertDescription from "./insert-description";
-
-// interface Order {
-//   receptions: Reception[];
-// }
-
-// interface Reception {
-//   reception_number: string;
-//   car_status: string;
-//   settlement_status: string;
-//   orders: OrderItem[];
-// }
-
-// interface OrderItem {
-//   order_id: string;
-//   piece_name: string;
-//   number_of_pieces: number;
-//   order_channel: string;
-//   order_date: string;
-//   order_number: string;
-//   estimated_arrival_days: number;
-//   delivery_date: string | null;
-//   status: string;
-// }
 
 export const OrderDetails = ({
   id,
@@ -62,12 +41,9 @@ export const OrderDetails = ({
   const isWarehouse = role === "انباردار";
   const isSelectableTab = !["تحویل شد", "canceled", "all"].includes(currentTab);
 
-
   const canShowSelectUI =
     isSelectableTab &&
     (isAccountant || (isWarehouse && currentTab !== "در انتظار تائید حسابداری"));
-
-
 
   const canSelectItem = (part: any) => {
     if (isWarehouse && isSelectableTab && currentTab !== "در انتظار تائید حسابداری") return true;
@@ -75,15 +51,9 @@ export const OrderDetails = ({
     return false;
   };
 
-
-
-
-
   const accountantPendingParts = order?.receptions
     ?.flatMap((r: any) => r.orders || [])
     .filter((o: any) => o.status === "در انتظار تائید حسابداری");
-
-
 
   const isSelected = (id: string) => selectedItems.includes(id);
 
@@ -103,7 +73,6 @@ export const OrderDetails = ({
       setSelectedItems(allSelectableIds);
     }
   };
-
 
   const handleMultiConfirm = async () => {
     const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
@@ -139,11 +108,22 @@ export const OrderDetails = ({
     setSelectedItems([]);
   };
 
+  const handleMultiCancel = async () => {
+    const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
+    const cancellableOrders = allOrders.filter((order: any) =>
+      selectedItems.includes(order.order_id)
+    );
 
+    if (cancellableOrders.length === 0) {
+      toast.warning("هیچ قطعه‌ای برای لغو وجود ندارد");
+      return;
+    }
 
+    setItemsToCancel(cancellableOrders);
+    setOpenDescriptionModal(true);
+  };
 
-
-
+  const canShowCancelAll = (isWarehouse && isSelectableTab) || isAccountant;
 
   return (
     <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
@@ -155,41 +135,28 @@ export const OrderDetails = ({
         </span>
         <AddItem id={id} />
       </div>
+      
       {selectedItems.length > 0 && (
         <div className="flex gap-2 mb-3">
-          {(isWarehouse && isSelectableTab) || isAccountant ? (
-            <Button
-              className="bg-green-600 text-white hover:bg-green-700"
-              onClick={handleMultiConfirm}
-            >
-              تایید همه
-            </Button>
-          ) : null}
-          {isAccountant && (
-            <Button
-              variant={"outline"}
-              onClick={() => {
-                const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
-                const cancellableOrders = allOrders.filter(
-                  (order: any) =>
-                    selectedItems.includes(order.order_id) &&
-                    order.status === "در انتظار تائید حسابداری"
-                );
-                if (cancellableOrders.length === 0) {
-                  toast.warning("هیچ قطعه‌ای برای لغو وجود ندارد");
-                  return;
-                }
-                setItemsToCancel(cancellableOrders);
-                setOpenDescriptionModal(true);
-              }}
-            >
-              عدم تایید
-            </Button>
+          {canShowCancelAll && (
+            <>
+              <Button
+                
+                onClick={handleMultiConfirm}
+              >
+                تایید همه
+              </Button>
+              <Button
+                variant={"outline"}
+                onClick={handleMultiCancel}
+                className="text-black"
+              >
+                لغو همه
+              </Button>
+            </>
           )}
         </div>
       )}
-
-
 
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-right text-gray-800 border-collapse">
@@ -208,9 +175,6 @@ export const OrderDetails = ({
                   />
                 </th>
               )}
-
-
-
               <th className="px-4 py-2">نام قطعه</th>
               <th className="px-4 py-2">کد فنی</th>
               <th className="px-4 py-2">تعداد</th>
@@ -268,7 +232,6 @@ export const OrderDetails = ({
                         </div>
                       </div>
                     </td>
-
                   </tr>
 
                   {reception.orders.map((part: any, j: any) => {
@@ -387,7 +350,6 @@ export const OrderDetails = ({
                                 </div>
                               </ToolTip>
                             )}
-
                           </div>
                           <div className="flex gap-1">
                             <DeleteItem
@@ -418,8 +380,6 @@ export const OrderDetails = ({
                               </ToolTip>
                             )}
                           </div>
-
-
                         </td>
                       </tr>
                     );
@@ -472,8 +432,11 @@ export const OrderDetails = ({
           await Promise.all(
             itemsToCancel.map(async (part) => {
               try {
+                const options = getStatusOptions(part.status, part.order_channel, part.car_status || "");
+                const cancelStatus = options[1]?.value || "لغو شده";
+                
                 await editOrder(part.order_id, {
-                  status: "عدم پرداخت حسابداری",
+                  status: cancelStatus,
                   description,
                 });
                 successCount++;
@@ -483,7 +446,7 @@ export const OrderDetails = ({
             })
           );
 
-          toast.success(`${successCount} قطعه با وضعیت "عدم تایید حسابداری" رد شدند`);
+          toast.success(`${successCount} قطعه با موفقیت لغو شدند`);
           refetch();
           setSelectedItems([]);
           setItemsToCancel([]);
