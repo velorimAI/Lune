@@ -1,7 +1,6 @@
-// app/admin/users/components/DeleteUserModal.tsx
 'use client';
 
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Modal } from '@/app/components/modal';
@@ -14,7 +13,13 @@ interface DeleteUserModalProps {
   userName: string;
 }
 
-const DeleteUserModal = ({ isOpen, onClose, onUserDeleted, userId, userName }: DeleteUserModalProps) => {
+const DeleteUserModal: FC<DeleteUserModalProps> = ({
+  isOpen,
+  onClose,
+  onUserDeleted,
+  userId,
+  userName,
+}) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleConfirm = async () => {
@@ -49,7 +54,9 @@ const DeleteUserModal = ({ isOpen, onClose, onUserDeleted, userId, userName }: D
       confirmLoading={isDeleting}
       cancelText="لغو"
     >
-      <p>آیا از حذف کاربر <strong>{userName}</strong> مطمئن هستید؟</p>
+      <p>
+        آیا از حذف کاربر <strong>{userName}</strong> مطمئن هستید؟
+      </p>
     </Modal>
   );
 };
