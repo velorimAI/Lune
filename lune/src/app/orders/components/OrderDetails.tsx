@@ -14,14 +14,11 @@ import { getStatusOptions } from "@/lib/getStatusOptions";
 import { toast } from "sonner";
 import { InsertDate } from "./insert-date";
 import ToolTip from "@/app/components/custom-tooltip";
-<<<<<<< HEAD
 import AddItemToReception from "./add-item-to-reception";
 
-=======
 import { CheckBox } from "@/app/components/custom-form/check-box";
 import { Button } from "@/app/components/button";
 import InsertDescription from "./insert-description";
->>>>>>> implement-selectable-ordersList
 
 export const OrderDetails = ({
   id,
@@ -216,11 +213,7 @@ export const OrderDetails = ({
                 <React.Fragment key={i}>
                   <tr>
                     <td
-<<<<<<< HEAD
-                      colSpan={10}
-=======
                       colSpan={11}
->>>>>>> implement-selectable-ordersList
                       className="bg-blue-50 text-blue-800 font-bold px-4 py-2 border-y border-blue-300"
                     >
                       <div className="flex flex-col gap-2">
