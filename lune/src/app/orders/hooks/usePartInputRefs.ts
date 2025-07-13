@@ -9,15 +9,18 @@ export const usePartInputRefs = () => {
   const pieceNameRef = useRef<InputRefHandle>(null);
   const numberOfPiecesRef = useRef<InputRefHandle>(null);
   const orderNumberRef = useRef<InputRefHandle>(null);
-  const deliveryDateRef = useRef<InputRefHandle>(null); // اضافه شد
+  const deliveryDateRef = useRef<InputRefHandle>(null); 
 
   const clearPartFields = () => {
     partIdRef.current?.clear();
     pieceNameRef.current?.clear();
     numberOfPiecesRef.current?.clear();
     orderNumberRef.current?.clear();
-    deliveryDateRef.current?.clear(); // اضافه شد
+    deliveryDateRef.current?.clear(); 
   };
+
+  
+  
 
   return {
     refs: {
@@ -25,7 +28,7 @@ export const usePartInputRefs = () => {
       pieceNameRef,
       numberOfPiecesRef,
       orderNumberRef,
-      deliveryDateRef, // اضافه شد
+      deliveryDateRef, 
     },
     clearPartFields,
   };

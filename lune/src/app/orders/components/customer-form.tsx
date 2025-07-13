@@ -26,7 +26,7 @@ export function CustomerForm({
         cancelHide
         onSubmit={onSubmit}
         submitDisable={userInfoSubmitted}
-        methods={userForm}
+        // methods={userForm}
       >
         <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
           <Input

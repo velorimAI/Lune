@@ -85,13 +85,20 @@ export const OrderDetails = ({
       return;
     }
 
+    console.log(selectedOrders);
     let successCount = 0;
 
     await Promise.all(
       selectedOrders.map(async (part: any) => {
-        const options = getStatusOptions(part.status, part.order_channel, part.car_status || "");
+        const options = getStatusOptions(part.status, part.order_channel, part.reception_car_status || "");
+
         if (options.length > 0) {
           const nextStatus = options[0].value;
+          if ( part.reception_car_status === "متوقع" && part.status === "در انتظار نوبت دهی") {
+            setSelectedOrder({ id: part.order_id, name: part.piece_name });
+            setOpenDateModal(true);
+            return;
+          }
           if (nextStatus === "نوبت داده شد") return;
           try {
             await editOrder(part.order_id, { status: nextStatus });
@@ -135,13 +142,13 @@ export const OrderDetails = ({
         </span>
         <AddItem id={id} />
       </div>
-      
+
       {selectedItems.length > 0 && (
         <div className="flex gap-2 mb-3">
           {canShowCancelAll && (
             <>
               <Button
-                
+
                 onClick={handleMultiConfirm}
               >
                 تایید همه
@@ -434,7 +441,7 @@ export const OrderDetails = ({
               try {
                 const options = getStatusOptions(part.status, part.order_channel, part.car_status || "");
                 const cancelStatus = options[1]?.value || "لغو شده";
-                
+
                 await editOrder(part.order_id, {
                   status: cancelStatus,
                   description,
