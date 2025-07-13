@@ -4,6 +4,7 @@ import { usePartInputRefs } from "./usePartInputRefs";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAddOrder } from "./use-add-order";
+import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
 
 interface ArrivalSettings {
   VIS: string;
@@ -29,6 +30,16 @@ interface OrderItem {
 export function useOrderData() {
   const userForm = useForm();
   const { mutate, isPending } = useAddOrder();
+  const [formKey, setFormKey] = useState(0);
+  const [customerFormKey, setCustomerFormKey] = useState(0);
+
+  const resetPartForm = () => {
+    setFormKey((prev) => prev + 1);
+    setOrderChannel("VOR");
+  };
+  const resetCustomerForm = () => {
+    setCustomerFormKey((prev) => prev + 1);
+  };
 
   const [userData, setUserData] = useState<any>({});
   const [userInfoSubmitted, setUserInfoSubmitted] = useState(false);
@@ -73,6 +84,7 @@ export function useOrderData() {
   const handleSubmitItem = (data: any) => {
     setOrderGroups((prevData) => [...prevData, data]);
     clearPartFields();
+    resetPartForm();
   };
 
   const handleSubmit = () => {
@@ -123,8 +135,16 @@ export function useOrderData() {
           toast.success("سفارش با موفقیت اضافه شد");
           setUserData({});
           setOrderGroups([]);
-          setUserInfoSubmitted(false);
           clearAllFields();
+          setUserInfoSubmitted(false);
+          userForm.reset({
+            customer_name: "",
+            phone_number: "",
+            car_status: "متوقف",
+            reception_number: "",
+            reception_date: getTodayJalaliDate(),
+          });
+
         },
         onError: () => {
           toast.error("خطا در ارسال سفارش");
@@ -148,5 +168,9 @@ export function useOrderData() {
     isPending,
     refs,
     partRefs,
+    formKey,
+    customerFormKey,
+    resetPartForm,
+    resetCustomerForm
   };
 }

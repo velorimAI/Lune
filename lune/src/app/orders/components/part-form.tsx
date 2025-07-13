@@ -14,6 +14,8 @@ interface PartFormProps {
   setOrderChannel: (value: string) => void;
   estimatedArrivalDays?: string | number;
   onSubmit: (data: any) => void;
+  formKey: number;
+  onFormReset: () => void;
 }
 
 export default function PartForm({
@@ -22,9 +24,11 @@ export default function PartForm({
   setOrderChannel,
   estimatedArrivalDays,
   onSubmit,
+  formKey,
+  onFormReset
 }: PartFormProps) {
   const { refs } = usePartInputRefs();
-  const [formKey, setFormKey] = useState(0);
+  // const [formKey, setFormKey] = useState(0);
   const [arrivalDays, setArrivalDays] = useState<string>("1");
   const [formValues, setFormValues] = useState({
     part_id: '',
@@ -41,14 +45,19 @@ export default function PartForm({
     } else {
       setArrivalDays(String(estimatedArrivalDays));
     }
+
+    setFormValues({
+      part_id: '',
+      piece_name: '',
+    });
   }, [estimatedArrivalDays, formKey]);
 
-  const handleFormSubmit = (data: any) => {
-    onSubmit({ ...data, estimated_arrival_days: arrivalDays });
-    setFormKey((prev) => prev + 1);
-    setOrderChannel("VOR");
-    setArrivalDays("7");
-  };
+  // const handleFormSubmit = (data: any) => {
+  //   onSubmit({ ...data, estimated_arrival_days: arrivalDays });
+  //   setFormKey((prev) => prev + 1);
+  //   setOrderChannel("VOR");
+  //   setArrivalDays("7");
+  // };
 
   return (
     <Card title="اطلاعات قطعه" className="p-0 pb-4">
@@ -56,9 +65,10 @@ export default function PartForm({
         key={formKey}
         submitText="ثبت قطعه"
         cancelHide
-        onSubmit={(data) =>
-          onSubmit({ ...data, estimated_arrival_days: arrivalDays })
-        }
+        onSubmit={(data) => {
+          onSubmit({ ...data, estimated_arrival_days: arrivalDays });
+          onFormReset();
+        }}
         submitDisable={!userInfoSubmitted}
         className="mt-1"
       >
@@ -77,6 +87,7 @@ export default function PartForm({
                 setFormValues((prev) => ({ ...prev, piece_name: name }));
               }}
               disabled={!userInfoSubmitted}
+              ref={refs.partIdRef}
             />
             <Input
               label="نام قطعه"
@@ -85,6 +96,7 @@ export default function PartForm({
               required
               readOnly
               disabled={!userInfoSubmitted}
+              ref={refs.pieceNameRef}
             />
             <Input
               label="تعداد"
@@ -155,7 +167,6 @@ export default function PartForm({
                 placeholder="توضیحاتی درباره سفارش وارد کنید..."
                 className="mb-6 w-full col-span-1 sm:col-span-2 md:col-span-4"
               />
-
             </div>
           </div>
         </div>

@@ -117,6 +117,7 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     validations: fieldValidation,
     initialValue: value === null ? "" : value,
   });
+  
 
   const handleChange = (event: ChangeEvent<{ value: string }>) => {
     let val = event?.target?.value;

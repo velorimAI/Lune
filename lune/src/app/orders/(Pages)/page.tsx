@@ -20,6 +20,7 @@ const Orders: FC = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [searchField, setSearchField] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("all");
+  const [page, setPage] = useState(1);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["orders"],
@@ -87,6 +88,7 @@ const Orders: FC = () => {
             <OrdersListWrapper
               orders={filteredOrdersByTab}
               refetch={refetch}
+              currentTab={activeTab}
             />
           )}
         </div>
