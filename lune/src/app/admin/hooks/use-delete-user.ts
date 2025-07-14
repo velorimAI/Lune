@@ -1,18 +1,8 @@
 import { deleteUser } from "@/app/apis/admin/adminService";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
 
 export const useDeleteUser = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (id: string) => deleteUser(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
-      queryClient.refetchQueries({ queryKey: ["orders"] });
-    },
-    onError: () => {
-      toast.error("حذف کاربر با خطا مواجه شد");
-    },
+    mutationFn:  (id: string) => deleteUser(id),
   });
 };

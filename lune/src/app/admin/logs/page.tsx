@@ -1,155 +1,126 @@
-// app/admin/logs/page.tsx
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
 import {
-  User,
-  ReplaceAll,
   MessageCircle,
-  Calendar,
   Clock as ClockIcon,
-  Hash,
-  Loader2,
-  ArrowRight
+  ArrowRight,
+  AlertCircle,
+  FileText
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
-
-interface LogEntry {
-  id: number;
-  uses_id: number;
-  action: string;
-  message: string;
-  date: string;
-  time: string;
-}
+import { useQuery } from '@tanstack/react-query';
+import { getLogsList } from '@/app/apis/admin/adminService';
+import { getActionStyle } from '../utils/getActionStyle';
 
 export default function LogsPage() {
   const router = useRouter();
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchLogs = useCallback(async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token')!;
-      const res = await axios.get<{ logs: LogEntry[] }>(
-        'http://localhost:3001/api/admin/getlogs',
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setLogs(res.data.logs);
-      setError(null);
-    } catch (err: any) {
-      setError(err.response?.data?.error || err.message || 'خطا در دریافت سوابق');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['logs'],
+    queryFn: getLogsList,
+    refetchInterval: 300_000,
+  });
 
-  useEffect(() => {
-    fetchLogs();
-    const interval = setInterval(fetchLogs, 300_000);
-    return () => clearInterval(interval);
-  }, [fetchLogs]);
+  const logs = data?.logs || [];
+
+  const formatTime = (time: string) => time?.slice(0, 5);
 
   return (
-    <div className="relative flex flex-col h-screen bg-gray-50 p-4 md:p-6">
-      {/* دکمه بازگشت */}
-      <Button
-        onClick={() => router.push('/admin')}
-        variant="outline"
-        className="absolute top-0 right-0"
-      >
-        <ArrowRight size={20} />
-      </Button>
+    <div className="bg-gray-50 p-6 min-h-screen">
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-white rounded-lg shadow">
+              <FileText className="w-5 h-5 text-gray-700" />
+            </div>
+            <div>
+              <h1 className="text-xl font-semibold text-gray-800">سوابق فعالیت</h1>
+              <p className="text-sm text-gray-500 mt-0.5">لیست فعالیت‌های انجام‌شده در سیستم</p>
+            </div>
+          </div>
 
-      <div className="flex flex-col bg-white border border-gray-200 shadow rounded-lg overflow-hidden h-full">
-        {/* هدر صفحه */}
-        <div className="p-3 bg-gray-100 border-b">
-          <h2 className="text-lg font-semibold text-gray-800">لیست سوابق فعالیت</h2>
+          <Button
+            onClick={() => router.push('/admin')}
+            variant="ghost"
+            className="text-sm text-gray-600 hover:bg-white hover:shadow-sm"
+          >
+            <ArrowRight size={16} className="ml-1" />
+            بازگشت
+          </Button>
         </div>
 
-        {/* لیست سوابق با اسکرول سفارشی */}
-        <ScrollArea className="flex-1">
-          {loading ? (
-            <div className="flex justify-center items-center h-full">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-              <span className="mr-2">در حال بارگذاری سوابق...</span>
+        {/* Logs Table */}
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-32">
+              <div className="relative">
+                <div className="w-14 h-14 border-4 border-gray-200 rounded-full" />
+                <div className="w-14 h-14 border-4 border-gray-700 rounded-full animate-spin absolute top-0 left-0 border-t-transparent" />
+              </div>
+              <p className="mt-4 text-gray-500 text-sm">در حال بارگذاری...</p>
             </div>
-          ) : error ? (
-            <div className="flex flex-col justify-center items-center h-full p-4 text-center">
-              <div className="text-red-500 mb-2">{error}</div>
-              <button
-                onClick={fetchLogs}
-                className="px-4 py-2 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors text-sm"
-              >
-                تلاش مجدد
-              </button>
+          ) : isError ? (
+            <div className="flex flex-col items-center justify-center py-32">
+              <div className="p-4 bg-red-50 rounded-full mb-4">
+                <AlertCircle className="w-7 h-7 text-red-500" />
+              </div>
+              <p className="text-gray-700 font-medium mb-2">خطا در دریافت اطلاعات</p>
             </div>
           ) : logs.length === 0 ? (
-            <div className="flex justify-center items-center h-full text-gray-500">
-              لاگی پیدا نشد
+            <div className="flex flex-col items-center justify-center py-32">
+              <div className="p-4 bg-gray-50 rounded-full mb-4">
+                <MessageCircle className="w-7 h-7 text-gray-400" />
+              </div>
+              <p className="text-gray-500 text-sm">هیچ سابقه‌ای یافت نشد</p>
             </div>
           ) : (
-            <div className="divide-y">
-              {/* هدر ردیفی با آیکون (ترتیب: زمان، تاریخ، پیام، عملیات، کاربر، شناسه) */}
-              <div className="grid grid-cols-6 gap-4 px-4 py-2 bg-gray-100 text-sm font-semibold text-gray-700 border-b">
-                <div className="flex items-center gap-1 justify-end">
-                  <ClockIcon className="w-4 h-4 ml-1" />
-                  <span>زمان</span>
-                </div>
-                <div className="flex items-center gap-1 justify-end">
-                  <Calendar className="w-4 h-4 ml-1" />
-                  <span>تاریخ</span>
-                </div>
-                <div className="flex items-center gap-1 justify-end">
-                  <MessageCircle className="w-4 h-4 ml-1" />
-                  <span>پیام</span>
-                </div>
-                <div className="flex items-center gap-1 justify-end">
-                  <ReplaceAll className="w-4 h-4 ml-1" />
-                  <span>عملیات</span>
-                </div>
-                <div className="flex items-center gap-1 justify-end">
-                  <User className="w-4 h-4 ml-1" />
-                  <span>کاربر</span>
-                </div>
-                <div className="flex items-center gap-1 justify-end">
-                  <Hash className="w-4 h-4 ml-1" />
-                  <span>شناسه</span>
-                </div>
+            <>
+              {/* Table Head */}
+              <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-100 text-sm font-medium text-gray-600 border-b border-gray-200">
+                <div className="col-span-2 text-right">عملیات</div>
+                <div className="col-span-2 text-right">تاریخ و زمان</div>
+                <div className="col-span-8 text-right">توضیحات</div>
               </div>
 
-              {/* ردیف‌های دیتا مطابق ترتیب جدید */}
-              {logs.map((log) => (
-                <div
-                  key={log.id}
-                  className="grid grid-cols-6 gap-4 px-4 py-2 hover:bg-gray-50 transition-colors text-sm"
-                >
-                  <div className="text-right text-gray-500">{log.time}</div>
-                  <div className="text-right text-gray-500">{log.date}</div>
-                  <div
-                    className="text-right text-gray-700 truncate"
-                    title={log.message}
-                  >
-                    {log.message}
-                  </div>
-                  <div className="text-right">
-                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full max-w-full truncate">
-                      {log.action}
-                    </span>
-                  </div>
-                  <div className="text-right text-gray-800">{log.uses_id}</div>
-                  <div className="text-right text-gray-800">{log.id}</div>
+              {/* Table Body */}
+              <ScrollArea className="h-[calc(100vh-320px)]">
+                <div dir="rtl" className="divide-y divide-gray-100">
+                  {logs.map((log: any) => (
+                    <div
+                      key={log.id}
+                      className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-150"
+                    >
+                      <div className="col-span-2 text-right">
+                        <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${getActionStyle(log.action)}`}>
+                          {log.action}
+                        </span>
+                      </div>
+                      <div className="col-span-2 text-right text-sm">
+                        <div className="text-gray-700">{log.date}</div>
+                        <div className="text-xs text-gray-500 mt-1">{formatTime(log.time)}</div>
+                      </div>
+                      <div className="col-span-8 text-right text-sm text-gray-600 leading-relaxed">
+                        {log.message}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </ScrollArea>
+
+              {/* Footer */}
+              <div className="px-6 py-3 bg-gray-50 flex items-center justify-between border-t border-gray-100">
+                <div className="text-sm text-gray-500">نمایش {logs.length} مورد</div>
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <ClockIcon className="w-4 h-4" />
+                  بروزرسانی خودکار هر ۵ دقیقه
+                </div>
+              </div>
+            </>
           )}
-        </ScrollArea>
+        </div>
       </div>
     </div>
   );

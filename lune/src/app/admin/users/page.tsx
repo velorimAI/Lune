@@ -13,17 +13,6 @@ import { SearchBox } from '@/app/components/table/search-box';
 import { AddUserModal } from './components/add-user-modal';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
-interface User {
-  id: number;
-  name: string;
-  last_name: string;
-  code_meli: number;
-  role: string;
-  last_active_date: string | null;
-  last_active_time: string | null;
-  online: boolean;
-}
-
 export default function UsersListPage() {
   const router = useRouter();
   const [searchText, setSearchText] = useState<string>("");
@@ -77,8 +66,8 @@ export default function UsersListPage() {
                   <p className="text-gray-500 text-sm">کل کاربران</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">{users.length}</p>
                 </div>
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <UserPlus className="text-gray-700" size={24} />
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center transition hover:shadow-2xl hover:scale-105">
+                  <AddUserModal refetch={refetch} />
                 </div>
               </div>
             </div>
@@ -90,8 +79,9 @@ export default function UsersListPage() {
                     {users.filter((u: { online: any; }) => u.online).length}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <div className="w-3 h-3 bg-gray-900 rounded-full animate-pulse"></div>
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute w-6 h-6 bg-green-500 rounded-full animate-ping opacity-50 duration-1000 ease-out"></div>
+                  <div className="w-4 h-4 bg-green-500 rounded-full"></div>
                 </div>
               </div>
             </div>
@@ -124,14 +114,14 @@ export default function UsersListPage() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <ScrollArea className="w-full pr-3 mt-3 max-h-[55vh] overflow-auto">
             <table dir="rtl" className="w-full">
-              <thead  className="sticky top-0 bg-white border-b border-gray-200 z-10">
+              <thead className="sticky top-0 bg-white border-b border-gray-200 z-10">
                 <tr className="border-b border-gray-100 ">
                   <th className="text-right p-6 font-medium text-gray-700">کاربر</th>
                   <th className="text-right p-6 font-medium text-gray-700">کد ملی</th>
                   <th className="text-right p-6 font-medium text-gray-700">نقش</th>
                   <th className="text-right p-6 font-medium text-gray-700">آخرین فعالیت</th>
                   <th className="text-center p-6 font-medium text-gray-700">وضعیت</th>
-                  <th className="text-center p-6 font-medium text-gray-700">عملیات</th>
+                  <th className="text-center p-6 font-medium text-gray-700"></th>
                 </tr>
               </thead>
               <tbody>
@@ -187,10 +177,11 @@ export default function UsersListPage() {
                         <div className="flex items-center justify-center">
                           {u.online ? (
                             <div className="flex items-center gap-2">
-                              <div className="relative">
-                                <div className="absolute inset-0 bg-gray-400 rounded-full animate-ping opacity-75"></div>
-                                <div className="relative w-2.5 h-2.5 bg-gray-900 rounded-full"></div>
+                              <div className="relative flex items-center justify-center">
+                                <div className="absolute w-3 h-3 bg-green-500 rounded-full animate-ping opacity-50 duration-1000 ease-out"></div>
+                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                               </div>
+
                               <span className="text-xs text-gray-900 font-medium">آنلاین</span>
                             </div>
                           ) : (
@@ -214,10 +205,9 @@ export default function UsersListPage() {
             </table>
             <ScrollBar />
           </ScrollArea>
-        {/* </div> */}
-      </div>
+        </div>
 
-      <div
+        {/* <div
         className="
         fixed bottom-8 left-8 bg-gray-900 text-white p-4 rounded-xl 
         shadow-lg transition 
@@ -227,9 +217,9 @@ export default function UsersListPage() {
         "
       >
         <AddUserModal refetch={refetch} />
-      </div>
+      </div> */}
 
-    </div>
+      </div>
     </div >
   );
 }

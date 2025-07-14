@@ -58,3 +58,14 @@ export const deleteUser = async (id: string) => {
     );
     return response.data;
 };
+
+export const getLogsList= async () => {
+    const token = localStorage.getItem("token");
+    const res = await axios.get(`${API_BASE}admin/getlogs`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    return res.data;
+};

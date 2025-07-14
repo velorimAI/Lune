@@ -50,11 +50,13 @@ export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
             <Input
               label="نام"
               name="name"
+              required
 
             />
             <Input
               label="نام خانوادگی"
               name="last_name"
+              required
 
             />
           </div>
@@ -63,6 +65,7 @@ export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
               label="کد ملی"
               name="code_meli"
               type='number'
+              required
 
               inputClassName="w-full 
               [appearance:textfield] 
@@ -75,6 +78,7 @@ export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
               name="password"
               type="password"
               placeholder="****"
+              required
             />
             <Select
               label="نقش"
@@ -87,6 +91,7 @@ export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
                 { label: 'پذیرش', value: 'پذیرش' },
               ]}
               inputStyle='w-full'
+              required
             />
           </div>
         </Form>
