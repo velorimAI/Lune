@@ -1,63 +1,55 @@
 'use client';
 
 import { FC, useState } from 'react';
-import axios from 'axios';
 import { toast } from 'sonner';
 import { Modal } from '@/app/components/modal';
+import { UserX } from 'lucide-react';
+import { useDeleteUser } from '../../hooks/use-delete-user';
 
 interface DeleteUserModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onUserDeleted: () => void;
-  userId: number | null;
-  userName: string;
+  id: any;
+  name: string;
+  refetch: () => void;
 }
 
-const DeleteUserModal: FC<DeleteUserModalProps> = ({
-  isOpen,
-  onClose,
-  onUserDeleted,
-  userId,
-  userName,
-}) => {
-  const [isDeleting, setIsDeleting] = useState(false);
+const DeleteUserModal: FC<DeleteUserModalProps> = ({ id, name , refetch}) => {
+  const [open, setOpen] = useState(false);
+  const { mutate, isPending } = useDeleteUser();
 
-  const handleConfirm = async () => {
-    if (!userId) return;
-    setIsDeleting(true);
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('توکن موجود نیست');
-
-      await axios.delete(
-        `http://localhost:3001/api/admin/deleteuser/${userId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      toast.success('کاربر با موفقیت حذف شد.');
-      onUserDeleted();
-      onClose();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || err.message || 'خطا در حذف کاربر');
-    } finally {
-      setIsDeleting(false);
-    }
+  const handleDelete = () => {
+    mutate(id, {
+      onSuccess: () => {
+        refetch?.()
+        toast.success(`کاربر «${name}» با موفقیت حذف شد.`);
+        setOpen(false);
+      },
+      onError: () => {
+        toast.error('خطا در حذف کاربر.');
+      },
+    });
   };
 
   return (
-    <Modal
-      open={isOpen}
-      title="حذف کاربر"
-      onCancel={onClose}
-      onConfirm={handleConfirm}
-      confirmText={isDeleting ? 'در حال حذف...' : 'حذف'}
-      confirmLoading={isDeleting}
-      cancelText="لغو"
-    >
-      <p>
-        آیا از حذف کاربر <strong>{userName}</strong> مطمئن هستید؟
-      </p>
-    </Modal>
+    <>
+      <UserX
+        className="text-red-600 hover:text-red-900 hover:cursor-pointer"
+        onClick={() => setOpen(true)}
+      />
+      <Modal
+        open={open}
+        title="حذف کاربر"
+        onCancel={() => setOpen(false)}
+        onConfirm={handleDelete}
+        confirmText="بله، حذف کن"
+        cancelText="خیر، منصرف شدم"
+        confirmLoading={isPending}
+        confirmDisabled={isPending}
+      >
+        <p className="text-right">
+          آیا از حذف کاربر <span className="font-semibold">«{name}»</span> مطمئن هستید؟
+        </p>
+      </Modal>
+    </>
   );
 };
 

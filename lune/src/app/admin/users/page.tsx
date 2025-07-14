@@ -1,16 +1,17 @@
-// pages/users/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import Lottie from 'lottie-react';
-import { UserX, UserPlus, ArrowRight, UserPen } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from 'react';
+import { UserX, UserPlus, ArrowLeft, UserPen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import AddUserModal from './components/AddUserModal';
 import DeleteUserModal from './components/DeleteUserModal';
 import EditUserModal from './components/EditUserModal';
+import { getUsersList } from '@/app/apis/admin/adminService';
+import { useQuery } from '@tanstack/react-query';
+import { useUsersSearch } from '../hooks/useUsersSearch';
+import { SearchBox } from '@/app/components/table/search-box';
+import { AddUserModal } from './components/add-user-modal';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 interface User {
   id: number;
@@ -23,206 +24,212 @@ interface User {
   online: boolean;
 }
 
-const API_BASE = 'http://localhost:3001/api/admin';
-
 export default function UsersListPage() {
   const router = useRouter();
-  const [users, setUsers] = useState<User[]>([]);
-  const [onlineAnimation, setOnlineAnimation] = useState<any>(null);
-  const [offlineAnimation, setOfflineAnimation] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState<string>("");
+  const [searchField, setSearchField] = useState<string>("all");
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<{ id: number; name: string } | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [userToEdit, setUserToEdit] = useState<User | null>(null);
+  const { data: users = [], isLoading, refetch } = useQuery({
+    queryKey: ["users"],
+    queryFn: getUsersList,
+    refetchInterval: 300_000,
+  });
 
-  // تابع بارگذاری لیست کاربران
-  const fetchUsers = async () => {
-    try {
-      const token = localStorage.getItem('token')!;
-      const res = await axios.get<User[]>(`${API_BASE}/usersstats`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUsers(res.data);
-      setError(null);
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'خطا در دریافت اطلاعات کاربران');
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  // یک‌بار هنگام مونت شدن صفحه، انیمیشن‌ها را لود و اولین fetch را انجام بده
-  useEffect(() => {
-    fetch('/animations/Online-Pulse-Icon.json')
-      .then(r => r.json())
-      .then(setOnlineAnimation)
-      .catch(() => setOnlineAnimation(null));
-    fetch('/animations/Red-Pulse-Dot.json')
-      .then(r => r.json())
-      .then(setOfflineAnimation)
-      .catch(() => setOfflineAnimation(null));
+  const filteredUsers = useUsersSearch(users, searchText, searchField);
 
-    fetchUsers();
-  }, []);
-
-  // Polling برای بروزرسانی لیست کاربران هر 5 دقیقه
-  useEffect(() => {
-    const intervalId = setInterval(fetchUsers, 300_000); // 300,000ms = 5 minutes
-    return () => clearInterval(intervalId);
-  }, []);
-
-  // هندلرهای CRUD که پس از اجرا، مجدداً لیست را می‌خوانند
-  const handleUserAdded = () => {
-    setIsAddModalOpen(false);
-    fetchUsers();
-    toast.success('لیست کاربران به‌روز شد.');
-  };
-  const handleUserDeleted = () => {
-    setIsDeleteModalOpen(false);
-    setUserToDelete(null);
-    fetchUsers();
-    toast.success('لیست کاربران به‌روز شد.');
-  };
-  const handleUserEdited = () => {
-    setIsEditModalOpen(false);
-    setUserToEdit(null);
-    fetchUsers();
-    toast.success('لیست کاربران به‌روز شد.');
-  };
-
-  const openDelete = (id: number, fullName: string) => {
-    setUserToDelete({ id, name: fullName });
-    setIsDeleteModalOpen(true);
-  };
-  const openEdit = (user: User) => {
-    setUserToEdit(user);
-    setIsEditModalOpen(true);
-  };
-
-  if (loading) return <div className="p-4 text-center">در حال بارگذاری...</div>;
-  if (error) return <div className="p-4 text-red-600">{error}</div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          </div>
+          <p className="text-gray-600 font-medium">در حال بارگذاری...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative w-full p-4">
-      <Button
-        onClick={() => router.push('/admin')}
-        variant="outline"
-        className="absolute top-0 right-0"
-      >
-        <ArrowRight size={20} />
-      </Button>
+    <div className="bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">مدیریت کاربران</h1>
+              <p className="text-gray-600">مشاهده و مدیریت کاربران سیستم</p>
+            </div>
+            <Button
+              onClick={() => router.push('/admin')}
+              variant="ghost"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft size={20} className="ml-2" />
+              بازگشت
+            </Button>
+          </div>
 
-      <AddUserModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onUserAdded={handleUserAdded}
-      />
-      <DeleteUserModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onUserDeleted={handleUserDeleted}
-        userId={userToDelete?.id || null}
-        userName={userToDelete?.name || ''}
-      />
-      <EditUserModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        user={userToEdit}
-        onUserEdited={handleUserEdited}
-      />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm">کل کاربران</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{users.length}</p>
+                </div>
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <UserPlus className="text-gray-700" size={24} />
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm">کاربران آنلاین</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    {users.filter((u: { online: any; }) => u.online).length}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <div className="w-3 h-3 bg-gray-900 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm">مدیران</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    {users.filter((u: { role: string; }) => u.role === 'مدیریت').length}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <UserPen className="text-gray-700" size={24} />
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div className="w-full max-h-[450px] overflow-y-auto border border-gray-200 shadow bg-white">
-        <table className="min-w-full">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="p-3 text-right border-b">نام</th>
-              <th className="p-3 text-right border-b">نام خانوادگی</th>
-              <th className="p-3 text-right border-b">کد ملی</th>
-              <th className="p-3 text-right border-b">نقش</th>
-              <th className="p-3 text-right border-b">آخرین فعالیت</th>
-              <th className="p-3 text-center border-b"></th>
-              <th className="p-3 text-center border-b">عملیات</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="p-4 text-center text-gray-500 border-b">
-                  کاربری پیدا نشد
-                </td>
-              </tr>
-            ) : (
-              users.map(u => (
-                <tr key={u.id} className="border-b hover:bg-gray-50">
-                  <td className="p-3">{u.name}</td>
-                  <td className="p-3">{u.last_name}</td>
-                  <td className="p-3 font-mono">{u.code_meli}</td>
-                  <td className="p-3">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        u.role === 'مدیریت'
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'bg-blue-100 text-blue-800'
-                      }`}
-                    >
-                      {u.role}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    {u.last_active_date
-                      ? `${u.last_active_date} ${u.last_active_time}`
-                      : 'نامشخص'}
-                  </td>
-                  <td className="p-3 text-center">
-                    {u.online ? (
-                      onlineAnimation ? (
-                        <Lottie animationData={onlineAnimation} loop autoplay className="w-6 h-6" />
-                      ) : (
-                        <div className="relative flex items-center justify-center">
-                          <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75" />
-                          <div className="w-4 h-4 rounded-full bg-green-500" />
-                        </div>
-                      )
-                    ) : offlineAnimation ? (
-                      <Lottie animationData={offlineAnimation} loop autoplay className="w-6 h-6" />
-                    ) : (
-                      <div className="w-4 h-4 rounded-full bg-gray-400" />
-                    )}
-                  </td>
-                  <td className="p-3 text-center">
-                    <button
-                      onClick={() => openEdit(u)}
-                      className="text-gray-600 hover:text-blue-600 mx-1"
-                      title="ویرایش"
-                    >
-                      <UserPen size={20} />
-                    </button>
-                    <button
-                      onClick={() => openDelete(u.id, `${u.name} ${u.last_name}`)}
-                      className="text-gray-600 hover:text-red-600 mx-1"
-                      title="حذف"
-                    >
-                      <UserX size={20} />
-                    </button>
-                  </td>
+          <div className="flex flex-col md:flex-row gap-4 w-[400px]">
+            <SearchBox
+              searchText={searchText}
+              setSearchText={setSearchText}
+              searchField={searchField}
+              setSearchField={setSearchField}
+              className="min-h-[0px] flex-1"
+            />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <ScrollArea className="w-full pr-3 mt-3 max-h-[55vh] overflow-auto">
+            <table dir="rtl" className="w-full">
+              <thead  className="sticky top-0 bg-white border-b border-gray-200 z-10">
+                <tr className="border-b border-gray-100 ">
+                  <th className="text-right p-6 font-medium text-gray-700">کاربر</th>
+                  <th className="text-right p-6 font-medium text-gray-700">کد ملی</th>
+                  <th className="text-right p-6 font-medium text-gray-700">نقش</th>
+                  <th className="text-right p-6 font-medium text-gray-700">آخرین فعالیت</th>
+                  <th className="text-center p-6 font-medium text-gray-700">وضعیت</th>
+                  <th className="text-center p-6 font-medium text-gray-700">عملیات</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="p-12 text-center">
+                      <div className="text-gray-400">
+                        <UserX size={48} className="mx-auto mb-4 opacity-50" />
+                        <p className="text-lg">کاربری پیدا نشد</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredUsers.map((u, index) => (
+                    <tr
+                      key={u.id}
+                      className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                        }`}
+                    >
+                      <td className="p-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white font-medium">
+                            {u.name[0]}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{u.name} {u.last_name}</p>
+                            <p className="text-sm text-gray-500 mt-0.5">ID: {u.id}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-6">
+                        <span className="font-mono text-gray-700">{u.code_meli}</span>
+                      </td>
+                      <td className="p-6">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${u.role === 'مدیریت'
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-gray-100 text-gray-700'
+                          }`}>
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="p-6">
+                        <div className="text-sm">
+                          <p className="text-gray-900">
+                            {u.last_active_date || 'نامشخص'}
+                          </p>
+                          {u.last_active_time && (
+                            <p className="text-gray-500 mt-0.5">{u.last_active_time}</p>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-6 text-center">
+                        <div className="flex items-center justify-center">
+                          {u.online ? (
+                            <div className="flex items-center gap-2">
+                              <div className="relative">
+                                <div className="absolute inset-0 bg-gray-400 rounded-full animate-ping opacity-75"></div>
+                                <div className="relative w-2.5 h-2.5 bg-gray-900 rounded-full"></div>
+                              </div>
+                              <span className="text-xs text-gray-900 font-medium">آنلاین</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <div className="w-2.5 h-2.5 bg-gray-300 rounded-full"></div>
+                              <span className="text-xs text-gray-500">آفلاین</span>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-6">
+                        <div className="flex items-center justify-center gap-4">
+                          <EditUserModal data={u} refetch={refetch} />
+                          <DeleteUserModal id={u.id} name={u.name} refetch={refetch} />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+            <ScrollBar />
+          </ScrollArea>
+        {/* </div> */}
       </div>
 
-      <button
-        onClick={() => setIsAddModalOpen(true)}
-        className="fixed bottom-4 left-4 bg-gray-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg"
-        title="افزودن کاربر جدید"
+      <div
+        className="
+        fixed bottom-8 left-8 bg-gray-900 text-white p-4 rounded-xl 
+        shadow-lg transition 
+        hover:bg-gray-800 hover:shadow-2xl hover:scale-105 
+        transform
+        cursor-pointer
+        "
       >
-        <UserPlus size={20} />
-      </button>
+        <AddUserModal refetch={refetch} />
+      </div>
+
     </div>
+    </div >
   );
 }

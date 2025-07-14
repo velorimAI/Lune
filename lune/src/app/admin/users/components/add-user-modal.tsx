@@ -1,66 +1,61 @@
 'use client';
 
-import { FC, useState} from 'react';
+import { FC, useState } from 'react';
 import { toast } from 'sonner';
 import { Modal } from '@/app/components/modal';
 import { Select } from '@/app/components/custom-form/select-box';
 import { Input } from '@/app/components/custom-form/input';
-import { UserPen } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { Form } from '@/app/components/custom-form/form';
-import { editUser } from '@/app/apis/admin/adminService';
+import { useAddUser } from '../../hooks/use-add-user';
 
-interface EditUserModalProps {
-  data: any
+interface AddUserModalProps {
   refetch: () => void;
 }
 
-const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
+
+export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { mutate, isPending } = useAddUser();
 
-  const handleSubmit = async (formData: any) => {
-    setLoading(true); 
-    try {
-      const updated = {
-        ...formData,
-        code_meli: `0${formData.code_meli}`.slice(-10),
-      };
-
-      await editUser(data.id, updated);
-      refetch?.()
-
-      toast.success(`اطلاعات کاربر ${data?.name || ""} با موفقیت ویرایش شد`);
-      setOpen(false);
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'خطا در بروزرسانی کاربر');
-    } finally {
-      setLoading(false);
-    }
+  const handleSubmit = (formData: any) => {
+    mutate(formData, {
+      onSuccess: () => {
+        refetch();
+        toast.success("کاربر با موفقیت اضافه شد");
+        setOpen(false);
+      },
+      onError: (error: any) => {
+        toast.error(error?.response?.data?.message || "خطا در افزودن کاربر");
+      },
+    });
   };
+
 
   return (
     <>
-      <UserPen
-        className="hover:text-green-600 hover:cursor-pointer"
+      <UserPlus
+        size={24}
+        className="group-hover:rotate-12 transition-transform"
         onClick={() => setOpen(true)}
       />
       <Modal
         open={open}
-        title="ویرایش کاربر"
+        title="اضافه کاربر"
         hideCancel
         hideConfirm
       >
-        <Form cancelText='لغو' submitText='ویرایش' onSubmit={handleSubmit} onCancel={() => setOpen(false)} isLoading={data?.isLoading || data?.isPending || loading} submitLoading={loading} >
+        <Form cancelText='لغو' submitText='اضافه' onSubmit={handleSubmit} onCancel={() => setOpen(false)} submitLoading={isPending} >
           <div className="grid grid-cols-2 gap-4">
             <Input
               label="نام"
               name="name"
-              value={data?.name}
+
             />
             <Input
               label="نام خانوادگی"
               name="last_name"
-              value={data?.last_name}
+
             />
           </div>
           <div className="grid grid-cols-3 gap-4 mt-4">
@@ -68,16 +63,15 @@ const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
               label="کد ملی"
               name="code_meli"
               type='number'
-              isPositiveNumber
+
               inputClassName="w-full 
               [appearance:textfield] 
               [&::-webkit-inner-spin-button]:appearance-none 
               [&::-webkit-outer-spin-button]:appearance-none"
-              value={data?.code_meli}
               idNumber
             />
             <Input
-              label="رمز عبور جدید"
+              label="رمز عبور"
               name="password"
               type="password"
               placeholder="****"
@@ -85,6 +79,7 @@ const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
             <Select
               label="نقش"
               name='role'
+              value='پذیرش'
               options={[
                 { label: 'مدیریت', value: 'مدیریت' },
                 { label: 'انباردار', value: 'انباردار' },
@@ -92,7 +87,6 @@ const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
                 { label: 'پذیرش', value: 'پذیرش' },
               ]}
               inputStyle='w-full'
-              value={data?.role}
             />
           </div>
         </Form>
@@ -101,4 +95,3 @@ const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
   );
 };
 
-export default EditUserModal;

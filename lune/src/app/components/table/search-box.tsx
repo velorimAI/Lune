@@ -1,9 +1,10 @@
 "use client";
 
-import { FC, useState, useCallback } from "react";
+import { FC, useState, useCallback, useEffect } from "react";
 import debounce from "lodash/debounce";
 import { cn } from "@/lib/utils";
 import { Input } from "../custom-form/input";
+import { Select } from "../custom-form/select-box";
 
 export type SearchBoxProps = {
   className?: string;
@@ -11,38 +12,67 @@ export type SearchBoxProps = {
   disabled?: boolean;
   clearable?: boolean;
   placeholderSearch?: string;
+
+  searchText?: string;
+  setSearchText?: (value: string) => void;
+  searchField?: string;
+  setSearchField?: (value: string) => void;
 };
 
-export const SearchBox: FC<SearchBoxProps> = (props) => {
-  const {
-    className,
-    onSearch,
-    disabled,
-    placeholderSearch = "جستجو ...",
-  } = props;
+export const SearchBox: FC<SearchBoxProps> = ({
+  className,
+  onSearch,
+  disabled,
+  placeholderSearch = "جستجو ...",
+  searchText,
+  setSearchText,
+  searchField,
+  setSearchField,
+}) => {
+  const [internalSearch, setInternalSearch] = useState(searchText || "");
 
-  const [searchState, setSearchState] = useState<string>("");
+  useEffect(() => {
+    setInternalSearch(searchText || "");
+  }, [searchText]);
 
   const handleDebounceFn = (value: string) => {
     onSearch?.(value);
+    setSearchText?.(value);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debounceFn = useCallback(debounce(handleDebounceFn, 700), []);
+  const debounceFn = useCallback(debounce(handleDebounceFn, 500), []);
 
   const handleInputChange = (value?: string) => {
-    setSearchState(value || "");
-    debounceFn(value || "");
+    const val = value || "";
+    setInternalSearch(val);
+    debounceFn(val);
   };
 
   return (
-    <Input
-      placeholder={placeholderSearch}
-      value={searchState}
-      onChange={handleInputChange}
-      disabled={disabled}
-      className={cn("w-full", className)}
-      clearable
-    />
+    <div className={cn("flex gap-2 items-center", className)}>
+      <Input
+        placeholder={placeholderSearch}
+        value={internalSearch}
+        onChange={handleInputChange}
+        disabled={disabled}
+        className="flex-1 min-h-[0px]"
+        clearable
+
+      />
+      {setSearchField && (
+        <Select
+          value={searchField}
+          onChange={setSearchField}
+          options={[
+            { label: 'همه', value: 'all' },
+            { label: 'نام', value: 'name' },
+            // { label: 'نام خانوادگی', value: 'last_name' },
+            { label: 'کد ملی', value: 'code_meli' },
+            { label: 'نقش', value: 'role' },
+          ]}
+          className=" min-h-[0px] mt-2"
+          />
+      )}
+    </div>
   );
 };
