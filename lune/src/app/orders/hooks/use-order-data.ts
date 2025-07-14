@@ -137,13 +137,6 @@ export function useOrderData() {
           setOrderGroups([]);
           clearAllFields();
           setUserInfoSubmitted(false);
-          userForm.reset({
-            customer_name: "",
-            phone_number: "",
-            car_status: "متوقف",
-            reception_number: "",
-            reception_date: getTodayJalaliDate(),
-          });
 
         },
         onError: () => {
