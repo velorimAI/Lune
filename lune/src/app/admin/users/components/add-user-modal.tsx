@@ -44,6 +44,7 @@ export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
         title="اضافه کاربر"
         hideCancel
         hideConfirm
+        onCancel={() => setOpen(false)}
       >
         <Form cancelText='لغو' submitText='اضافه' onSubmit={handleSubmit} onCancel={() => setOpen(false)} submitLoading={isPending} >
           <div className="grid grid-cols-2 gap-4">
