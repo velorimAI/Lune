@@ -2,10 +2,8 @@
 
 import {
   MessageCircle,
-  Clock as ClockIcon,
   ArrowRight,
   AlertCircle,
-  FileText
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -27,32 +25,22 @@ export default function LogsPage() {
 
   const formatTime = (time: string) => time?.slice(0, 5);
 
-  return (
-    <div className="bg-gray-50 p-6 min-h-screen">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-white rounded-lg shadow">
-              <FileText className="w-5 h-5 text-gray-700" />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold text-gray-800">سوابق فعالیت</h1>
-              <p className="text-sm text-gray-500 mt-0.5">لیست فعالیت‌های انجام‌شده در سیستم</p>
-            </div>
-          </div>
 
+
+  return (
+    <div className="bg-gray-50 p-2">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-6 flex items-center justify-between">
           <Button
             onClick={() => router.push('/admin')}
-            variant="ghost"
-            className="text-sm text-gray-600 hover:bg-white hover:shadow-sm"
+            variant="outline"
+            className="text-center content-center"
           >
-            <ArrowRight size={16} className="ml-1" />
-            بازگشت
+            <ArrowRight size={26}/>
           </Button>
         </div>
 
-        {/* Logs Table */}
+
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-32">
@@ -78,14 +66,14 @@ export default function LogsPage() {
             </div>
           ) : (
             <>
-              {/* Table Head */}
+
               <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-100 text-sm font-medium text-gray-600 border-b border-gray-200">
                 <div className="col-span-2 text-right">عملیات</div>
                 <div className="col-span-2 text-right">تاریخ و زمان</div>
                 <div className="col-span-8 text-right">توضیحات</div>
               </div>
 
-              {/* Table Body */}
+
               <ScrollArea className="h-[calc(100vh-320px)]">
                 <div dir="rtl" className="divide-y divide-gray-100">
                   {logs.map((log: any) => (
@@ -109,15 +97,6 @@ export default function LogsPage() {
                   ))}
                 </div>
               </ScrollArea>
-
-              {/* Footer */}
-              <div className="px-6 py-3 bg-gray-50 flex items-center justify-between border-t border-gray-100">
-                <div className="text-sm text-gray-500">نمایش {logs.length} مورد</div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <ClockIcon className="w-4 h-4" />
-                  بروزرسانی خودکار هر ۵ دقیقه
-                </div>
-              </div>
             </>
           )}
         </div>

@@ -1,41 +1,44 @@
 'use client';
 
-import { FC, useState} from 'react';
+import { FC, useState } from 'react';
 import { toast } from 'sonner';
 import { Modal } from '@/app/components/modal';
 import { Select } from '@/app/components/custom-form/select-box';
 import { Input } from '@/app/components/custom-form/input';
 import { UserPen } from 'lucide-react';
 import { Form } from '@/app/components/custom-form/form';
-import { editUser } from '@/app/apis/admin/adminService';
+import { useEditUser } from '../../hooks';
 
 interface EditUserModalProps {
   data: any
   refetch: () => void;
 }
 
-const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
+export const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { mutate, isPending } = useEditUser();
 
   const handleSubmit = async (formData: any) => {
-    setLoading(true); 
-    try {
-      const updated = {
-        ...formData,
-        code_meli: `0${formData.code_meli}`.slice(-10),
-      };
-
-      await editUser(data.id, updated);
-      refetch?.()
-
-      toast.success(`اطلاعات کاربر ${data?.name || ""} با موفقیت ویرایش شد`);
-      setOpen(false);
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'خطا در بروزرسانی کاربر');
-    } finally {
-      setLoading(false);
-    }
+    const updated = {
+      ...formData,
+      code_meli: `0${formData.code_meli}`.slice(-10),
+    };
+    mutate(
+      {
+        id: data?.id,
+        updatedData: updated,
+      },
+      {
+        onSuccess: () => {
+          refetch();
+          toast.success(`اطلاعات کاربر "${updated.name || ""}" با موفقیت ویرایش شد`);
+          setOpen(false);
+        },
+        onError: (error: any) => {
+          toast.error(error?.response?.data?.message || 'خطا در بروزرسانی کاربر');
+        },
+      }
+    );
   };
 
   return (
@@ -49,8 +52,9 @@ const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
         title="ویرایش کاربر"
         hideCancel
         hideConfirm
+        onCancel={() => setOpen(false)}
       >
-        <Form cancelText='لغو' submitText='ویرایش' onSubmit={handleSubmit} onCancel={() => setOpen(false)} isLoading={data?.isLoading || data?.isPending || loading} submitLoading={loading} >
+        <Form cancelText='لغو' submitText='ویرایش' onSubmit={handleSubmit} onCancel={() => setOpen(false)} isLoading={data?.isLoading || data?.isPending} submitLoading={isPending} >
           <div className="grid grid-cols-2 gap-4">
             <Input
               label="نام"
@@ -100,5 +104,3 @@ const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
     </>
   );
 };
-
-export default EditUserModal;

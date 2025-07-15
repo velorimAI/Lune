@@ -34,7 +34,7 @@ const Orders: FC = () => {
     setSearchText
   );
 
-  console.log(filteredOrdersByTab);
+  // console.log(filteredOrdersByTab);
   
 
   return (

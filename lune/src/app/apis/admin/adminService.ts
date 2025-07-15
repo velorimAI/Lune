@@ -69,3 +69,18 @@ export const getLogsList= async () => {
 
     return res.data;
 };
+
+export const addItem = async (itemData: any) => {
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+        `${API_BASE}admin/addpart`,
+        itemData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        }
+    );
+    return response.data;
+};

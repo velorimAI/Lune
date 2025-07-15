@@ -12,7 +12,7 @@ interface DeleteUserModalProps {
   refetch: () => void;
 }
 
-const DeleteUserModal: FC<DeleteUserModalProps> = ({ id, name , refetch}) => {
+export const DeleteUserModal: FC<DeleteUserModalProps> = ({ id, name , refetch}) => {
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useDeleteUser();
 
@@ -52,5 +52,3 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({ id, name , refetch}) => {
     </>
   );
 };
-
-export default DeleteUserModal;

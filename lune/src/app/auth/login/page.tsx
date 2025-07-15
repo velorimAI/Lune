@@ -29,13 +29,18 @@ const Login: FC = () => {
           label: "بستن",
           onClick: () => console.log("بستن"),
         },
-      });
 
+      }
+      );
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
       localStorage.setItem("name", name);
       localStorage.setItem("lastname", last_name);
-      router.push("/orders");
+      if (role === "مدیریت") {
+        router.push("/admin");
+      } else {
+        router.push("/orders");
+      }
     } catch (error: any) {
       toast.error(
         error.response?.data?.message || error.message || "ورود ناموفق بود"

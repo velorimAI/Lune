@@ -1,17 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { UserX, UserPlus, ArrowLeft, UserPen } from 'lucide-react';
+import { UserX, UserPen, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import DeleteUserModal from './components/DeleteUserModal';
-import EditUserModal from './components/EditUserModal';
 import { getUsersList } from '@/app/apis/admin/adminService';
 import { useQuery } from '@tanstack/react-query';
 import { useUsersSearch } from '../hooks/useUsersSearch';
 import { SearchBox } from '@/app/components/table/search-box';
-import { AddUserModal } from './components/add-user-modal';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { AddUserModal, DeleteUserModal, EditUserModal } from './components';
 
 export default function UsersListPage() {
   const router = useRouter();
@@ -41,21 +39,16 @@ export default function UsersListPage() {
   }
 
   return (
-    <div className="bg-gray-50 p-6">
+    <div className="p-2">
       <div className="max-w-7xl mx-auto">
         <div className="mb-2">
           <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">مدیریت کاربران</h1>
-              <p className="text-gray-600">مشاهده و مدیریت کاربران سیستم</p>
-            </div>
             <Button
               onClick={() => router.push('/admin')}
-              variant="ghost"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
+              variant="outline"
+              className='text-center content-center'
             >
-              <ArrowLeft size={20} className="ml-2" />
-              بازگشت
+              <ArrowRight size={26} />
             </Button>
           </div>
 
@@ -111,11 +104,11 @@ export default function UsersListPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <ScrollArea className="w-full pr-3 mt-3 max-h-[55vh] overflow-auto">
-            <table dir="rtl" className="w-full">
-              <thead className="sticky top-0 bg-white border-b border-gray-200 z-10">
-                <tr className="border-b border-gray-100 ">
+        {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"> */}
+          <ScrollArea className="w-full pr-3 mt-3 max-h-[55vh] overflow-auto" >
+            <table className="w-full" dir='rtl'>
+              <thead >
+                <tr className="border-b border-gray-200 ">
                   <th className="text-right p-6 font-medium text-gray-700">کاربر</th>
                   <th className="text-right p-6 font-medium text-gray-700">کد ملی</th>
                   <th className="text-right p-6 font-medium text-gray-700">نقش</th>
@@ -124,7 +117,7 @@ export default function UsersListPage() {
                   <th className="text-center p-6 font-medium text-gray-700"></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody >
                 {filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="p-12 text-center">
@@ -205,20 +198,7 @@ export default function UsersListPage() {
             </table>
             <ScrollBar />
           </ScrollArea>
-        </div>
-
-        {/* <div
-        className="
-        fixed bottom-8 left-8 bg-gray-900 text-white p-4 rounded-xl 
-        shadow-lg transition 
-        hover:bg-gray-800 hover:shadow-2xl hover:scale-105 
-        transform
-        cursor-pointer
-        "
-      >
-        <AddUserModal refetch={refetch} />
-      </div> */}
-
+        {/* </div> */}
       </div>
     </div >
   );
