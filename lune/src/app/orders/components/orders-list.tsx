@@ -17,7 +17,7 @@ import { OrdersListProps } from "@/types/orders.d.type";
 import { OrderDetails } from "./OrderDetails";
 import { extractMonthDay } from "@/app/utils/extractMonthlyDay";
 
-export const OrdersList: FC<OrdersListProps> = ({ data, refetch , currentTab}) => {
+export const OrdersList: FC<OrdersListProps> = ({ data, refetch, currentTab, userRole }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const toggleDetails = (index: number) => {
@@ -115,6 +115,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch , currentTab}) =
                   <DeleteOrder
                     id={String(order?.customer_id)}
                     name={order?.customer_name}
+                    userRole={userRole}
                   />
                   {/* <EditOrderModal data={order} refetch={refetch} /> */}
                   <motion.div
@@ -149,7 +150,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch , currentTab}) =
                     className="border-t border-gray-100"
                   >
                     <div className="px-3 pt-2 pb-4 max-h-[350px] overflow-y-auto rounded-b-xl scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                      <OrderDetails order={order} id={order.customer_id} refetch={refetch} selectable={true}   currentTab={currentTab}/>
+                      <OrderDetails order={order} id={order.customer_id} refetch={refetch} selectable={true} currentTab={currentTab}/>
                     </div>
                   </motion.div>
                 )}

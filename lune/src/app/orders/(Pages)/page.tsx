@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { Card } from "../../components/card";
 import { useRouter } from "next/navigation";
 import { CirclePlus } from "lucide-react";
@@ -21,6 +21,7 @@ const Orders: FC = () => {
   const [searchField, setSearchField] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("all");
   const [page, setPage] = useState(1);
+  const [userRole, setUserRole] = useState<string>("");
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["orders"],
@@ -37,7 +38,13 @@ const Orders: FC = () => {
   
 
   // console.log(filteredOrdersByTab);
-  
+  useEffect(() => {
+    const getCurrentUserRole = () => {
+      const role = localStorage.getItem('userRole');
+      if (role) return role;
+
+    setUserRole(getCurrentUserRole());
+  }, []);
 
   return (
     <Card contentClassName="min-h-[85vh]" className="lg:h-[calc(100%-55px)]">
@@ -89,19 +96,14 @@ const Orders: FC = () => {
               orders={filteredOrdersByTab}
               refetch={refetch}
               currentTab={activeTab}
+              userRole={userRole}
             />
           )}
         </div>
 
-        {/* <div className="fixed left-6 bottom-[20px] bg-white rounded-lg">
-          <CirclePlus
-            className="w-[30px] h-[30px] cursor-pointer"
-            onClick={() => router.push("/orders/new")}
-          />
-        </div> */}
-
         <ScrollBar />
       </ScrollArea>
+      
       <motion.div
         className="fixed left-6 bottom-[20px] cursor-pointer"
         whileHover={{ scale: 1.2}}
@@ -115,5 +117,3 @@ const Orders: FC = () => {
     </Card>
   );
 };
-
-export default Orders;

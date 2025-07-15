@@ -1,6 +1,6 @@
 // مشخصات هر قطعه سفارش‌شده
 export interface OrderItem {
-  settlement_status:string;
+  settlement_status: string;
   payment_status(payment_status: any): { color: any; icon: any; };
   arrive_length_time: string | null; // مدت زمان رسیدن
   description: string;
@@ -42,9 +42,10 @@ export interface Order {
 
 // پراپز کامپوننت
 export interface OrdersListProps {
-  refetch : () => void;
+  refetch: () => void;
   data: Order[];
-  currentTab : string;
+  currentTab: string;
+  userRole: string; // اضافه شده
 }
 // هر قطعه‌ای که در یک پذیرش وجود داره
 export interface OrderItem {

@@ -4,9 +4,10 @@ import { OrdersList } from "@/app/orders/components/orders-list";
 interface Props {
   orders: any[];
   refetch: () => void;
-  currentTab : string;
+  currentTab: string;
+  userRole: string;
 }
 
-export const OrdersListWrapper: FC<Props> = ({ orders, refetch, currentTab }) => {
-  return <OrdersList data={orders} refetch={refetch} currentTab={currentTab} />;
+export const OrdersListWrapper: FC<Props> = ({ orders, refetch, currentTab, userRole }) => {
+  return <OrdersList data={orders} refetch={refetch} currentTab={currentTab} userRole={userRole} />;
 };

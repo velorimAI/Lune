@@ -7,19 +7,16 @@ import { toast } from "sonner";
 import { Modal } from "@/app/components/modal";
 import { useDeleteOrder } from "../hooks";
 
-
 interface DeleteItemProps {
   id: string;
   name: string;
+  userRole: string;
 }
 
-export const DeleteOrder: FC<DeleteItemProps> = ({ id, name }) => {
+export const DeleteOrder: FC<DeleteItemProps> = ({ id, name, userRole }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { mutate, isPending } = useDeleteOrder();
-
- 
-  
 
   const handleDelete = () => {
     mutate(id, {
@@ -34,11 +31,18 @@ export const DeleteOrder: FC<DeleteItemProps> = ({ id, name }) => {
     });
   };
 
+  // اگر نقش کاربر "حسابداری" باشد، دکمه disable شود
+  const isDisabled = userRole === "حسابدار";
+
   return (
     <>
       <Trash2
-        className="hover:text-red-600 hover:cursor-pointer"
-        onClick={() => setOpen(true)}
+        className={`hover:cursor-pointer ${
+          isDisabled 
+            ? "text-gray-400 cursor-not-allowed" 
+            : "hover:text-red-600"
+        }`}
+        onClick={isDisabled ? undefined : () => setOpen(true)}
       />
 
       <Modal
