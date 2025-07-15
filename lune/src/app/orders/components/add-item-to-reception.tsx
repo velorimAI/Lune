@@ -99,7 +99,7 @@ const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, 
           <div className="bg-white rounded-lg space-y-4">
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input label="شماره سفارش" name="order_number" />
+              <Input label="شماره سفارش" name="order_number" required />
               <Select
                 label="وضعیت خودرو"
                 name="car_status"
@@ -109,6 +109,8 @@ const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, 
                   { label: "متوقف", value: "متوقف" },
                 ]}
                 inputStyle="w-full"
+                required
+                hiddenSearch
               />
               <Select
                 label="کانال"
@@ -122,13 +124,15 @@ const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, 
                 ]}
                 onChange={(val) => setOrderChannel(val)}
                 inputStyle="w-full"
+                required
+                hiddenSearch
               />
             </div>
 
             {orderChannel === "بازار آزاد" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="نام بازار" name="market_name" />
-                <Input label="تلفن بازار" name="market_phone" />
+                <Input label="نام بازار" name="market_name" required />
+                <Input label="تلفن بازار" name="market_phone" required />
               </div>
             )}
 
@@ -154,12 +158,14 @@ const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, 
                 name="piece_name"
                 value={formValues.piece_name}
                 readOnly
+                required
               />
               <Input
                 label="تعداد"
                 name="number_of_pieces"
                 type="number"
                 isPositiveNumber
+                required
               />
             </div>
 

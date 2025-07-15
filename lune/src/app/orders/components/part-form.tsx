@@ -87,7 +87,7 @@ export default function PartForm({
                 setFormValues((prev) => ({ ...prev, piece_name: name }));
               }}
               disabled={!userInfoSubmitted}
-              ref={refs.partIdRef}
+              // ref={refs.partIdRef}
             />
             <Input
               label="نام قطعه"
@@ -133,8 +133,8 @@ export default function PartForm({
             />
             {orderChannel === "بازار آزاد" && (
               <>
-                <Input label="نام فروشنده" name="market_name" />
-                <Input label="تلفن فروشنده" name="market_phone" phone />
+                <Input label="نام فروشنده" name="market_name" required/>
+                <Input label="تلفن فروشنده" name="market_phone" phone required/>
               </>
             )}
             <Input

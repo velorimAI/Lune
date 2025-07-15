@@ -114,6 +114,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                   { label: "متوقف", value: "متوقف" },
                 ]}
                 inputStyle="w-full"
+                hiddenSearch
               />
               <PartIdInput
                 value={formValues.part_id}
@@ -158,6 +159,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                 ]}
                 onChange={(val) => setOrderChannel(val)}
                 inputStyle="w-full"
+                hiddenSearch
               />
             </div>
 
