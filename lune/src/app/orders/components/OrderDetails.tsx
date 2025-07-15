@@ -15,7 +15,6 @@ import { toast } from "sonner";
 import { InsertDate } from "./insert-date";
 import ToolTip from "@/app/components/custom-tooltip";
 import AddItemToReception from "./add-item-to-reception";
-
 import { CheckBox } from "@/app/components/custom-form/check-box";
 import { Button } from "@/app/components/button";
 import InsertDescription from "./insert-description";
@@ -98,7 +97,7 @@ export const OrderDetails = ({
 
         if (options.length > 0) {
           const nextStatus = options[0].value;
-          if ( part.reception_car_status === "متوقع" && part.status === "در انتظار نوبت دهی") {
+          if (part.reception_car_status === "متوقع" && part.status === "در انتظار نوبت دهی") {
             setSelectedOrder({ id: part.order_id, name: part.piece_name });
             setOpenDateModal(true);
             return;
@@ -136,6 +135,20 @@ export const OrderDetails = ({
 
   const canShowCancelAll = (isWarehouse && isSelectableTab) || isAccountant;
 
+
+  const closedStatuses = [
+    "تحویل شد",
+    "لغو توسط شرکت",
+    "انصراف مشتری",
+    "عدم دریافت",
+    "عدم پرداخت حسابداری",
+    "تحویل نشد"
+  ];
+
+  const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []) || [];
+  const allClosed = allOrders.every((o: any) => closedStatuses.includes(o.status));
+
+
   return (
     <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
       <div className="flex items-center gap-2 mb-4 text-gray-800 font-semibold text-lg">
@@ -144,11 +157,32 @@ export const OrderDetails = ({
           جزئیات قطعات (
           {order?.receptions?.flatMap((r: { orders: any; }) => r.orders || []).length || 0})
         </span>
-        <AddItem id={id} />
+        {allClosed ? (
+          <AddItem id={id} />
+        ) : (
+          (() => {
+            const openReceptions = order?.receptions?.filter((r: any) =>
+              (r.orders || []).some((o: any) => !closedStatuses.includes(o.status))
+            );
+
+            const latestOpenReception = openReceptions?.[openReceptions.length - 1];
+
+            return latestOpenReception ? (
+              <AddItemToReception
+                id={latestOpenReception.reception_id}
+                data={order.receptions}
+                refetch={refetch}
+                onClose={() => setOpenReceptionIndex(null)}
+              />
+            ) : null;
+          })()
+        )}
+
+
       </div>
 
       {selectedItems.length > 0 && (
-        <div className="flex gap-2 mb-3">
+        <div className="flex gap-2 mb-4">
           {canShowCancelAll && (
             <>
               <Button
@@ -206,7 +240,7 @@ export const OrderDetails = ({
                   car_status: string;
                   settlement_status: string;
                   orders: any[];
-                  reception_id : number
+                  reception_id: number
                 },
                 i: number
               ) => (
@@ -240,12 +274,12 @@ export const OrderDetails = ({
                               {reception.settlement_status || "-"}
                             </span>
                           </div>
-                          <AddItemToReception
+                          {/* <AddItemToReception
                             id={reception.reception_id}
                             data={order.receptions}
                             refetch={refetch}
                             onClose={() => setOpenReceptionIndex(null)}
-                          />
+                          /> */}
                         </div>
                       </div>
                     </td>
@@ -374,15 +408,15 @@ export const OrderDetails = ({
                               id={String(part.order_id)}
                               name={part.piece_name}
                             />
-                            {(part.description || part.all_description) && (
-                              <ToolTip
-                                hintClassName="ml-4"
-                                hint={
+                            <ToolTip
+                              hintClassName="ml-4"
+                              hint={
+                                (part.description || part.all_description) ? (
                                   <div className="space-y-2 text-sm leading-6 text-gray-100 max-w-[400px]">
                                     {part.all_description && (
                                       <div>
-                                        <div className="font-semibold text-white  mb-1">توضیحات کلی :</div>
-                                        <p className="text-gray-300 ">{part.all_description}</p>
+                                        <div className="font-semibold text-white mb-1">توضیحات کلی :</div>
+                                        <p className="text-gray-300">{part.all_description}</p>
                                       </div>
                                     )}
                                     {part.description && (
@@ -392,11 +426,22 @@ export const OrderDetails = ({
                                       </div>
                                     )}
                                   </div>
-                                }
-                              >
-                                <MessageCircleMore className="w-6 h-6 text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white cursor-pointer" />
-                              </ToolTip>
-                            )}
+                                ) : (
+                                  <div className="text-sm text-gray-300">توضیحاتی وجود ندارد</div>
+                                )
+                              }
+                            >
+                              <MessageCircleMore
+                                className={`
+                                    w-6 h-6
+                                    ${part.description || part.all_description
+                                    ? 'text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white'
+                                    : 'text-gray-400 '
+                                  }
+                                `}
+                              />
+                            </ToolTip>
+
                           </div>
                         </td>
                       </tr>

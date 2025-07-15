@@ -92,16 +92,17 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
           onCancel={() => setOpen(false)}
           onSubmit={handleUpdate}
         >
-          <div className="bg-white rounded-lg space-y-4">
+          <div className="bg-white rounded-lg ">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input label="شماره پذیرش" name="reception_number" />
+              <Input label="شماره پذیرش" name="reception_number" required/>
               <Input
                 label="تاریخ پذیرش"
                 name="reception_date"
                 value={getTodayJalaliDate()}
                 readOnly
+                required
               />
-              <Input label="شماره سفارش" name="order_number" />
+              <Input label="شماره سفارش" name="order_number"  required/>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -115,6 +116,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                 ]}
                 inputStyle="w-full"
                 hiddenSearch
+                required
               />
               <PartIdInput
                 value={formValues.part_id}
@@ -137,6 +139,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                 name="piece_name"
                 value={formValues.piece_name}
                 readOnly
+                required
               />
             </div>
 
@@ -146,6 +149,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                 name="number_of_pieces"
                 type="number"
                 isPositiveNumber
+                required
               />
               <Select
                 label="کانال"
@@ -160,13 +164,14 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                 onChange={(val) => setOrderChannel(val)}
                 inputStyle="w-full"
                 hiddenSearch
+                required
               />
             </div>
 
             {orderChannel === "بازار آزاد" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="نام بازار" name="market_name" />
-                <Input label="تلفن بازار" name="market_phone" />
+                <Input label="نام بازار" name="market_name" required/>
+                <Input label="تلفن بازار" name="market_phone" required />
               </div>
             )}
 

@@ -8,7 +8,6 @@ import { CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAddItemToReception } from "../hooks/use-add-item-to-reception";
-import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
 import { TextArea } from "@/app/components/custom-form/text-area";
 import { PartIdInput } from "./part-id-input";
 
@@ -96,7 +95,7 @@ const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, 
           }}
           onSubmit={handleUpdate}
         >
-          <div className="bg-white rounded-lg space-y-4">
+          <div className="bg-white rounded-lg ">
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Input label="شماره سفارش" name="order_number" required />
