@@ -14,6 +14,10 @@ const pathToTitle: Record<string, string> = {
   "/orders": "سفارشات",
   "/orders/new": "ثبت سفارش",
   "/settings": "تنظبمات",
+  "/admin":"مدیریت",
+  "/admin/users":"کاربران",
+  "/admin/logs":"سوابق فعالیت"
+
 };
 
 export default function TopBar() {

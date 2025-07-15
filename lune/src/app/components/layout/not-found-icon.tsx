@@ -2,20 +2,19 @@
 
 import { useEffect } from 'react';
 
-const LiveIcon = () => {
+const NotFoundIcon = () => {
   useEffect(() => {
-    // لود وب‌کامپوننت lottie-player
     import('@lottiefiles/lottie-player');
   }, []);
 
-  // درون همین JSX، HTML مناسب برای lottie-player رو به عنوان رشته بفرست
+
   return (
     <div
-      className="w-[700px] h-[700px]"
+      className="w-[600px] h-[600px]"
       dangerouslySetInnerHTML={{
         __html: `
           <lottie-player
-            src="/animations/Animation.json"
+            src="/animations/car-crash.json"
             background="transparent"
             speed="1"
             loop
@@ -28,4 +27,4 @@ const LiveIcon = () => {
   );
 };
 
-export default LiveIcon;
+export default NotFoundIcon;
