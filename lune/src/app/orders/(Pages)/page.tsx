@@ -20,7 +20,7 @@ const Orders: FC = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [searchField, setSearchField] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("all");
-  const [page, setPage] = useState(1);
+  const role = localStorage.getItem('role');
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["orders"],
@@ -34,10 +34,10 @@ const Orders: FC = () => {
     activeTab,
     setSearchText
   );
-  
+
 
   // console.log(filteredOrdersByTab);
-  
+
 
   return (
     <Card contentClassName="min-h-[85vh]" className="lg:h-[calc(100%-55px)]">
@@ -67,7 +67,7 @@ const Orders: FC = () => {
           />
           <SearchBox
             onSearch={handleSearch}
-            className="min-h-[0px] flex-1"            
+            className="min-h-[0px] flex-1"
           />
         </div>
       </div>
@@ -89,6 +89,7 @@ const Orders: FC = () => {
               orders={filteredOrdersByTab}
               refetch={refetch}
               currentTab={activeTab}
+              role={role}
             />
           )}
         </div>
@@ -103,15 +104,23 @@ const Orders: FC = () => {
         <ScrollBar />
       </ScrollArea>
       <motion.div
-        className="fixed left-6 bottom-[20px] cursor-pointer"
-        whileHover={{ scale: 1.2}}
+        className={`
+    fixed left-6 bottom-[20px] 
+    ${role === "حسابدار" ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+  `}
+        whileHover={role === "حسابدار" ? {} : { scale: 1.2 }}
         transition={{ type: "spring", stiffness: 300 }}
-        onClick={() => router.push("/orders/new")}
+        onClick={() => {
+          if (role !== "حسابدار") {
+            router.push("/orders/new");
+          }
+        }}
         role="button"
         aria-label="Add new order"
       >
-        <CirclePlus className="w-8 h-8 text-gray-700 hover:text-gray-700" />
+        <CirclePlus className="w-8 h-8 text-gray-700" />
       </motion.div>
+
     </Card>
   );
 };

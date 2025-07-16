@@ -17,9 +17,10 @@ interface AddItemToReceptionProps {
   refetch?: () => void;
   id?: number;
   onClose?: () => void;
+  disabled?: boolean;
 }
 
-const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, id, onClose }) => {
+const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, id, onClose, disabled }) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState<string>("VOR");
   const { mutate, isPending } = useAddItemToReception();
@@ -75,8 +76,16 @@ const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, 
   return (
     <>
       <CirclePlus
-        className="cursor-pointer w-6 h-6 mr-auto transition-all duration-300 hover:text-gray-700 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
-        onClick={() => setOpen(true)}
+        className={`
+        w-6 h-6 mr-auto transition-all duration-300
+        ${disabled
+            ? "text-gray-300 cursor-not-allowed"
+            : "cursor-pointer hover:text-gray-700 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
+          }
+        `}
+        onClick={() => {
+          if (!disabled) setOpen(true);
+        }}
       />
 
       <Modal

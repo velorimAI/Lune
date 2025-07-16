@@ -11,22 +11,23 @@ import { useDeleteOrder } from "../hooks";
 interface DeleteItemProps {
   id: string;
   name: string;
+  disabled?: boolean;
 }
 
-export const DeleteOrder: FC<DeleteItemProps> = ({ id, name }) => {
+export const DeleteOrder: FC<DeleteItemProps> = ({ id, name , disabled}) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { mutate, isPending } = useDeleteOrder();
 
- 
-  
+
+
 
   const handleDelete = () => {
     mutate(id, {
       onSuccess: () => {
         toast.success(`سفارش «${name}» با موفقیت حذف شد`);
         setOpen(false);
-        router.refresh(); 
+        router.refresh();
       },
       onError: () => {
         toast.error("خطا در حذف سفارش");
@@ -37,8 +38,10 @@ export const DeleteOrder: FC<DeleteItemProps> = ({ id, name }) => {
   return (
     <>
       <Trash2
-        className="hover:text-red-600 hover:cursor-pointer"
-        onClick={() => setOpen(true)}
+        className={`hover:cursor-pointer ${disabled ? "text-gray-400 " : "hover:text-red-600"}`}
+        onClick={() => {
+          if (!disabled) setOpen(true);
+        }}
       />
 
       <Modal

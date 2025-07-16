@@ -17,9 +17,10 @@ interface AddItemModalProp {
   data?: any;
   refetch?: () => void;
   id?: number;
+  disabled?: boolean;
 }
 
-const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
+const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id , disabled}) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState<string>("VOR");
   const { mutate, isPending } = useAddItem();
@@ -75,8 +76,14 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
   return (
     <>
       <CirclePlus
-        className="cursor-pointer w-6 h-6 mr-auto transition-all duration-300 hover:text-gray-700 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
-        onClick={() => setOpen(true)}
+        className={`cursor-pointer w-6 h-6 mr-auto transition-all duration-300 
+        ${disabled
+            ? "text-gray-300 cursor-not-allowed"
+            : "hover:text-gray-700 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"}
+        `}
+        onClick={() => {
+          if (!disabled) setOpen(true);
+        }}
       />
 
       <Modal
@@ -94,7 +101,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
         >
           <div className="bg-white rounded-lg ">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input label="شماره پذیرش" name="reception_number" required/>
+              <Input label="شماره پذیرش" name="reception_number" required />
               <Input
                 label="تاریخ پذیرش"
                 name="reception_date"
@@ -102,7 +109,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
                 readOnly
                 required
               />
-              <Input label="شماره سفارش" name="order_number"  required/>
+              <Input label="شماره سفارش" name="order_number" required />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -170,13 +177,13 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id }) => {
 
             {orderChannel === "بازار آزاد" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="نام بازار" name="market_name" required/>
+                <Input label="نام بازار" name="market_name" required />
                 <Input label="تلفن بازار" name="market_phone" required />
               </div>
             )}
 
             <div className="mb-4">
-              
+
               <TextArea
                 label="توضیحات"
                 name="all_description"
