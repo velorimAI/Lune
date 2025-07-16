@@ -84,7 +84,3 @@ export const InsertDate: React.FC<InsertDateProps> = ({
         </Modal>
     );
 };
-
-
-
-
