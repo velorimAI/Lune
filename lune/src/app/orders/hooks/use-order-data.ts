@@ -108,6 +108,7 @@ export function useOrderData() {
       customer_name: userData.customer_name,
       phone_number: userData.phone_number,
       car_status: userData.car_status,
+      car_name : userData.car_name,
       reception_number: userData.reception_number,
       reception_date: userData.reception_date,
       orders: orderGroups.map((item) => ({
