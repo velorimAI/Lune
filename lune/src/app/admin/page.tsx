@@ -31,15 +31,7 @@ export default function AdminPage() {
           <span className="mt-4 text-gray-700 font-semibold text-center">سوابق فعالیت</span>
         </div>
 
-        {/* <div
-          onClick={() => router.push('/orders/new')}
-          className="flex flex-col items-center justify-center border-2 border-gray-300 rounded-lg p-8 cursor-pointer
-                     hover:border-purple-500 hover:bg-purple-50 transition-colors duration-300
-                     w-48 min-h-[160px]"
-        >
-          <PackagePlus size={64} className="text-gray-700 hover:text-purple-600" />
-          <span className="mt-4 text-gray-700 font-semibold text-center">افزودن سفارش</span>
-        </div> */}
+       
 
         <AddItemModal/>
       </main>

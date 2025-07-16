@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-// import Loading from '@/app/loading';
+
 import { FormDescription } from './form-description';
 import { FormLabel } from './form-label';
 import { useFormFieldValidations } from '@/app/hooks/form/useFormFieldValidations';
@@ -22,7 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 type SelectBoxProps = {
   className?: string;
   disabled?: boolean;
-  // grouping?: { title: string; startIndex: number; endIndex: number }[];
+ 
   hiddenSearch?: boolean;
   hint?: ReactNode;
   inline?: boolean;
@@ -49,7 +49,7 @@ export const Select: FC<SelectBoxProps> = (props) => {
   const {
     className,
     disabled,
-    // grouping,
+    
     hiddenSearch = false,
     hint,
     inline = false,
@@ -120,7 +120,7 @@ export const Select: FC<SelectBoxProps> = (props) => {
       });
     }
   };
-  // console.log('filterResults', filterResults);
+ 
   useEffect(() => {
     restoreFocus();
   }, [filterResults]);
@@ -176,11 +176,11 @@ export const Select: FC<SelectBoxProps> = (props) => {
 
         <SelectContent
           className="dark:bg-box-brighter dark:border-none "
-        //   hiddenArrow={!hiddenSearch}
+        
         dir='rtl'
         >
           {isLoading ? (
-            // <Loading cssClass="max-h-24 w-[200px]" />
+          
             <Skeleton />
           ) : (
             <>
@@ -191,7 +191,7 @@ export const Select: FC<SelectBoxProps> = (props) => {
                   placeholder="Search"
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  // autoFocus
+                 
                   style={{ position: 'sticky', top: 0, zIndex: 10 }}
                 />
               )}

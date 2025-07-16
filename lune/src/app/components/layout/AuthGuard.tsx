@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 function isTokenExpired(token: string): boolean {
   try {
-    const payloadBase64 = token.split('.')[1];
+    const payloadBase64 = token.split(".")[1];
     const payloadJson = atob(payloadBase64);
     const payload = JSON.parse(payloadJson);
 
@@ -23,30 +23,27 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const publicPaths = ['/auth/login', '/register'];
+    const publicPaths = ["/auth/login", "/register"];
     const isPublic = publicPaths.includes(pathname);
 
     const checkToken = () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
 
       if (!token && !isPublic) {
-        router.replace('/auth/login');
+        router.replace("/auth/login");
         return;
       }
 
       if (token && isTokenExpired(token)) {
-        localStorage.removeItem('token');
-        router.replace('/auth/login');
+        localStorage.removeItem("token");
+        router.replace("/auth/login");
       }
     };
 
-    // اولین بار بلافاصله چک کنه
     checkToken();
 
-    // بعدش هر 5 ثانیه یکبار
     const interval = setInterval(checkToken, 5000);
 
-    // پاک‌سازی تایمر موقع unmount
     return () => clearInterval(interval);
   }, [pathname]);
 

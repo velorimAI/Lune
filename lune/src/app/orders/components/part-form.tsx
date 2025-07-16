@@ -28,7 +28,7 @@ export default function PartForm({
   onFormReset
 }: PartFormProps) {
   const { refs } = usePartInputRefs();
-  // const [formKey, setFormKey] = useState(0);
+ 
   const [arrivalDays, setArrivalDays] = useState<string>("1");
   const [formValues, setFormValues] = useState({
     part_id: '',
@@ -52,12 +52,7 @@ export default function PartForm({
     });
   }, [estimatedArrivalDays, formKey]);
 
-  // const handleFormSubmit = (data: any) => {
-  //   onSubmit({ ...data, estimated_arrival_days: arrivalDays });
-  //   setFormKey((prev) => prev + 1);
-  //   setOrderChannel("VOR");
-  //   setArrivalDays("7");
-  // };
+ 
 
   return (
     <Card title="اطلاعات قطعه" className="p-0 pb-4">
@@ -87,7 +82,7 @@ export default function PartForm({
                 setFormValues((prev) => ({ ...prev, piece_name: name }));
               }}
               disabled={!userInfoSubmitted}
-              // ref={refs.partIdRef}
+             
             />
             <Input
               label="نام قطعه"

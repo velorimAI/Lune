@@ -45,9 +45,7 @@ export const OrderDetails = ({
   const isWarehouse = role === "انباردار";
   const isSelectableTab = !["تحویل شد", "canceled", "all"].includes(currentTab);
 
-  // const canShowSelectUI =
-  //   isSelectableTab &&
-  //   (isAccountant || (isWarehouse && currentTab !== "در انتظار تائید حسابداری"));
+  
 
   const canShowSelectUI =
     (isAccountant && currentTab === "در انتظار تائید حسابداری") ||

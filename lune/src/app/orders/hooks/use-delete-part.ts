@@ -1,4 +1,4 @@
-// hooks/useDeletePart.ts
+
 import { deletePart } from "@/app/apis/orders/orderService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";

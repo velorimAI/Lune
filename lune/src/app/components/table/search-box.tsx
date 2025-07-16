@@ -66,7 +66,7 @@ export const SearchBox: FC<SearchBoxProps> = ({
           options={[
             { label: 'همه', value: 'all' },
             { label: 'نام', value: 'name' },
-            // { label: 'نام خانوادگی', value: 'last_name' },
+           
             { label: 'کد ملی', value: 'code_meli' },
             { label: 'نقش', value: 'role' },
           ]}

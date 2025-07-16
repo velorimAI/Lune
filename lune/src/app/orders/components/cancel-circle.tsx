@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { X } from "lucide-react";
 import clsx from "clsx";
-import InsertDescription from "./insert-description"; // مسیر را در صورت نیاز اصلاح کن
+import InsertDescription from "./insert-description";
 
 interface CancelCircleProps {
   onCancel: (description: string) => void;
@@ -15,8 +15,7 @@ export const CancelCircle = ({
   const [progress, setProgress] = useState(0);
   const [cancelled, setCancelled] = useState(false);
   const [isFired, setIsFired] = useState(false);
-  const [showModal, setShowModal] = useState(false); // ⬅️ اضافه شده برای کنترل مودال
-
+  const [showModal, setShowModal] = useState(false); 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -37,7 +36,7 @@ export const CancelCircle = ({
 
     timeoutRef.current = setTimeout(() => {
       if (!isFired) {
-        setShowModal(true); // ⬅️ به جای onCancel مستقیم، اول مودال باز میشه
+        setShowModal(true); 
         setCancelled(true);
         setIsFired(true);
       }
@@ -108,7 +107,7 @@ export const CancelCircle = ({
         />
       </div>
 
-      {/* فقط مودال اضافه شده بدون تغییر دیگر بخش‌ها */}
+    
       <InsertDescription
         open={showModal}
         onClose={() => setShowModal(false)}

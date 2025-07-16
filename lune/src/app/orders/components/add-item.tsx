@@ -23,7 +23,7 @@ interface AddItemModalProp {
 const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id , disabled}) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState<string>("VOR");
-  const { mutate, isPending } = useAddItem();
+  const { mutate} = useAddItem();
   const [formValues, setFormValues] = useState({
     part_id: "",
     piece_name: "",

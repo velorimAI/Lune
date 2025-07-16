@@ -25,7 +25,7 @@ export const ItemList: FC<ItemsListProp> = ({ data, onDelete }) => {
         </div>
       ) : (
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm h-[400px] overflow-y-auto">
-          {/* هدر ثابت */}
+          
           <div className="grid grid-cols-6 bg-gray-100 px-4 py-3 text-xs font-medium text-gray-600 border-b border-gray-200 sticky top-0 z-10">
             <div className="text-center">کد فنی</div>
             <div className="text-center">نام قطعه</div>
@@ -35,7 +35,7 @@ export const ItemList: FC<ItemsListProp> = ({ data, onDelete }) => {
             <div className="text-center">عملیات</div>
           </div>
           
-          {/* آیتم‌های لیست */}
+         
           <div className="divide-y divide-gray-100">
             {data.map((item, index) => (
               <div 

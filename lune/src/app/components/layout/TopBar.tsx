@@ -70,13 +70,13 @@ export default function TopBar() {
 
   return (
     <div className="flex items-center justify-between px-4 py-2 bg-gray-50 shadow-sm border-b border-blue-200 rounded-b-lg mb-1 text-black text-sm">
-      {/* Right: User Info */}
+     
       <UserInfo />
 
-      {/* Center: Title */}
+    
       <div className="font-bold text-lg">{currentPageTitle}</div>
 
-      {/* Left: Date/Time, Notifications, Logout */}
+     
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1">
           <Clock4 className="w-4 h-4" />

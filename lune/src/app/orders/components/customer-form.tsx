@@ -14,7 +14,7 @@ interface CustomerFormProps {
 }
 
 export function CustomerForm({
-  userForm,
+  
   userInfoSubmitted,
   onSubmit,
 }: CustomerFormProps) {
@@ -27,7 +27,7 @@ export function CustomerForm({
         cancelHide
         onSubmit={onSubmit}
         submitDisable={userInfoSubmitted}
-        // methods={userForm}
+        
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <Input

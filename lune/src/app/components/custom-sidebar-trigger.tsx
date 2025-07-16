@@ -30,7 +30,7 @@ export function CustomSidebarTrigger({
     >
       {state === 'expanded' ? (
         <ChevronRight className="dark:text-zinc-400" />
-        // <ChevronLeft className="dark:text-zinc-400" />
+       
       ) : (
         <ChevronLeft className="dark:text-zinc-400" />
       )}
