@@ -35,15 +35,19 @@ const Orders: FC = () => {
     activeTab,
     setSearchText
   );
-  
 
-  // console.log(filteredOrdersByTab);
+  // Function to get current user role
+  const getCurrentUserRole = () => {
+    // Add your logic here to get user role
+    // For example: return localStorage.getItem('userRole') || 'user';
+    return 'user'; // placeholder
+  };
+
   useEffect(() => {
-    const getCurrentUserRole = () => {
-      const role = localStorage.getItem('userRole');
-      if (role) return role;
-
-    setUserRole(getCurrentUserRole());
+    const role = getCurrentUserRole();
+    if (role) {
+      setUserRole(role);
+    }
   }, []);
 
   return (
@@ -74,7 +78,7 @@ const Orders: FC = () => {
           />
           <SearchBox
             onSearch={handleSearch}
-            className="min-h-[0px] flex-1"            
+            className="min-h-[0px] flex-1"
           />
         </div>
       </div>
@@ -103,10 +107,10 @@ const Orders: FC = () => {
 
         <ScrollBar />
       </ScrollArea>
-      
+
       <motion.div
         className="fixed left-6 bottom-[20px] cursor-pointer"
-        whileHover={{ scale: 1.2}}
+        whileHover={{ scale: 1.2 }}
         transition={{ type: "spring", stiffness: 300 }}
         onClick={() => router.push("/orders/new")}
         role="button"
@@ -117,3 +121,5 @@ const Orders: FC = () => {
     </Card>
   );
 };
+
+export default Orders;
