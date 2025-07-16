@@ -55,6 +55,7 @@ type InputProps = {
   tooltip?: string | ReactNode;
   tooltipTriggerIcon?: any;
   isPositiveNumber?: boolean;
+  justPersian?: boolean;
 };
 
 const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
@@ -67,7 +68,7 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
       text: "",
       className: "",
       type: "button",
-      onClick: () => {},
+      onClick: () => { },
       isLoading: false,
     },
     className,
@@ -94,6 +95,7 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     tooltip,
     isPositiveNumber,
     idNumber,
+    justPersian
   } = props;
 
   const [eyeOff, setEye] = useState<boolean>(true);
@@ -117,7 +119,7 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     validations: fieldValidation,
     initialValue: value === null ? "" : value,
   });
-  
+
 
   const handleChange = (event: ChangeEvent<{ value: string }>) => {
     let val = event?.target?.value;
@@ -131,6 +133,9 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
       if (val !== "" && val !== "0") {
         val = val.replace(/^0+/, "");
       }
+    }
+    if (props.justPersian) {
+      val = val.replace(/[^\u0600-\u06FF\s]/g, "");
     }
 
     setInternalValue(val);
@@ -161,11 +166,14 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     }
   }, [value]);
 
+
+
+
+
   return (
     <div
       className={cn(
-        `min-h-[80px] ${
-          inline && "flex w-full justify-start gap-3 items-center"
+        `min-h-[80px] ${inline && "flex w-full justify-start gap-3 items-center"
         }`,
         className
       )}

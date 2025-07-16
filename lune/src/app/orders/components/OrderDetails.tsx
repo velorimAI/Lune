@@ -44,9 +44,14 @@ export const OrderDetails = ({
   const isWarehouse = role === "انباردار";
   const isSelectableTab = !["تحویل شد", "canceled", "all"].includes(currentTab);
 
+  // const canShowSelectUI =
+  //   isSelectableTab &&
+  //   (isAccountant || (isWarehouse && currentTab !== "در انتظار تائید حسابداری"));
+
   const canShowSelectUI =
-    isSelectableTab &&
-    (isAccountant || (isWarehouse && currentTab !== "در انتظار تائید حسابداری"));
+    (isAccountant && currentTab === "در انتظار تائید حسابداری") ||
+    (isWarehouse && currentTab !== "در انتظار تائید حسابداری" && isSelectableTab);
+
 
   const canSelectItem = (part: any) => {
     if (isWarehouse && isSelectableTab && currentTab !== "در انتظار تائید حسابداری") return true;
@@ -274,12 +279,6 @@ export const OrderDetails = ({
                               {reception.settlement_status || "-"}
                             </span>
                           </div>
-                          {/* <AddItemToReception
-                            id={reception.reception_id}
-                            data={order.receptions}
-                            refetch={refetch}
-                            onClose={() => setOpenReceptionIndex(null)}
-                          /> */}
                         </div>
                       </div>
                     </td>

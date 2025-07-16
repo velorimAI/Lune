@@ -10,6 +10,7 @@ interface CustomerFormProps {
   userForm: UseFormReturn<any>;
   userInfoSubmitted: boolean;
   onSubmit: (data: any) => void;
+  
 }
 
 export function CustomerForm({
@@ -35,6 +36,7 @@ export function CustomerForm({
             required
             readOnly={userInfoSubmitted}
             ref={refs.customerNameRef}
+            justPersian
           />
           <Input
             label="شماره تماس"

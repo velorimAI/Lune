@@ -21,7 +21,7 @@ export const AddItemModal: FC<AddUserModalProps> = ({ refetch }) => {
         mutate(formData, {
             onSuccess: () => {
                 refetch?.();
-                toast.success(`قطعه "${formData.piece_name}" با موفقیت اضافه شد`);
+                toast.success(`قطعه "${formData.part_name}" با موفقیت اضافه شد`);
                 setOpen(false);
             },
             onError: (error: any) => {
@@ -54,14 +54,14 @@ export const AddItemModal: FC<AddUserModalProps> = ({ refetch }) => {
                     <div className="grid grid-cols-2 gap-4">
                         <Input
                             label="نام قطعه"
-                            name="piece_name"
+                            name="part_name"
                             required
                             placeholder="مثلاً: برد تغذیه، صفحه نمایش، موتور"
 
                         />
                         <Input
                             label="شماره فنی"
-                            name="part_id"
+                            name="technical_code"
                             required
                             placeholder="مثلاً: P-4582 یا 21DF-XP12"
                         />
