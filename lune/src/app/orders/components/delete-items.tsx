@@ -10,9 +10,10 @@ import { useDeletePart } from "../hooks";
 interface DeleteItemProps {
   id: string;
   name: string;
+  disabled?: boolean;
 }
 
-export const DeleteItem: FC<DeleteItemProps> = ({ id, name }) => {
+export const DeleteItem: FC<DeleteItemProps> = ({ id, name, disabled }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -29,8 +30,13 @@ export const DeleteItem: FC<DeleteItemProps> = ({ id, name }) => {
   return (
     <>
       <Trash2
-        className="hover:text-red-600 hover:cursor-pointer"
-        onClick={() => setOpen(true)}
+        className={`
+        w-6 h-6 
+        ${disabled ? "text-gray-400  cursor-not-allowed" : "hover:text-red-600 hover:cursor-pointer"}
+        `}
+        onClick={() => {
+          if (!disabled) setOpen(true);
+        }}
       />
 
       <Modal

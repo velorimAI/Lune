@@ -24,7 +24,8 @@ export const OrderDetails = ({
   order,
   refetch,
   selectable = false,
-  currentTab
+  currentTab,
+  role
 }: {
 
   id: number;
@@ -32,9 +33,9 @@ export const OrderDetails = ({
   refetch: () => void;
   selectable?: boolean;
   currentTab: string;
+  role : string | null
 }) => {
   const [openReceptionIndex, setOpenReceptionIndex] = useState<number | null>(null);
-  const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
   const [openDateModal, setOpenDateModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -44,9 +45,14 @@ export const OrderDetails = ({
   const isWarehouse = role === "انباردار";
   const isSelectableTab = !["تحویل شد", "canceled", "all"].includes(currentTab);
 
+  // const canShowSelectUI =
+  //   isSelectableTab &&
+  //   (isAccountant || (isWarehouse && currentTab !== "در انتظار تائید حسابداری"));
+
   const canShowSelectUI =
-    isSelectableTab &&
-    (isAccountant || (isWarehouse && currentTab !== "در انتظار تائید حسابداری"));
+    (isAccountant && currentTab === "در انتظار تائید حسابداری") ||
+    (isWarehouse && currentTab !== "در انتظار تائید حسابداری" && isSelectableTab);
+
 
   const canSelectItem = (part: any) => {
     if (isWarehouse && isSelectableTab && currentTab !== "در انتظار تائید حسابداری") return true;
@@ -158,7 +164,7 @@ export const OrderDetails = ({
           {order?.receptions?.flatMap((r: { orders: any; }) => r.orders || []).length || 0})
         </span>
         {allClosed ? (
-          <AddItem id={id} />
+          <AddItem id={id} disabled={isAccountant}/>
         ) : (
           (() => {
             const openReceptions = order?.receptions?.filter((r: any) =>
@@ -173,6 +179,7 @@ export const OrderDetails = ({
                 data={order.receptions}
                 refetch={refetch}
                 onClose={() => setOpenReceptionIndex(null)}
+                disabled={isAccountant}
               />
             ) : null;
           })()
@@ -274,12 +281,6 @@ export const OrderDetails = ({
                               {reception.settlement_status || "-"}
                             </span>
                           </div>
-                          {/* <AddItemToReception
-                            id={reception.reception_id}
-                            data={order.receptions}
-                            refetch={refetch}
-                            onClose={() => setOpenReceptionIndex(null)}
-                          /> */}
                         </div>
                       </div>
                     </td>
@@ -407,6 +408,7 @@ export const OrderDetails = ({
                             <DeleteItem
                               id={String(part.order_id)}
                               name={part.piece_name}
+                              disabled={isAccountant}
                             />
                             <ToolTip
                               hintClassName="ml-4"

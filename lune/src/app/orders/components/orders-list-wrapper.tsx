@@ -5,8 +5,9 @@ interface Props {
   orders: any[];
   refetch: () => void;
   currentTab : string;
+  role : string | null
 }
 
-export const OrdersListWrapper: FC<Props> = ({ orders, refetch, currentTab }) => {
-  return <OrdersList data={orders} refetch={refetch} currentTab={currentTab} />;
+export const OrdersListWrapper: FC<Props> = ({ orders, refetch, currentTab , role }) => {
+  return <OrdersList data={orders} refetch={refetch} currentTab={currentTab} role={role} />;
 };
