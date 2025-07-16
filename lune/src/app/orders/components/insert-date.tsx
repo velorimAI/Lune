@@ -44,6 +44,7 @@ export const InsertDate: React.FC<InsertDateProps> = ({
     return (
         <Modal
             open={open}
+            onCancel={onClose}
             title="تاریخ و ساعت نوبت داده شده را وارد کنید"
             hideCancel
             hideConfirm
