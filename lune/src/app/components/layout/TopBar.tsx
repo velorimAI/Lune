@@ -16,7 +16,8 @@ const pathToTitle: Record<string, string> = {
   "/settings": "تنظبمات",
   "/admin":"مدیریت",
   "/admin/users":"کاربران",
-  "/admin/logs":"سوابق فعالیت"
+  "/admin/logs":"سوابق فعالیت",
+  "/lost-orders":"قطعات از دست رفته"
 
 };
 

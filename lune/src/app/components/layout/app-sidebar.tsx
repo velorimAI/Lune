@@ -12,11 +12,15 @@ import {
   Settings,
   ShieldUser,
   ClipboardList,
+   FileX,
 } from "lucide-react";
+
+
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
+import { title } from "process";
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -31,6 +35,7 @@ export function AppSidebar() {
     navMain: [
       { title: "داشبورد", url: "#", icon: ChartColumn },
       { title: "سفارش ها", url: "/orders", icon: ClipboardList },
+      { title:"قطعات از دست رفته", url:"/lost-orders", icon:FileX },
     ],
     navSecondary: [
       {
