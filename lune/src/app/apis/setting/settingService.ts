@@ -1,24 +1,10 @@
 import { API_BASE } from "@/app/utils/baseURL";
 import axios from "axios";
 
-export interface SettingData {
-  VOR?: string;
-  VIS?: string;
-  market?: string;
-  warhouse_charge?: string;
-}
 
-export interface SettingResponse {
-  message?: string;
-  VOR?: string;
-  VIS?: string;
-  market?: string;
-  warhouse_charge?: string;
-}
-
-export const getSettings = async (): Promise<SettingResponse> => {
+export const getSettings = async () => {
   const token = localStorage.getItem("token");
-  
+
   if (!token) {
     throw new Error("Token not found");
   }
@@ -28,13 +14,13 @@ export const getSettings = async (): Promise<SettingResponse> => {
       Authorization: `Bearer ${token}`,
     },
   });
-  
+
   return response.data;
 };
 
-export const updateSettings = async (settingsData: SettingData): Promise<SettingResponse> => {
+export const updateSettings = async (settingsData: any) => {
   const token = localStorage.getItem("token");
-  
+
   if (!token) {
     throw new Error("Token not found");
   }
@@ -49,6 +35,6 @@ export const updateSettings = async (settingsData: SettingData): Promise<Setting
       },
     }
   );
-  
+
   return response.data;
 };

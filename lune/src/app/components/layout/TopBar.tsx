@@ -13,7 +13,7 @@ const toEnglishDigits = (str: string) =>
 const pathToTitle: Record<string, string> = {
   "/orders": "سفارشات",
   "/orders/new": "ثبت سفارش",
-  "/settings": "تنظبمات",
+  "/settings": "تنظیمات",
   "/admin":"مدیریت",
   "/admin/users":"کاربران",
   "/admin/logs":"سوابق فعالیت"

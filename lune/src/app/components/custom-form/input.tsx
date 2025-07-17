@@ -56,6 +56,8 @@ type InputProps = {
   tooltipTriggerIcon?: any;
   isPositiveNumber?: boolean;
   justPersian?: boolean;
+  min ?: number;
+  max?:number
 };
 
 const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
@@ -95,7 +97,10 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     tooltip,
     isPositiveNumber,
     idNumber,
-    justPersian
+    justPersian,
+    min,
+    max
+    
   } = props;
 
   const [eyeOff, setEye] = useState<boolean>(true);
@@ -210,6 +215,8 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck="false"
+          min={min}
+          max={max}
         />
 
         {submitButton?.status && (
