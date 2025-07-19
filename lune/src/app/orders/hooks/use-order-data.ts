@@ -1,18 +1,11 @@
-<<<<<<< HEAD
 import { useForm } from "react-hook-form";
-=======
-import { useForm} from "react-hook-form";
->>>>>>> making-folder-for-lost-orders
 import { useCustomerInputRefs } from "./useCustomerInputRefs";
 import { usePartInputRefs } from "./usePartInputRefs";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAddOrder } from "./use-add-order";
 
-<<<<<<< HEAD
 import { useGetSettings } from "@/app/settings/hooks/use-get-settings";
-=======
->>>>>>> making-folder-for-lost-orders
 
 interface ArrivalSettings {
   VIS: string;
