@@ -15,7 +15,6 @@ export const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
       {!hideSidebar && (
         <>
           <AppSidebar />
-          {/* <SidebarTrigger /> */}
         </>
       )}
       <div className={hideSidebar ? "w-full" : "w-full m-2"}>{children}</div>

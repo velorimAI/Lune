@@ -36,7 +36,7 @@ const Orders: FC = () => {
   );
 
 
-  // console.log(filteredOrdersByTab);
+  
 
 
   return (
@@ -94,13 +94,7 @@ const Orders: FC = () => {
           )}
         </div>
 
-        {/* <div className="fixed left-6 bottom-[20px] bg-white rounded-lg">
-          <CirclePlus
-            className="w-[30px] h-[30px] cursor-pointer"
-            onClick={() => router.push("/orders/new")}
-          />
-        </div> */}
-
+       
         <ScrollBar />
       </ScrollArea>
       <motion.div

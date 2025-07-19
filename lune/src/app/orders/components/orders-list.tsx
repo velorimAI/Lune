@@ -67,7 +67,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch , currentTab , r
             );
           const firstReception = sorted.length ? sorted[0] : null;
 
-          // Combine all reception numbers separated by '/'
+         
           const receptionNumbers = sorted
             .map((r: any) => r.reception_number)
             .filter(Boolean)
@@ -117,7 +117,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch , currentTab , r
                     name={order?.customer_name}
                     disabled={role === "حسابدار"}
                   />
-                  {/* <EditOrderModal data={order} refetch={refetch} /> */}
+                 
                   <motion.div
                     className="cursor-pointer ml-2"
                     onClick={(e) => handleArrowClick(e, index)}

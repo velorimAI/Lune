@@ -70,7 +70,7 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
       text: "",
       className: "",
       type: "button",
-      onClick: () => { },
+      onClick: () => {},
       isLoading: false,
     },
     className,
@@ -98,9 +98,12 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     isPositiveNumber,
     idNumber,
     justPersian,
+<<<<<<< HEAD
     min,
     max
     
+=======
+>>>>>>> making-folder-for-lost-orders
   } = props;
 
   const [eyeOff, setEye] = useState<boolean>(true);
@@ -124,7 +127,6 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     validations: fieldValidation,
     initialValue: value === null ? "" : value,
   });
-
 
   const handleChange = (event: ChangeEvent<{ value: string }>) => {
     let val = event?.target?.value;
@@ -171,14 +173,11 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     }
   }, [value]);
 
-
-
-
-
   return (
     <div
       className={cn(
-        `min-h-[80px] ${inline && "flex w-full justify-start gap-3 items-center"
+        `min-h-[80px] ${
+          inline && "flex w-full justify-start gap-3 items-center"
         }`,
         className
       )}

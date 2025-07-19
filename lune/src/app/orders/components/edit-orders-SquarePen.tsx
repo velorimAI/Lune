@@ -113,7 +113,7 @@ interface editOrderModalProp {
 
 
   const canEditStatus =
-    (isWarehouse && selectedOrder?.status !== "در انتظار تائید حسابداری") || // انباردار می‌تونه بجز این حالت تغییر بده
+    (isWarehouse && selectedOrder?.status !== "در انتظار تائید حسابداری") || 
     (isAccountant && selectedOrder?.status === "در انتظار تائید حسابداری");
 
 
@@ -165,10 +165,7 @@ interface editOrderModalProp {
               name="status"
               className="w-[200px]"
               inputStyle="w-full"
-              // options={[
-              //   { label: "تسویه شده ", value: "تسویه شده" },
-              //   { label: "تسویه نشده", value: "تسویه نشده" },
-              // ]}
+              
               options={statusOptions}
               placeholder={selectedOrder?.status}
               disabled={!canEditStatus}

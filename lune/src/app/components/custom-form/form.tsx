@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { ReactNode, useEffect, FC } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm, FormProvider } from 'react-hook-form';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '../button';
-import { recursivelyRemoveInvalidValues } from '@/app/hooks/form/objectHelper';
+import { ReactNode, useEffect, FC } from "react";
+import { useRouter } from "next/navigation";
+import { useForm, FormProvider } from "react-hook-form";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "../button";
+import { recursivelyRemoveInvalidValues } from "@/app/hooks/form/objectHelper";
 
 type OnFormStateTypes = {
   isDirty?: boolean;
@@ -35,7 +35,7 @@ type FormProps = {
   cancelHref?: string;
   onFormState?: (data?: OnFormStateTypes) => void;
   defaultValue?: Record<any, any>;
-  methods?: any
+  methods?: any;
 };
 
 export const Form: FC<FormProps> = (props) => {
@@ -47,9 +47,9 @@ export const Form: FC<FormProps> = (props) => {
     isLoading,
     submitLoading,
     submitDisable = false,
-    submitText = 'Create',
+    submitText = "Create",
     submitHide,
-    cancelText = 'Cancel',
+    cancelText = "Cancel",
     cancelHide,
     sanitizeValues = true,
     onCancel,
@@ -60,12 +60,6 @@ export const Form: FC<FormProps> = (props) => {
 
   const router = useRouter();
 
-  // const methods = useForm<any>({
-  //   defaultValues,
-  //   // mode: 'onBlur',
-  //   // reValidateMode: 'onBlur',
-  // });
-
   const internalMethods = useForm<any>({ defaultValues });
   const methods = injectedMethods || internalMethods;
 
@@ -73,17 +67,9 @@ export const Form: FC<FormProps> = (props) => {
     if (onFormState) {
       onFormState({ ...methods.formState });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [methods.formState]);
 
   const onFormSubmit = (values: Record<any, any> = {}) => {
-    // let result = {...values};
-    // if (defaultValues) {
-    //   result = normalizeSubmittedData(defaultValues, result);
-    // } else if (sanitizeValues) {
-    //   result = recursivelyRemoveInvalidValues(result);
-    // }
-    // onSubmit?.(result);
     const result = sanitizeValues
       ? recursivelyRemoveInvalidValues(values)
       : values;
@@ -122,7 +108,12 @@ export const Form: FC<FormProps> = (props) => {
         <div className="w-full">
           <div className="flex justify-end gap-4">
             {!cancelHide && (
-              <Button type="button" variant="outline" className='text-black' onClick={handleCancel}>
+              <Button
+                type="button"
+                variant="outline"
+                className="text-black"
+                onClick={handleCancel}
+              >
                 {cancelText}
               </Button>
             )}

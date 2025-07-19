@@ -23,7 +23,7 @@ interface AddItemToReceptionProps {
 const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, id, onClose, disabled }) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState<string>("VOR");
-  const { mutate, isPending } = useAddItemToReception();
+  const { mutate } = useAddItemToReception();
   const [formValues, setFormValues] = useState({
     part_id: "",
     piece_name: "",

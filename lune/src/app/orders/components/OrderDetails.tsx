@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Wrench, PackageOpen, DollarSign, PlusCircle as CirclePlus, InfoIcon, MessageCircleMore } from "lucide-react";
+import { Wrench, PackageOpen, DollarSign, PlusCircle as  MessageCircleMore } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle } from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -45,9 +45,7 @@ export const OrderDetails = ({
   const isWarehouse = role === "انباردار";
   const isSelectableTab = !["تحویل شد", "canceled", "all"].includes(currentTab);
 
-  // const canShowSelectUI =
-  //   isSelectableTab &&
-  //   (isAccountant || (isWarehouse && currentTab !== "در انتظار تائید حسابداری"));
+  
 
   const canShowSelectUI =
     (isAccountant && currentTab === "در انتظار تائید حسابداری") ||
@@ -60,9 +58,7 @@ export const OrderDetails = ({
     return false;
   };
 
-  const accountantPendingParts = order?.receptions
-    ?.flatMap((r: any) => r.orders || [])
-    .filter((o: any) => o.status === "در انتظار تائید حسابداری");
+ 
 
   const isSelected = (id: string) => selectedItems.includes(id);
 

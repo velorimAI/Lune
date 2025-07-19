@@ -21,14 +21,14 @@ export const useFormField = (params: formFieldParams) => {
       result = false;
     }
     setValueState(result);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [initialValue]);
 
   useEffect(() => {
     if (setValue && name) {
       setValue(name, valueState);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [name, valueState]);
 
   useEffect(() => {

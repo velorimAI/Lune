@@ -25,6 +25,10 @@ export default function PartForm({
   onSubmit,
 }: PartFormProps) {
   const { refs } = usePartInputRefs();
+<<<<<<< HEAD
+=======
+ 
+>>>>>>> making-folder-for-lost-orders
   const [arrivalDays, setArrivalDays] = useState<string>("1");
   const [formValues, setFormValues] = useState({
     part_id: '',
@@ -39,6 +43,16 @@ export default function PartForm({
     }
   }, [estimatedArrivalDays]);
 
+<<<<<<< HEAD
+=======
+    setFormValues({
+      part_id: '',
+      piece_name: '',
+    });
+  }, [estimatedArrivalDays, formKey]);
+
+ 
+>>>>>>> making-folder-for-lost-orders
 
   return (
     <Card title="اطلاعات قطعه" className="p-0 pb-4">
@@ -67,7 +81,11 @@ export default function PartForm({
                 setFormValues((prev) => ({ ...prev, piece_name: name }));
               }}
               disabled={!userInfoSubmitted}
+<<<<<<< HEAD
             // ref={refs.partIdRef}
+=======
+             
+>>>>>>> making-folder-for-lost-orders
             />
             <Input
               label="نام قطعه"
