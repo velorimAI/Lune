@@ -98,12 +98,9 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     isPositiveNumber,
     idNumber,
     justPersian,
-<<<<<<< HEAD
     min,
     max
     
-=======
->>>>>>> making-folder-for-lost-orders
   } = props;
 
   const [eyeOff, setEye] = useState<boolean>(true);
