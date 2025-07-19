@@ -1,10 +1,11 @@
-import { useForm, UseFormReturn } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useCustomerInputRefs } from "./useCustomerInputRefs";
 import { usePartInputRefs } from "./usePartInputRefs";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAddOrder } from "./use-add-order";
-import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
+
+import { useGetSettings } from "@/app/settings/hooks/use-get-settings";
 
 interface ArrivalSettings {
   VIS: string;
@@ -30,13 +31,16 @@ interface OrderItem {
 export function useOrderData() {
   const userForm = useForm();
   const { mutate, isPending } = useAddOrder();
-  const [formKey, setFormKey] = useState(0);
+  // const [formKey, setFormKey] = useState(0);
   const [customerFormKey, setCustomerFormKey] = useState(0);
+  const { data: settings } = useGetSettings();
 
-  const resetPartForm = () => {
-    setFormKey((prev) => prev + 1);
-    setOrderChannel("VOR");
-  };
+
+
+  // const resetPartForm = () => {
+  //   setFormKey((prev) => prev + 1);
+  //   setOrderChannel("VOR");
+  // };
   const resetCustomerForm = () => {
     setCustomerFormKey((prev) => prev + 1);
   };
@@ -45,36 +49,24 @@ export function useOrderData() {
   const [userInfoSubmitted, setUserInfoSubmitted] = useState(false);
   const { refs, clearAllFields } = useCustomerInputRefs();
   const { refs: partRefs, clearPartFields } = usePartInputRefs();
-
   const [orderChannel, setOrderChannel] = useState("VOR");
-  const [arrivalSettings, setArrivalSettings] = useState<ArrivalSettings>({
-    VIS: "10",
-    VOR: "7",
-  });
-
   const [orderGroups, setOrderGroups] = useState<OrderItem[]>([]);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("orderSettings");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (parsed?.VIS && parsed?.VOR) {
-          setArrivalSettings(parsed);
-        }
-      } catch (e) {
-        console.error("تنظیمات سفارش معتبر نیست");
-      }
-    }
-  }, []);
-
   const estimatedArrivalDays = useMemo(() => {
-    return orderChannel === "VOR"
-      ? arrivalSettings.VOR
-      : orderChannel === "VIS"
-        ? arrivalSettings.VIS
-        : undefined;
-  }, [orderChannel, arrivalSettings]);
+    switch (orderChannel) {
+      case "VOR":
+        return settings?.vor ?? "1";
+      case "VIS":
+        return settings?.vis ?? "1";
+      case "شارژ انبار":
+        return settings?.warhouse_charge ?? "1";
+      case "بازار آزاد":
+        return settings?.market ?? "1";
+      default:
+        return "1";
+    }
+  }, [orderChannel, settings]);
+
 
   const handleUserData = (data: any) => {
     setUserData(data);
@@ -84,7 +76,6 @@ export function useOrderData() {
   const handleSubmitItem = (data: any) => {
     setOrderGroups((prevData) => [...prevData, data]);
     clearPartFields();
-    resetPartForm();
   };
 
   const handleSubmit = () => {
@@ -108,7 +99,7 @@ export function useOrderData() {
       customer_name: userData.customer_name,
       phone_number: userData.phone_number,
       car_status: userData.car_status,
-      car_name : userData.car_name,
+      car_name: userData.car_name,
       reception_number: userData.reception_number,
       reception_date: userData.reception_date,
       orders: orderGroups.map((item) => ({
@@ -162,9 +153,5 @@ export function useOrderData() {
     isPending,
     refs,
     partRefs,
-    formKey,
-    customerFormKey,
-    resetPartForm,
-    resetCustomerForm
   };
 }

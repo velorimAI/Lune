@@ -42,7 +42,7 @@ export default function SettingsPage() {
   return (
     <div className="p-8">
       <div className="max-w-5xl mx-auto mt-26">
-        <Card className="bg-gray-50" >
+        <Card className="bg-gray-100" >
           <div className="mb-4" >
 
             <Button onClick={() => router.push('/admin')} variant={"outline"} className="text-black"> <ArrowRight size={26} /></Button>

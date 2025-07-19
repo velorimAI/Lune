@@ -25,8 +25,6 @@ export default function NewOrderPage() {
     setOrderGroups,
     formKey,
     resetPartForm,
-    customerFormKey,
-    resetCustomerForm
   } = useOrderData();
 
   return (
@@ -60,8 +58,7 @@ export default function NewOrderPage() {
           <OrderList
             items={orderGroups}
             onDelete={(index: number) => {
-              const updated = [...orderGroups];
-              updated.splice(index, 1);
+              const updated = orderGroups.filter((_, i) => i !== index);
               setOrderGroups(updated);
             }}
             onSubmit={handleSubmit}

@@ -18,7 +18,7 @@ export const settingsConfig = [
   },
   {
     title: "شارژ انباری",
-    name: "warehouse_charge",
+    name: "warhouse_charge",
     icon: Warehouse,
   }
 ];

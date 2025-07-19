@@ -6,6 +6,7 @@ import { Card } from "@/app/components/card";
 import { usePartInputRefs } from "../hooks";
 import { PartIdInput } from "./part-id-input";
 import { TextArea } from "@/app/components/custom-form/text-area";
+import { useGetSettings } from "@/app/settings/hooks/use-get-settings";
 
 
 interface PartFormProps {
@@ -14,8 +15,6 @@ interface PartFormProps {
   setOrderChannel: (value: string) => void;
   estimatedArrivalDays?: string | number;
   onSubmit: (data: any) => void;
-  formKey: number;
-  onFormReset: () => void;
 }
 
 export default function PartForm({
@@ -24,11 +23,8 @@ export default function PartForm({
   setOrderChannel,
   estimatedArrivalDays,
   onSubmit,
-  formKey,
-  onFormReset
 }: PartFormProps) {
   const { refs } = usePartInputRefs();
-  // const [formKey, setFormKey] = useState(0);
   const [arrivalDays, setArrivalDays] = useState<string>("1");
   const [formValues, setFormValues] = useState({
     part_id: '',
@@ -36,38 +32,22 @@ export default function PartForm({
   });
 
   useEffect(() => {
-    if (
-      estimatedArrivalDays === undefined ||
-      estimatedArrivalDays === null ||
-      estimatedArrivalDays === ""
-    ) {
-      setArrivalDays("1");
-    } else {
+    if (estimatedArrivalDays !== undefined && estimatedArrivalDays !== null) {
       setArrivalDays(String(estimatedArrivalDays));
+    } else {
+      setArrivalDays("1");
     }
+  }, [estimatedArrivalDays]);
 
-    setFormValues({
-      part_id: '',
-      piece_name: '',
-    });
-  }, [estimatedArrivalDays, formKey]);
-
-  // const handleFormSubmit = (data: any) => {
-  //   onSubmit({ ...data, estimated_arrival_days: arrivalDays });
-  //   setFormKey((prev) => prev + 1);
-  //   setOrderChannel("VOR");
-  //   setArrivalDays("7");
-  // };
 
   return (
     <Card title="اطلاعات قطعه" className="p-0 pb-4">
       <Form
-        key={formKey}
+      
         submitText="ثبت قطعه"
         cancelHide
         onSubmit={(data) => {
           onSubmit({ ...data, estimated_arrival_days: arrivalDays });
-          onFormReset();
         }}
         submitDisable={!userInfoSubmitted}
         className="mt-1"
@@ -87,7 +67,7 @@ export default function PartForm({
                 setFormValues((prev) => ({ ...prev, piece_name: name }));
               }}
               disabled={!userInfoSubmitted}
-              // ref={refs.partIdRef}
+            // ref={refs.partIdRef}
             />
             <Input
               label="نام قطعه"
@@ -118,7 +98,7 @@ export default function PartForm({
             <Select
               label="کانال سفارش"
               name="order_channel"
-              value="VOR"
+              value={orderChannel} 
               inputStyle="w-full"
               options={[
                 { value: "VOR", label: "VOR" },
@@ -133,8 +113,8 @@ export default function PartForm({
             />
             {orderChannel === "بازار آزاد" && (
               <>
-                <Input label="نام فروشنده" name="market_name" required/>
-                <Input label="تلفن فروشنده" name="market_phone" phone required/>
+                <Input label="نام فروشنده" name="market_name" required />
+                <Input label="تلفن فروشنده" name="market_phone" phone required />
               </>
             )}
             <Input
