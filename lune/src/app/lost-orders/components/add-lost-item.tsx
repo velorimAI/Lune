@@ -72,14 +72,13 @@ export const AddLostItem: FC<AddUserModalProps> = ({ refetch }) => {
                             label="نام قطعه"
                             name="piece_name"
                             required
-                            placeholder="مثلاً: برد تغذیه، صفحه نمایش، موتور"
-
+                           
                         />
                         <Input
                             label="شماره فنی"
                             name="piece_code"
                             required
-                            placeholder="مثلاً: P-4582 یا 21DF-XP12"
+                           
                         />
                         <Input
                             label="تعداد"
