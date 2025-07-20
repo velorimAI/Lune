@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { MessageCircleMore, CirclePlus } from "lucide-react";
+import { MessageCircleMore } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { SearchBox } from "@/app/components/table/search-box";
-import { Button } from "../components/button";
-import { AddLostItem } from "./components";
+import { AddLostItem, DeleteLostItem, EditLostItem } from "./components";
 import { useQuery } from "@tanstack/react-query";
 import { getLostItemsList } from "../apis/lost-orders/lostOrdersService";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,7 +18,7 @@ export default function MyCustomPage() {
     queryFn: getLostItemsList,
   });
 
- const filteredItems = lostItems.filter((item: any) => {
+  const filteredItems = lostItems.filter((item: any) => {
     if (!searchText) return true;
 
     const searchLower = searchText.toLowerCase();
@@ -62,7 +61,7 @@ export default function MyCustomPage() {
       <div className="max-w-7xl mx-auto space-y-6">
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          
+
           <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
             <SearchBox
               searchText={searchText}
@@ -72,7 +71,7 @@ export default function MyCustomPage() {
           </div>
         </div>
 
- 
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <ScrollArea className="w-full h-[75vh]">
             <table className="w-full" dir="rtl">
@@ -84,6 +83,7 @@ export default function MyCustomPage() {
                   <th className="p-4 text-right font-medium text-gray-500">کاربرد</th>
                   <th className="p-4 text-center font-medium text-gray-500">تاریخ و ساعت</th>
                   <th className="p-4 text-center font-medium text-gray-500">توضیحات</th>
+                  <th className="p-4 text-center font-medium text-gray-500"></th>
                 </tr>
               </thead>
 
@@ -141,6 +141,10 @@ export default function MyCustomPage() {
                           <span className="text-gray-300">-</span>
                         )}
                       </td>
+                      <td className="flex gap-4 justify-center items-center p-4 py-7 text-center">
+                        <EditLostItem data={item} refetch={refetch}/>
+                        <DeleteLostItem id={item?.id} name={item.piece_name} refetch={refetch} />
+                      </td>
                     </tr>
                   ))
                 )}
@@ -151,9 +155,8 @@ export default function MyCustomPage() {
         </div>
       </div>
 
-      {/* Floating Add Button */}
       <div className="fixed bottom-6 left-6 z-50">
-        <AddLostItem refetch={refetch}/>
+        <AddLostItem refetch={refetch} />
       </div>
     </div>
   );
