@@ -11,9 +11,21 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useQuery } from '@tanstack/react-query';
 import { getLogsList } from '@/app/apis/admin/adminService';
 import { getActionStyle } from '../utils/getActionStyle';
+import { useEffect } from 'react';
 
 export default function LogsPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        router.push('/admin');
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [router]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['logs'],
@@ -26,7 +38,6 @@ export default function LogsPage() {
   const formatTime = (time: string) => time?.slice(0, 5);
 
 
-
   return (
     <div className="bg-gray-50 p-2">
       <div className="max-w-5xl mx-auto">
@@ -36,10 +47,9 @@ export default function LogsPage() {
             variant="outline"
             className="text-center content-center"
           >
-            <ArrowRight size={26}/>
+            <ArrowRight size={26} />
           </Button>
         </div>
-
 
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           {isLoading ? (

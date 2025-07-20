@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from "@/app/components/card";
 import { useOrderData } from "../../hooks/use-order-data";
@@ -11,6 +12,18 @@ import { Button } from '@/app/components/button';
 
 export default function NewOrderPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        router.push("/orders");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [router]);
+
   const {
     userForm,
     userInfoSubmitted,

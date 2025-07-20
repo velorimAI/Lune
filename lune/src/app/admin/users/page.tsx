@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // ✅ useEffect اضافه شد
 import { UserX, UserPen, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -16,12 +16,23 @@ export default function UsersListPage() {
   const [searchText, setSearchText] = useState<string>("");
   const [searchField, setSearchField] = useState<string>("all");
 
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        router.push('/admin');
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [router]);
+
   const { data: users = [], isLoading, refetch } = useQuery({
     queryKey: ["users"],
     queryFn: getUsersList,
     refetchInterval: 300_000,
   });
-
 
   const filteredUsers = useUsersSearch(users, searchText, searchField);
 
