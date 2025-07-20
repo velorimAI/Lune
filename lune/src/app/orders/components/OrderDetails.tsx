@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Wrench, PackageOpen,  PlusCircle as  MessageCircleMore } from "lucide-react";
+import { Wrench, PackageOpen,  MessageCircleMore } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle } from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
