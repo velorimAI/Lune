@@ -1,7 +1,7 @@
 "use client";
 
+import { JalaliDatePicker } from "@/app/components/custom-form/date-picker";
 import { Form } from "@/app/components/custom-form/form";
-import { Input } from "@/app/components/custom-form/input";
 import { Modal } from "@/app/components/modal";
 import { TimePicker } from "@/app/components/time-picker";
 import { toZonedTime } from "date-fns-tz";
@@ -10,29 +10,30 @@ import React, { useEffect, useState } from "react";
 interface InsertDateProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: { Date: string; time: string }) => void;
 }
 
-export const InsertDate: React.FC<InsertDateProps> = ({
+export const InsertDate = ({
   open,
   onClose,
   onSubmit,
-}) => {
+}: InsertDateProps) => {
   const [time, setTime] = useState("00:00");
+  const [date, setDate] = useState("");
 
   useEffect(() => {
     if (open) {
       const now = toZonedTime(new Date(), "Asia/Tehran");
       const hour = now.getHours().toString().padStart(2, "0");
       const minute = now.getMinutes().toString().padStart(2, "0");
-
       setTime(`${hour}:${minute}`);
+      setDate("");
     }
   }, [open]);
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = () => {
     const finalData = {
-      ...data,
+      Date: date,
       time,
     };
     onSubmit(finalData);
@@ -56,12 +57,18 @@ export const InsertDate: React.FC<InsertDateProps> = ({
       >
         <div className="flex flex-col sm:flex-row gap-4 w-full">
           <div className="w-full sm:w-2/3">
-            <Input label="تاریخ" name="Date" required />
+            <JalaliDatePicker
+              label="تاریخ"
+              name="Date"
+              value={date}
+              onChange={setDate}
+              required
+            />
           </div>
           <div className="w-full sm:w-1/3">
             <TimePicker
               value={time}
-              onChange={(val) => setTime(val)}
+              onChange={setTime}
               required
               label="ساعت"
             />

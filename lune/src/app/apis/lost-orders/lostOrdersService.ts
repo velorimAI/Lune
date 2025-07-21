@@ -50,8 +50,12 @@ export const deleteLostItem = async (id: string) => {
   return response.data;
 };
 
-export const downloadLostOrdersReport = async (format : "excel" | "csv",fromDate: string, toDate: string) => {
-  const token = localStorage.getItem("token");
+export const downloadLostOrdersReport = async (
+  format: 'excel' | 'csv',
+  fromDate: string,
+  toDate: string
+) => {
+  const token = localStorage.getItem('token');
 
   const response = await axios.get(
     `${API_BASE}reports/lost-orders-report?format=${format}&from_date=${fromDate}&to_date=${toDate}`,
@@ -59,15 +63,15 @@ export const downloadLostOrdersReport = async (format : "excel" | "csv",fromDate
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      responseType: "blob",
+      responseType: 'blob',
     }
   );
 
-
+  const fileExtension = format === 'excel' ? 'xlsx' : 'csv';
   const url = window.URL.createObjectURL(new Blob([response.data]));
-  const link = document.createElement("a");
+  const link = document.createElement('a');
   link.href = url;
-  link.setAttribute("download", `lost-orders-report.xlsx`);
+  link.setAttribute('download', `lost-orders-report.${fileExtension}`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
