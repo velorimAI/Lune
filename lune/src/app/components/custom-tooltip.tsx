@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -7,20 +8,38 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
+import { ReactNode, CSSProperties } from "react";
 import { InfoIcon } from "lucide-react";
+import { getCancelMessage, getConfirmMessage } from "../utils/status-utils";
 
 interface ToolTipProps {
   hint?: string | ReactNode;
   className?: string;
-  tooltipTriggerIcon?: any;
-  style?: any;
-  children?: React.ReactNode;
+  tooltipTriggerIcon?: ReactNode;
+  style?: CSSProperties;
+  children?: ReactNode;
   hintClassName?: string;
+  status?: string;
+  actionType?: "confirm" | "cancel";
 }
 
-function ToolTip(props: ToolTipProps) {
-  const { hint, className, tooltipTriggerIcon, style, children , hintClassName } = props;
+export default function ToolTip({
+  hint,
+  className,
+  tooltipTriggerIcon,
+  style,
+  children,
+  hintClassName,
+  status,
+  actionType,
+}: ToolTipProps) {
+  let computedHint: ReactNode = hint ?? "";
+  if (!hint && status && actionType) {
+    computedHint =
+      actionType === "confirm"
+        ? getConfirmMessage(status)
+        : getCancelMessage(status);
+  }
 
   return (
     <TooltipProvider>
@@ -31,7 +50,9 @@ function ToolTip(props: ToolTipProps) {
               {children}
             </div>
           ) : tooltipTriggerIcon ? (
-            tooltipTriggerIcon
+            <div style={style} className={cn("cursor-pointer", className)}>
+              {tooltipTriggerIcon}
+            </div>
           ) : (
             <InfoIcon
               onClick={(e) => e.stopPropagation()}
@@ -41,7 +62,6 @@ function ToolTip(props: ToolTipProps) {
             />
           )}
         </TooltipTrigger>
-
         <TooltipContent
           side="top"
           align="center"
@@ -49,14 +69,13 @@ function ToolTip(props: ToolTipProps) {
           className={cn(
             "z-50 rounded-md bg-black text-white px-3 py-2 text-xs",
             "shadow-lg backdrop-blur-sm",
-            "dark:bg-white/90 dark:text-black", hintClassName
+            "dark:bg-white/90 dark:text-black",
+            hintClassName
           )}
         >
-          {hint || ""}
+          {computedHint}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
 }
-
-export default ToolTip;

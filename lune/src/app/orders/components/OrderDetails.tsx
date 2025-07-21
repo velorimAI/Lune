@@ -120,6 +120,8 @@ export const OrderDetails = ({
     setSelectedItems([]);
   };
 
+  
+
   const handleMultiCancel = async () => {
     const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
     const cancellableOrders = allOrders.filter((order: any) =>
@@ -341,7 +343,7 @@ export const OrderDetails = ({
                         <td className="px-4 py-3 text-center flex gap-3 justify-end items-center">
                           <div className="flex justify-center items-center gap-1">
                             {options[0] && canEdit && (
-                              <ToolTip hint={`${options[0].value}`}>
+                              <ToolTip status={part.status} actionType="confirm">
                                 <div>
                                   <ConfirmCircle
                                     onConfirm={async () => {
