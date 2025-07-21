@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { Card } from "../../components/card";
 import { useRouter } from "next/navigation";
 import { CirclePlus } from "lucide-react";
@@ -20,7 +20,7 @@ const Orders: FC = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [searchField, setSearchField] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("all");
-  const role = localStorage.getItem('role');
+  const role = localStorage.getItem("role");
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["orders"],
@@ -35,8 +35,12 @@ const Orders: FC = () => {
     setSearchText
   );
 
-
-  
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role === "حسابدار") {
+      setActiveTab("در انتظار تائید حسابداری");
+    }
+  }, []);
 
 
   return (
@@ -65,10 +69,7 @@ const Orders: FC = () => {
             inputStyle="w-32"
             className="min-h-[0px] mt-2"
           />
-          <SearchBox
-            onSearch={handleSearch}
-            className="min-h-[0px] flex-1"
-          />
+          <SearchBox onSearch={handleSearch} className="min-h-[0px] flex-1" />
         </div>
       </div>
 
@@ -94,7 +95,6 @@ const Orders: FC = () => {
           )}
         </div>
 
-       
         <ScrollBar />
       </ScrollArea>
       <motion.div
@@ -114,7 +114,6 @@ const Orders: FC = () => {
       >
         <CirclePlus className="w-8 h-8 text-gray-700" />
       </motion.div>
-
     </Card>
   );
 };
