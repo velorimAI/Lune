@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Wrench, PackageOpen, DollarSign, PlusCircle as  MessageCircleMore } from "lucide-react";
+import { Wrench, PackageOpen,  PlusCircle as  MessageCircleMore } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle } from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -272,10 +272,7 @@ export const OrderDetails = ({
                               ) : null}
                               )
                             </span>
-                            <DollarSign className="inline w-4 h-4 align-middle" />
-                            <span className="font-normal text-gray-800">
-                              {reception.settlement_status || "-"}
-                            </span>
+                          
                           </div>
                         </div>
                       </div>

@@ -36,7 +36,7 @@ export function CustomerForm({
             required
             readOnly={userInfoSubmitted}
             ref={refs.customerNameRef}
-            justPersian
+           
           />
           <Input
             label="شماره تماس"

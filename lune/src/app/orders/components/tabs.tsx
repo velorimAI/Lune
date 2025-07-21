@@ -8,7 +8,7 @@ interface TabsProps {
 
 export const Tabs: FC<TabsProps> = ({ activeTab, setActiveTab, tabCounts }) => {
   const tabs = [
-    { label: `همه سفارش‌ها`, value: "all" },
+    
     { label: `در انتظار تایید شرکت`, value: "در انتظار تائید شرکت" },
     { label: `در انتظار تایید حسابداری`, value: "در انتظار تائید حسابداری" },
     { label: `در انتظار دریافت`, value: "در انتظار دریافت" },
@@ -17,6 +17,7 @@ export const Tabs: FC<TabsProps> = ({ activeTab, setActiveTab, tabCounts }) => {
     { label: `نوبت داده شد`, value: "نوبت داده شد" },
     { label: "لغو شده", value: "canceled" },
     { label: `تحویل شده`, value: "تحویل شد" },
+    { label: `همه سفارش‌ها`, value: "all" },
   ];
 
   return (

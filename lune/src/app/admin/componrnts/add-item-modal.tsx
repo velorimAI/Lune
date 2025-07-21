@@ -56,14 +56,14 @@ export const AddItemModal: FC<AddUserModalProps> = ({ refetch }) => {
                             label="نام قطعه"
                             name="part_name"
                             required
-                            placeholder="مثلاً: برد تغذیه، صفحه نمایش، موتور"
+                           
 
                         />
                         <Input
                             label="شماره فنی"
                             name="technical_code"
                             required
-                            placeholder="مثلاً: P-4582 یا 21DF-XP12"
+                          
                         />
                     </div>
                 </Form>
