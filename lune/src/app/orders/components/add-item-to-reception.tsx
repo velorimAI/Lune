@@ -176,6 +176,15 @@ const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, 
                 required
               />
             </div>
+              <Input
+              label={
+                orderChannel === "بازار آزاد"
+                  ? "دریافت(روز)"
+                  : "زمان تخمینی دریافت (روز)"
+              }
+              name="estimated_arrival_days"
+    
+            />
 
             <div>
               <TextArea
