@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MessageCircleMore, CirclePlus } from "lucide-react";
+import { MessageCircleMore } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { SearchBox } from "@/app/components/table/search-box";
 import { Button } from "../components/button";
