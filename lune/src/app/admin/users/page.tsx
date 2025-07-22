@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { UserX, UserPen, ArrowRight } from "lucide-react";
+import { UserX, UserPen, ShieldUser, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { getUsersList } from "@/app/apis/admin/adminService";
@@ -95,7 +95,7 @@ export default function UsersListPage() {
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <UserPen className="text-gray-700" size={24} />
+                  <ShieldUser className="text-gray-700" size={26} />
                 </div>
               </div>
             </div>

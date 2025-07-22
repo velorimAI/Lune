@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Users, FileClock} from 'lucide-react';
+import { Users, FileClock } from 'lucide-react';
 import { AddItemModal } from './componrnts';
 
 
@@ -31,9 +31,9 @@ export default function AdminPage() {
           <span className="mt-4 text-gray-700 font-semibold text-center">سوابق فعالیت</span>
         </div>
 
-       
 
-        <AddItemModal/>
+
+        <AddItemModal />
       </main>
     </div>
   );

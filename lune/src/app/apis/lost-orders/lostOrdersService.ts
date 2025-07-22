@@ -9,7 +9,7 @@ export const getLostItemsList = async () => {
     },
   });
 
-  return res.data;
+  return res.data.data;
 };
 
 export const addLostItem = async (Data: any) => {
