@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Wrench, PackageOpen,  MessageCircleMore } from "lucide-react";
+import { Wrench, PackageOpen, MessageCircleMore } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle } from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,17 +25,18 @@ export const OrderDetails = ({
   refetch,
   selectable = false,
   currentTab,
-  role
+  role,
 }: {
-
   id: number;
   order: any;
   refetch: () => void;
   selectable?: boolean;
   currentTab: string;
-  role : string | null
+  role: string | null;
 }) => {
-  const [openReceptionIndex, setOpenReceptionIndex] = useState<number | null>(null);
+  const [openReceptionIndex, setOpenReceptionIndex] = useState<number | null>(
+    null
+  );
   const [openDateModal, setOpenDateModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -45,20 +46,22 @@ export const OrderDetails = ({
   const isWarehouse = role === "انباردار";
   const isSelectableTab = !["تحویل شد", "canceled", "all"].includes(currentTab);
 
-  
-
   const canShowSelectUI =
     (isAccountant && currentTab === "در انتظار تائید حسابداری") ||
-    (isWarehouse && currentTab !== "در انتظار تائید حسابداری" && isSelectableTab);
-
+    (isWarehouse &&
+      currentTab !== "در انتظار تائید حسابداری" &&
+      isSelectableTab);
 
   const canSelectItem = (part: any) => {
-    if (isWarehouse && isSelectableTab && currentTab !== "در انتظار تائید حسابداری") return true;
+    if (
+      isWarehouse &&
+      isSelectableTab &&
+      currentTab !== "در انتظار تائید حسابداری"
+    )
+      return true;
     if (isAccountant && part.status === "در انتظار تائید حسابداری") return true;
     return false;
   };
-
- 
 
   const isSelected = (id: string) => selectedItems.includes(id);
 
@@ -70,7 +73,10 @@ export const OrderDetails = ({
 
   const toggleSelectAll = () => {
     const allSelectableIds =
-      order?.receptions?.flatMap((r: any) => r.orders || []).filter(canSelectItem).map((o: any) => o.order_id) || [];
+      order?.receptions
+        ?.flatMap((r: any) => r.orders || [])
+        .filter(canSelectItem)
+        .map((o: any) => o.order_id) || [];
 
     if (selectedItems.length === allSelectableIds.length) {
       setSelectedItems([]);
@@ -95,21 +101,31 @@ export const OrderDetails = ({
 
     await Promise.all(
       selectedOrders.map(async (part: any) => {
-        const options = getStatusOptions(part.status, part.order_channel, part.reception_car_status || "");
+        const options = getStatusOptions(
+          part.status,
+          part.order_channel,
+          part.reception_car_status || ""
+        );
 
         if (options.length > 0) {
           const nextStatus = options[0].value;
-          if (part.reception_car_status === "متوقع" && part.status === "در انتظار نوبت دهی") {
+          if (
+            part.reception_car_status === "متوقع" &&
+            part.status === "در انتظار نوبت دهی"
+          ) {
             setSelectedOrder({ id: part.order_id, name: part.piece_name });
             setOpenDateModal(true);
             return;
           }
-          if (nextStatus === "نوبت داده شد") return;
-          try {
-            await editOrder(part.order_id, { status: nextStatus });
-            successCount++;
-          } catch (error) {
-            console.error(`خطا در بروزرسانی قطعه ${part.piece_name}`, error);
+          if (nextStatus === "نوبت داده شد") {
+            if (role !== "پذیرش") {
+              toast.error("فقط پذیرش می‌تواند نوبت‌دهی انجام دهد");
+              return;
+            }
+
+            setSelectedOrder({ id: part.order_id, name: part.piece_name });
+            setOpenDateModal(true);
+            return;
           }
         }
       })
@@ -119,8 +135,6 @@ export const OrderDetails = ({
     refetch();
     setSelectedItems([]);
   };
-
-  
 
   const handleMultiCancel = async () => {
     const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
@@ -139,19 +153,20 @@ export const OrderDetails = ({
 
   const canShowCancelAll = (isWarehouse && isSelectableTab) || isAccountant;
 
-
   const closedStatuses = [
     "تحویل شد",
     "لغو توسط شرکت",
     "انصراف مشتری",
     "عدم دریافت",
     "عدم پرداخت حسابداری",
-    "تحویل نشد"
+    "تحویل نشد",
   ];
 
-  const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []) || [];
-  const allClosed = allOrders.every((o: any) => closedStatuses.includes(o.status));
-
+  const allOrders =
+    order?.receptions?.flatMap((r: any) => r.orders || []) || [];
+  const allClosed = allOrders.every((o: any) =>
+    closedStatuses.includes(o.status)
+  );
 
   return (
     <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
@@ -159,17 +174,22 @@ export const OrderDetails = ({
         <Wrench className="w-5 h-5" />
         <span>
           جزئیات قطعات (
-          {order?.receptions?.flatMap((r: { orders: any; }) => r.orders || []).length || 0})
+          {order?.receptions?.flatMap((r: { orders: any }) => r.orders || [])
+            .length || 0}
+          )
         </span>
         {allClosed ? (
-          <AddItem id={id} disabled={isAccountant}/>
+          <AddItem id={id} disabled={isAccountant} />
         ) : (
           (() => {
             const openReceptions = order?.receptions?.filter((r: any) =>
-              (r.orders || []).some((o: any) => !closedStatuses.includes(o.status))
+              (r.orders || []).some(
+                (o: any) => !closedStatuses.includes(o.status)
+              )
             );
 
-            const latestOpenReception = openReceptions?.[openReceptions.length - 1];
+            const latestOpenReception =
+              openReceptions?.[openReceptions.length - 1];
 
             return latestOpenReception ? (
               <AddItemToReception
@@ -182,20 +202,13 @@ export const OrderDetails = ({
             ) : null;
           })()
         )}
-
-
       </div>
 
       {selectedItems.length > 0 && (
         <div className="flex gap-2 mb-4">
           {canShowCancelAll && (
             <>
-              <Button
-
-                onClick={handleMultiConfirm}
-              >
-                تایید همه
-              </Button>
+              <Button onClick={handleMultiConfirm}>تایید همه</Button>
               <Button
                 variant={"outline"}
                 onClick={handleMultiCancel}
@@ -245,7 +258,7 @@ export const OrderDetails = ({
                   car_status: string;
                   settlement_status: string;
                   orders: any[];
-                  reception_id: number
+                  reception_id: number;
                 },
                 i: number
               ) => (
@@ -258,7 +271,9 @@ export const OrderDetails = ({
                       <div className="flex flex-col gap-2">
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-2 text-left mr-4">
-                            <span>شماره پذیرش: {reception.reception_number}</span>
+                            <span>
+                              شماره پذیرش: {reception.reception_number}
+                            </span>
                             <span className="flex items-center gap-1">
                               (<span>{reception.car_status}</span>
                               {reception.car_status === "متوقف" ? (
@@ -274,7 +289,6 @@ export const OrderDetails = ({
                               ) : null}
                               )
                             </span>
-                          
                           </div>
                         </div>
                       </div>
@@ -289,14 +303,20 @@ export const OrderDetails = ({
                     );
 
                     const canEdit =
-                      (isAccountant && part.status === "در انتظار تائید حسابداری") ||
-                      (isWarehouse && part.status !== "در انتظار تائید حسابداری" && currentTab !== "در انتظار تائید حسابداری");
-
+                      (isAccountant &&
+                        part.status === "در انتظار تائید حسابداری") ||
+                      (isWarehouse &&
+                        part.status !== "در انتظار تائید حسابداری" &&
+                        currentTab !== "در انتظار تائید حسابداری") ||
+                      (role === "پذیرش" &&
+                        part.status === "در انتظار نوبت دهی");
 
                     return (
                       <tr
                         key={j}
-                        className={`border-b ${j % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                        className={`border-b ${
+                          j % 2 === 0 ? "bg-gray-50" : "bg-white"
+                        }`}
                       >
                         {canShowSelectUI && canSelectItem(part) && (
                           <td className="px-4 py-3 text-center">
@@ -314,16 +334,22 @@ export const OrderDetails = ({
                         <td className="px-4 py-3">{part.part_id}</td>
 
                         <td className="px-4 py-3">{part.number_of_pieces}</td>
-                        <td className="px-4 py-3 font-semibold">{part.order_channel}</td>
+                        <td className="px-4 py-3 font-semibold">
+                          {part.order_channel}
+                        </td>
                         <td className="px-4 py-3">
-                          {part.order_date ? part.order_date.split("T")[0] : "-"}
+                          {part.order_date
+                            ? part.order_date.split("T")[0]
+                            : "-"}
                         </td>
                         <td className="px-4 py-3">{part.order_number}</td>
                         <td className="px-4 py-3">
                           {part.estimated_arrival_days}
                         </td>
                         <td className="px-4 py-3">
-                          {part.delivery_date ? part.delivery_date.split("T")[0] : "-"}
+                          {part.delivery_date
+                            ? part.delivery_date.split("T")[0]
+                            : "-"}
                         </td>
                         <td className="px-4 py-3 font-semibold">
                           <div className="flex items-center gap-1.5">
@@ -342,62 +368,83 @@ export const OrderDetails = ({
                         </td>
                         <td className="px-4 py-3 text-center flex gap-3 justify-end items-center">
                           <div className="flex justify-center items-center gap-1">
-                            {options[0] && canEdit && (
-                              <ToolTip status={part.status} actionType="confirm">
-                                <div>
-                                  <ConfirmCircle
-                                    onConfirm={async () => {
-                                      const previousStatus = part.status;
-                                      const newStatus = options[0].value;
+                            {options[0] &&
+                              canEdit &&
+                              (options[0].value !== "نوبت داده شد" ||
+                                role === "پذیرش") && (
+                                <ToolTip
+                                  status={part.status}
+                                  actionType="confirm"
+                                >
+                                  <div>
+                                    <ConfirmCircle
+                                      onConfirm={async () => {
+                                        const previousStatus = part.status;
+                                        const newStatus = options[0].value;
 
-                                      if (newStatus === "نوبت داده شد") {
-                                        setSelectedOrder({ id: part.order_id, name: part.piece_name });
-                                        setOpenDateModal(true);
-                                        return;
-                                      }
+                                        if (newStatus === "نوبت داده شد") {
+                                          setSelectedOrder({
+                                            id: part.order_id,
+                                            name: part.piece_name,
+                                          });
+                                          setOpenDateModal(true);
+                                          return;
+                                        }
 
-                                      try {
-                                        await editOrder(part.order_id, { status: newStatus });
-                                        toast.success(
-                                          `وضعیت «${part.piece_name}» از «${previousStatus}» به «${newStatus}» تغییر کرد`,
-                                          { duration: 2500 }
-                                        );
-                                        refetch();
-                                      } catch (error) {
-                                        toast.error("خطا در تغییر وضعیت قطعه", { duration: 3000 });
-                                      }
-                                    }}
-                                  />
-                                </div>
-                              </ToolTip>
-                            )}
+                                        try {
+                                          await editOrder(part.order_id, {
+                                            status: newStatus,
+                                          });
+                                          toast.success(
+                                            `وضعیت «${part.piece_name}» از «${previousStatus}» به «${newStatus}» تغییر کرد`,
+                                            { duration: 2500 }
+                                          );
+                                          refetch();
+                                        } catch (error) {
+                                          toast.error(
+                                            "خطا در تغییر وضعیت قطعه",
+                                            { duration: 3000 }
+                                          );
+                                        }
+                                      }}
+                                    />
+                                  </div>
+                                </ToolTip>
+                              )}
 
-                            {options[1] && canEdit && (
-                              <ToolTip hint={`لغو`}>
-                                <div>
-                                  <CancelCircle
-                                    onCancel={async (description: string) => {
-                                      try {
-                                        await editOrder(part.order_id, {
-                                          status: options[1].value,
-                                          description: description,
-                                        });
-                                        toast.success(
-                                          `وضعیت «${part.piece_name}» لغو شد با توضیح: «${description || "بدون توضیح"}»`,
-                                          {
-                                            duration: 2000,
-                                            dismissible: true,
-                                          }
-                                        );
-                                        refetch();
-                                      } catch {
-                                        toast.error("خطا در لغو وضعیت");
-                                      }
-                                    }}
-                                  />
-                                </div>
-                              </ToolTip>
-                            )}
+                            {options[1] &&
+                              canEdit &&
+                              (part.status !== "در انتظار نوبت دهی" ||
+                                role === "پذیرش") && (
+                                <ToolTip hint={`لغو`}>
+                                  <div>
+                                    <CancelCircle
+                                      onCancel={async (description: string) => {
+                                        try {
+                                          await editOrder(part.order_id, {
+                                            status: options[1].value,
+                                            description: description,
+                                          });
+                                          toast.success(
+                                            `وضعیت «${
+                                              part.piece_name
+                                            }» لغو شد با توضیح: «${
+                                              description || "بدون توضیح"
+                                            }»`,
+                                            {
+                                              duration: 2000,
+                                              dismissible: true,
+                                            }
+                                          );
+                                          refetch();
+                                        } catch {
+                                          toast.error("خطا در لغو وضعیت");
+                                        }
+                                      }}
+                                    />
+                                  </div>
+                                </ToolTip>
+                              )}
                           </div>
                           <div className="flex gap-1">
                             <DeleteItem
@@ -408,44 +455,55 @@ export const OrderDetails = ({
                             <ToolTip
                               hintClassName="ml-4"
                               hint={
-                                (part.description || part.all_description) ? (
+                                part.description || part.all_description ? (
                                   <div className="space-y-2 text-sm leading-6 text-gray-100 max-w-[400px]">
                                     {part.all_description && (
                                       <div>
-                                        <div className="font-semibold text-white mb-1">توضیحات کلی :</div>
-                                        <p className="text-gray-300">{part.all_description}</p>
+                                        <div className="font-semibold text-white mb-1">
+                                          توضیحات کلی :
+                                        </div>
+                                        <p className="text-gray-300">
+                                          {part.all_description}
+                                        </p>
                                       </div>
                                     )}
                                     {part.description && (
                                       <div>
-                                        <div className="font-semibold text-red-600 dark:text-red-400 mb-1">علت لغو :</div>
-                                        <p className="text-gray-300">{part.description}</p>
+                                        <div className="font-semibold text-red-600 dark:text-red-400 mb-1">
+                                          علت لغو :
+                                        </div>
+                                        <p className="text-gray-300">
+                                          {part.description}
+                                        </p>
                                       </div>
                                     )}
                                   </div>
                                 ) : (
-                                  <div className="text-sm text-gray-300">توضیحاتی وجود ندارد</div>
+                                  <div className="text-sm text-gray-300">
+                                    توضیحاتی وجود ندارد
+                                  </div>
                                 )
                               }
                             >
                               <MessageCircleMore
                                 className={`
                                     w-6 h-6
-                                    ${part.description || part.all_description
-                                    ? 'text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white'
-                                    : 'text-gray-400 '
-                                  }
+                                    ${
+                                      part.description || part.all_description
+                                        ? "text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                                        : "text-gray-400 "
+                                    }
                                 `}
                               />
                             </ToolTip>
-
                           </div>
                         </td>
                       </tr>
                     );
                   })}
                 </React.Fragment>
-              ))}
+              )
+            )}
           </tbody>
         </table>
       </div>
@@ -492,7 +550,11 @@ export const OrderDetails = ({
           await Promise.all(
             itemsToCancel.map(async (part) => {
               try {
-                const options = getStatusOptions(part.status, part.order_channel, part.car_status || "");
+                const options = getStatusOptions(
+                  part.status,
+                  part.order_channel,
+                  part.car_status || ""
+                );
                 const cancelStatus = options[1]?.value || "لغو شده";
 
                 await editOrder(part.order_id, {

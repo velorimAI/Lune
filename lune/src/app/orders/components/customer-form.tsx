@@ -138,7 +138,7 @@ export function CustomerForm({
             value={getTodayJalaliDate()}
             name="reception_date"
             required
-            readOnly
+             readOnly={userInfoSubmitted}
           />
         </div>
       </Form>
