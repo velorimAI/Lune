@@ -36,13 +36,11 @@ export function useOrderData() {
   const [customerFormKey, setCustomerFormKey] = useState(0);
   const { data: settings } = useGetSettings();
 
-   const userForm = useForm({
+  const userForm = useForm({
     defaultValues: {
       reception_date: getTodayJalaliDate(),
     },
   });
-
-
 
   // const resetPartForm = () => {
   //   setFormKey((prev) => prev + 1);
@@ -74,7 +72,6 @@ export function useOrderData() {
     }
   }, [orderChannel, settings]);
 
-
   const handleUserData = (data: any) => {
     setUserData(data);
     setUserInfoSubmitted(true);
@@ -90,7 +87,7 @@ export function useOrderData() {
       !userData.customer_name ||
       !userData.phone_number ||
       !userData.car_status ||
-      !userData.reception_number 
+      !userData.reception_number
       // !userData.reception_date
     ) {
       toast.error("لطفا ابتدا اطلاعات مشتری را کامل وارد کنید.");
@@ -109,7 +106,7 @@ export function useOrderData() {
       car_name: userData.car_name,
       reception_number: userData.reception_number,
       // reception_date: userData.reception_date,
-      reception_date: userData.reception_date,
+      reception_date: userForm.getValues("reception_date"),
       orders: orderGroups.map((item) => ({
         piece_name: item.piece_name,
         part_id: item.part_id,
@@ -137,7 +134,6 @@ export function useOrderData() {
           setOrderGroups([]);
           clearAllFields();
           setUserInfoSubmitted(false);
-
         },
         onError: () => {
           toast.error("خطا در ارسال سفارش");

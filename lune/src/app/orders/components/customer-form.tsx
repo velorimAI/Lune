@@ -8,7 +8,7 @@ import { useCustomerInputRefs } from "../hooks";
 import { JalaliDatePicker } from "@/app/components/date-picker-ui";
 
 interface CustomerFormProps {
-  userForm: UseFormReturn<any>;
+  userForm: any;
   userInfoSubmitted: boolean;
   onSubmit: (data: any) => void;
 
@@ -21,9 +21,7 @@ export function CustomerForm({
 }: CustomerFormProps) {
   const { refs } = useCustomerInputRefs();
 
-  const { control, watch } = userForm;
-
-  const reception_date = watch("reception_date");
+  const { control} = userForm;
 
   return (
     <Card title="اطلاعات مشتری" className="p-0 pb-4">
