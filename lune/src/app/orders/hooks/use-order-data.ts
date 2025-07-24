@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useAddOrder } from "./use-add-order";
 
 import { useGetSettings } from "@/app/settings/hooks/use-get-settings";
+import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
 
 interface ArrivalSettings {
   VIS: string;
@@ -29,11 +30,17 @@ interface OrderItem {
 }
 
 export function useOrderData() {
-  const userForm = useForm();
+  // const userForm = useForm();
   const { mutate, isPending } = useAddOrder();
   // const [formKey, setFormKey] = useState(0);
   const [customerFormKey, setCustomerFormKey] = useState(0);
   const { data: settings } = useGetSettings();
+
+   const userForm = useForm({
+    defaultValues: {
+      reception_date: getTodayJalaliDate(),
+    },
+  });
 
 
 
@@ -83,8 +90,8 @@ export function useOrderData() {
       !userData.customer_name ||
       !userData.phone_number ||
       !userData.car_status ||
-      !userData.reception_number ||
-      !userData.reception_date
+      !userData.reception_number 
+      // !userData.reception_date
     ) {
       toast.error("لطفا ابتدا اطلاعات مشتری را کامل وارد کنید.");
       return;
@@ -101,6 +108,7 @@ export function useOrderData() {
       car_status: userData.car_status,
       car_name: userData.car_name,
       reception_number: userData.reception_number,
+      // reception_date: userData.reception_date,
       reception_date: userData.reception_date,
       orders: orderGroups.map((item) => ({
         piece_name: item.piece_name,

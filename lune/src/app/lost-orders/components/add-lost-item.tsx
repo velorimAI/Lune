@@ -11,6 +11,8 @@ import { TimePicker } from '@/app/components/time-picker';
 import { toZonedTime } from 'date-fns-tz';
 import { TextArea } from '@/app/components/custom-form/text-area';
 import { useAddLostItem } from '../hooks';
+import { JalaliDatePicker } from '@/app/components/date-picker-ui';
+import { useForm } from 'react-hook-form';
 
 
 interface AddUserModalProps {
@@ -37,6 +39,7 @@ export const AddLostItem: FC<AddUserModalProps> = ({ refetch }) => {
     const handleSubmit = (formData: any) => {
         const finalData = {
             ...formData,
+            lost_date: lost_date,
             lost_time: time,
         };
 
@@ -54,6 +57,10 @@ export const AddLostItem: FC<AddUserModalProps> = ({ refetch }) => {
 
     };
 
+    const { control, watch } = useForm({
+        defaultValues: { lost_date: "" },
+    });
+    const lost_date = watch("lost_date");
 
     return (
         <>
@@ -152,7 +159,14 @@ export const AddLostItem: FC<AddUserModalProps> = ({ refetch }) => {
                             ]}
                             required
                         />
-                        <Input label="تاریخ" name="lost_date" required />
+                        {/* <Input label="تاریخ" name="lost_date" required /> */}
+                        <JalaliDatePicker
+                            control={control}
+                            name="lost_date"
+                            label="تاریخ"
+                            required
+                            className="text-right"
+                        />
                         <TimePicker
                             value={time}
                             onChange={(val) => setTime(val)}

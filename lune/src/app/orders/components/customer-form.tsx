@@ -3,22 +3,27 @@ import { Select } from "@/app/components/custom-form/select-box";
 import { Form } from "@/app/components/custom-form/form";
 import { Card } from "@/app/components/card";
 import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
-import { UseFormReturn } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { useCustomerInputRefs } from "../hooks";
+import { JalaliDatePicker } from "@/app/components/date-picker-ui";
 
 interface CustomerFormProps {
   userForm: UseFormReturn<any>;
   userInfoSubmitted: boolean;
   onSubmit: (data: any) => void;
-  
+
 }
 
 export function CustomerForm({
-  
+  userForm,
   userInfoSubmitted,
   onSubmit,
 }: CustomerFormProps) {
   const { refs } = useCustomerInputRefs();
+
+  const { control, watch } = userForm;
+
+  const reception_date = watch("reception_date");
 
   return (
     <Card title="اطلاعات مشتری" className="p-0 pb-4">
@@ -27,7 +32,7 @@ export function CustomerForm({
         cancelHide
         onSubmit={onSubmit}
         submitDisable={userInfoSubmitted}
-        
+
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <Input
@@ -133,12 +138,19 @@ export function CustomerForm({
             hiddenSearch
           />
 
-          <Input
+          {/* <Input
             label="تاریخ پذیرش"
             value={getTodayJalaliDate()}
             name="reception_date"
             required
             readOnly
+          /> */}
+          <JalaliDatePicker
+            control={control}
+            name="reception_date"
+            label=" تاریخ پذیرش"
+            required
+            className="text-right"
           />
         </div>
       </Form>
