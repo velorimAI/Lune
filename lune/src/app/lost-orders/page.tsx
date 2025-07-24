@@ -4,10 +4,11 @@ import { useState } from "react";
 import { MessageCircleMore } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { SearchBox } from "@/app/components/table/search-box";
-import { AddLostItem } from "./components";
+import { AddLostItem, DeleteLostItem, DownloadLostOrders, EditLostItem } from "./components";
 import { useQuery } from "@tanstack/react-query";
 import { getLostItemsList } from "../apis/lost-orders/lostOrdersService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DownloadModal } from "./components/download-modal";
 import ToolTip from "../components/custom-tooltip";
 import { cn } from "@/lib/utils";
 
@@ -64,39 +65,33 @@ export default function MyCustomPage() {
   return (
     <div className="p-4 md:p-6 bg-gray-50 min-h-[92vh]">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+        
+        <div className="flex flex-col gap-4 w-full">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
             <SearchBox
               searchText={searchText}
               setSearchText={setSearchText}
-              className="flex-1 min-w-[400px]"
+              className="flex-1 min-w-[250px] md:min-w-[400px]"
             />
+            <DownloadModal />
           </div>
         </div>
+
+
+
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <ScrollArea className="w-full h-[75vh]">
             <table className="w-full" dir="rtl">
               <thead className="sticky top-0 z-10 bg-white border-b border-gray-100">
                 <tr>
-                  <th className="p-4 text-right font-medium text-gray-500">
-                    نام قطعه
-                  </th>
-                  <th className="p-4 text-right font-medium text-gray-500">
-                    کد فنی
-                  </th>
-                  <th className="p-4 text-right font-medium text-gray-500">
-                    تعداد
-                  </th>
-                  <th className="p-4 text-right font-medium text-gray-500">
-                    کاربرد
-                  </th>
-                  <th className="p-4 text-center font-medium text-gray-500">
-                    تاریخ و ساعت
-                  </th>
-                  <th className="p-4 text-center font-medium text-gray-500">
-                    توضیحات
-                  </th>
+                  <th className="p-4 text-right font-medium text-gray-500">نام قطعه</th>
+                  <th className="p-4 text-right font-medium text-gray-500">کد فنی</th>
+                  <th className="p-4 text-right font-medium text-gray-500">تعداد</th>
+                  <th className="p-4 text-right font-medium text-gray-500">کاربرد</th>
+                  <th className="p-4 text-center font-medium text-gray-500">تاریخ و ساعت</th>
+                  <th className="p-4 text-center font-medium text-gray-500">توضیحات</th>
+                  <th className="p-4 text-center font-medium text-gray-500"></th>
                 </tr>
               </thead>
 
@@ -156,6 +151,10 @@ export default function MyCustomPage() {
                             <MessageCircleMore size={20} />
                           </button>
                         </ToolTip>
+                      </td>
+                      <td className="flex gap-4 justify-center items-center p-4 py-7 text-center">
+                        <EditLostItem data={item} refetch={refetch} />
+                        <DeleteLostItem id={item?.id} name={item.piece_name} refetch={refetch} />
                       </td>
                     </tr>
                   ))

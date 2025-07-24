@@ -40,7 +40,7 @@ export const AddItemModal: FC<AddUserModalProps> = ({ refetch }) => {
                      w-48 min-h-[160px]"
             >
                 <PackagePlus size={64} className="text-gray-700 hover:text-purple-600" />
-                <span className="mt-4 text-gray-700 font-semibold text-center">افزودن سفارش</span>
+                <span className="mt-4 text-gray-700 font-semibold text-center">افزودن قطعه</span>
             </div>
             <Modal
                 open={open}

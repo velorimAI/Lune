@@ -1,103 +1,64 @@
 'use client';
 
-import { FC, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Modal } from '@/app/components/modal';
-import { Input } from '@/app/components/custom-form/input';
-import { CirclePlus, PackagePlus } from 'lucide-react';
-import { Form } from '@/app/components/custom-form/form';
 import { Select } from '@/app/components/custom-form/select-box';
+import { Input } from '@/app/components/custom-form/input';
+import { Form } from '@/app/components/custom-form/form';
+import { useEditLostItem } from '../hooks';
+import { SquarePen } from 'lucide-react';
 import { TimePicker } from '@/app/components/time-picker';
-import { toZonedTime } from 'date-fns-tz';
-import { TextArea } from '@/app/components/custom-form/text-area';
-import { useAddLostItem } from '../hooks';
-import { JalaliDatePicker } from '@/app/components/date-picker-ui';
-import { useForm } from 'react-hook-form';
 
 
-interface AddUserModalProps {
-    refetch?: () => void;
+interface EditLostItemProps {
+    data: any
+    refetch: () => void;
 }
 
-
-export const AddLostItem: FC<AddUserModalProps> = ({ refetch }) => {
+export const EditLostItem = ({ data, refetch }: EditLostItemProps) => {
     const [open, setOpen] = useState(false);
-    const { mutate, isPending } = useAddLostItem();
+    const [time, setTime] = useState("");
+    const { mutate, isPending } = useEditLostItem();
 
-    const [time, setTime] = useState("00:00");
-
-    useEffect(() => {
-        if (open) {
-            const now = toZonedTime(new Date(), "Asia/Tehran");
-            const hour = now.getHours().toString().padStart(2, "0");
-            const minute = now.getMinutes().toString().padStart(2, "0");
-
-            setTime(`${hour}:${minute}`);
-        }
-    }, [open]);
-
-    const handleSubmit = (formData: any) => {
-        const finalData = {
-            ...formData,
-            lost_date: lost_date,
-            lost_time: time,
-        };
-
-        mutate(finalData, {
-            onSuccess: () => {
-                refetch?.();
-                toast.success(`قطعه "${formData.piece_name}" با موفقیت اضافه شد`);
-                setOpen(false);
+    const handleSubmit = async (formData: any) => {
+        mutate(
+            {
+                id: data?.id,
+                updatedData: formData,
             },
-            onError: (error: any) => {
-                toast.error(error?.response?.data?.message || "خطا در افزودن قطعه");
-            },
-        });
-        // console.log(formData);
-
+            {
+                onSuccess: () => {
+                    refetch();
+                    toast.success(`اطلاعات قطعه "${formData.name || ""}" با موفقیت ویرایش شد`);
+                    setOpen(false);
+                },
+                onError: (error: any) => {
+                    toast.error(error?.response?.data?.message || 'خطا در بروزرسانی قطعه');
+                },
+            }
+        );
     };
-
-    const { control, watch } = useForm({
-        defaultValues: { lost_date: "" },
-    });
-    const lost_date = watch("lost_date");
 
     return (
         <>
-            <CirclePlus className="w-10 h-10 cursor-pointer hover:scale-110 transition-transform" onClick={() => setOpen(true)} />
+            <SquarePen
+                className="hover:text-green-600 hover:cursor-pointer"
+                onClick={() => setOpen(true)}
+            />
             <Modal
                 open={open}
-                title="اضافه کردن قطعه"
+                title="ویرایش قطعه"
                 hideCancel
                 hideConfirm
-                contentClassName='pb-2'
                 onCancel={() => setOpen(false)}
             >
-                <Form cancelText='لغو' submitText='اضافه' onSubmit={handleSubmit} onCancel={() => setOpen(false)}   >
-                    <div className="grid grid-cols-3 gap-4">
-                        <Input
-                            label="نام قطعه"
-                            name="piece_name"
-                            required
-                           
-                        />
-                        <Input
-                            label="شماره فنی"
-                            name="piece_code"
-                            required
-                           
-                        />
-                        <Input
-                            label="تعداد"
-                            type="number"
-                            name="count"
-                            required
-                            isPositiveNumber={true}
-                        />
+                <Form cancelText='لغو' submitText='ویرایش' onSubmit={handleSubmit} onCancel={() => setOpen(false)} isLoading={data?.isLoading || data?.isPending} submitLoading={isPending} >
+                    <div className="grid grid-cols-1">
                         <Select
                             label="کاربرد"
                             name="car_name"
-                            value=""
+                            value={data?.car_name}
                             inputStyle="w-full"
                             placeholder="کاربرد را انتخاب کنید"
                             options={[
@@ -156,34 +117,40 @@ export const AddLostItem: FC<AddUserModalProps> = ({ refetch }) => {
                                 { value: "XTRIM LX", label: "XTRIM LX" },
                                 { value: "XTRIM RX", label: "XTRIM RX" },
                             ]}
-                            required
                         />
-                        {/* <Input label="تاریخ" name="lost_date" required /> */}
-                        <JalaliDatePicker
-                            control={control}
-                            name="lost_date"
-                            label="تاریخ"
-                            required
-                            className="text-right"
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                        <Input
+                            label="نام"
+                            name="piece_name"
+                            value={data?.piece_name}
                         />
+                        <Input
+                            label="کد فنی"
+                            name="part_id"
+                            value={data?.part_id}
+                        />
+                        <Input
+                            label="تعداد"
+                            name="count"
+                            value={data?.count}
+                            type='number'
+                            isPositiveNumber
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Input label="تاریخ" name="lost_date" value={data?.lost_date} />
                         <TimePicker
-                            value={time}
+                            value={data?.lost_time}
                             onChange={(val) => setTime(val)}
-                            required
                             label="ساعت"
                         />
-                        <div className="col-span-1 sm:col-span-2 md:col-span-3">
-                            <TextArea
-                                label="توضیحات"
-                                name="lost_description"
-                                placeholder="توضیحاتی درباره سفارش وارد کنید..."
-                                className="mb-6 w-full col-span-1 sm:col-span-2 md:col-span-4"
-                            />
-                        </div>
+                    </div>
+                    <div className="grid grid-cols-1">
+                        <Input label="توضیحات" name="lost_description" value={data?.lost_description} />
                     </div>
                 </Form>
             </Modal>
         </>
     );
 };
-

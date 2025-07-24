@@ -23,8 +23,8 @@ export default function NewOrderPage() {
     handleSubmitItem,
     handleSubmit,
     setOrderGroups,
-    formKey,
-    resetPartForm,
+    // formKey,
+    // resetPartForm,
   } = useOrderData();
 
   return (
@@ -50,8 +50,8 @@ export default function NewOrderPage() {
             setOrderChannel={setOrderChannel}
             estimatedArrivalDays={estimatedArrivalDays}
             onSubmit={handleSubmitItem}
-            formKey={formKey}
-            onFormReset={resetPartForm}
+            // formKey={formKey}
+            // onFormReset={resetPartForm}
           />
         </div>
         <div className="w-[50%]">
