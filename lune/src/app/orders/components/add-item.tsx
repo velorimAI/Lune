@@ -11,7 +11,8 @@ import { useAddItem } from "../hooks/use-add-item";
 import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
 import { TextArea } from "@/app/components/custom-form/text-area";
 import { PartIdInput } from "./part-id-input";
-
+import { useForm } from "react-hook-form";
+import { JalaliDatePicker } from "@/app/components/date-picker-ui";
 
 interface AddItemModalProp {
   data?: any;
@@ -20,14 +21,25 @@ interface AddItemModalProp {
   disabled?: boolean;
 }
 
-const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id , disabled}) => {
+const AddItem: React.FC<AddItemModalProp> = ({
+  data,
+  refetch,
+  id,
+  disabled,
+}) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState<string>("VOR");
-  const { mutate} = useAddItem();
+  const { mutate } = useAddItem();
   const [formValues, setFormValues] = useState({
     part_id: "",
     piece_name: "",
   });
+
+  const { control , watch } = useForm({
+    defaultValues: { reception_date: getTodayJalaliDate() },
+  });
+
+  const reception_date = watch("reception_date");
 
 
   const handleUpdate = async (formData: any) => {
@@ -50,7 +62,7 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id , disabled}) =>
 
     const payload = {
       reception_number: formData.reception_number,
-      reception_date: formData.reception_date,
+      reception_date: reception_date,
       car_status: formData.car_status,
       orders: [order],
     };
@@ -77,9 +89,11 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id , disabled}) =>
     <>
       <CirclePlus
         className={`cursor-pointer w-6 h-6 mr-auto transition-all duration-300 
-        ${disabled
+        ${
+          disabled
             ? "text-gray-300 cursor-not-allowed"
-            : "hover:text-gray-700 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"}
+            : "hover:text-gray-700 hover:scale-125 hover:rotate-12 hover:drop-shadow-lg"
+        }
         `}
         onClick={() => {
           if (!disabled) setOpen(true);
@@ -102,12 +116,19 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id , disabled}) =>
           <div className="bg-white rounded-lg ">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Input label="شماره پذیرش" name="reception_number" required />
-              <Input
+              {/* <Input
                 label="تاریخ پذیرش"
                 name="reception_date"
                 value={getTodayJalaliDate()}
                 readOnly
                 required
+              /> */}
+              <JalaliDatePicker
+                control={control}
+                name="reception_date"
+                label=" تاریخ پذیرش"
+                required
+                className="text-right"
               />
               <Input label="شماره سفارش" name="order_number" required />
             </div>
@@ -183,7 +204,6 @@ const AddItem: React.FC<AddItemModalProp> = ({ data, refetch, id , disabled}) =>
             )}
 
             <div className="mb-4">
-
               <TextArea
                 label="توضیحات"
                 name="all_description"
