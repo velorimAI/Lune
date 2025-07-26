@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Wrench, PackageOpen,  MessageCircleMore } from "lucide-react";
+import { Wrench, PackageOpen, MessageCircleMore } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle } from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,7 +33,7 @@ export const OrderDetails = ({
   refetch: () => void;
   selectable?: boolean;
   currentTab: string;
-  role : string | null
+  role: string | null
 }) => {
   const [openReceptionIndex, setOpenReceptionIndex] = useState<number | null>(null);
   const [openDateModal, setOpenDateModal] = useState(false);
@@ -43,22 +43,33 @@ export const OrderDetails = ({
   const [itemsToCancel, setItemsToCancel] = useState<any[]>([]);
   const isAccountant = role === "حسابدار";
   const isWarehouse = role === "انباردار";
+  const isReception = role === "پذیرش";
   const isSelectableTab = !["تحویل شد", "canceled", "all"].includes(currentTab);
 
-  
+
+  console.log("role", role);
+  console.log("currentTab", currentTab);
+
 
   const canShowSelectUI =
+    (isReception && currentTab === "در انتظار نوبت‌دهی") ||
     (isAccountant && currentTab === "در انتظار تائید حسابداری") ||
-    (isWarehouse && currentTab !== "در انتظار تائید حسابداری" && isSelectableTab);
+    (isWarehouse && isSelectableTab && currentTab !== "در انتظار تائید حسابداری");
+
+
+
+
 
 
   const canSelectItem = (part: any) => {
+    if (isReception && part.status === "در انتظار نوبت دهی") return true;
     if (isWarehouse && isSelectableTab && currentTab !== "در انتظار تائید حسابداری") return true;
     if (isAccountant && part.status === "در انتظار تائید حسابداری") return true;
     return false;
   };
 
- 
+
+
 
   const isSelected = (id: string) => selectedItems.includes(id);
 
@@ -90,21 +101,36 @@ export const OrderDetails = ({
       return;
     }
 
-    console.log(selectedOrders);
     let successCount = 0;
 
     await Promise.all(
       selectedOrders.map(async (part: any) => {
-        const options = getStatusOptions(part.status, part.order_channel, part.reception_car_status || "");
+        const options = getStatusOptions(
+          part.status,
+          part.order_channel,
+          part.reception_car_status || ""
+        );
 
         if (options.length > 0) {
           const nextStatus = options[0].value;
+
+
+          if (part.status === "در انتظار نوبت دهی" && role !== "پذیرش") return;
+          if (part.status === "در انتظار تائید حسابداری" && role !== "حسابدار") return;
+          if (
+            role === "انباردار" &&
+            (part.status === "در انتظار نوبت دهی" ||
+              part.status === "در انتظار تائید حسابداری")
+          )
+            return;
+
           if (part.reception_car_status === "متوقع" && part.status === "در انتظار نوبت دهی") {
             setSelectedOrder({ id: part.order_id, name: part.piece_name });
             setOpenDateModal(true);
             return;
           }
           if (nextStatus === "نوبت داده شد") return;
+
           try {
             await editOrder(part.order_id, { status: nextStatus });
             successCount++;
@@ -120,7 +146,6 @@ export const OrderDetails = ({
     setSelectedItems([]);
   };
 
-  
 
   const handleMultiCancel = async () => {
     const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
@@ -137,7 +162,8 @@ export const OrderDetails = ({
     setOpenDescriptionModal(true);
   };
 
-  const canShowCancelAll = (isWarehouse && isSelectableTab) || isAccountant;
+  const canShowCancelAll = (isWarehouse && isSelectableTab) || isAccountant || isReception;
+
 
 
   const closedStatuses = [
@@ -162,7 +188,7 @@ export const OrderDetails = ({
           {order?.receptions?.flatMap((r: { orders: any; }) => r.orders || []).length || 0})
         </span>
         {allClosed ? (
-          <AddItem id={id} disabled={isAccountant}/>
+          <AddItem id={id} disabled={isAccountant} />
         ) : (
           (() => {
             const openReceptions = order?.receptions?.filter((r: any) =>
@@ -190,19 +216,8 @@ export const OrderDetails = ({
         <div className="flex gap-2 mb-4">
           {canShowCancelAll && (
             <>
-              <Button
-
-                onClick={handleMultiConfirm}
-              >
-                تایید همه
-              </Button>
-              <Button
-                variant={"outline"}
-                onClick={handleMultiCancel}
-                className="text-black"
-              >
-                لغو همه
-              </Button>
+              <Button onClick={handleMultiConfirm}>تایید همه</Button>
+              <Button variant={"outline"} onClick={handleMultiCancel} className="text-black">لغو همه</Button>
             </>
           )}
         </div>
@@ -212,19 +227,20 @@ export const OrderDetails = ({
         <table className="min-w-full text-sm text-right text-gray-800 border-collapse">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
-              {canShowSelectUI && (
-                <th className="px-4 py-2">
-                  <CheckBox
-                    checked={
-                      selectedItems.length ===
-                      order?.receptions
-                        ?.flatMap((r: any) => r.orders || [])
-                        .filter(canSelectItem).length
-                    }
-                    onChange={toggleSelectAll}
-                  />
-                </th>
-              )}
+              {((isReception && currentTab === "در انتظار نوبت‌دهی") ||
+                (isAccountant && currentTab === "در انتظار تائید حسابداری") ||
+                (isWarehouse && isSelectableTab && currentTab !== "در انتظار تائید حسابداری")) && (
+                  <th className="px-4 py-2">
+                    <CheckBox
+                      checked={
+                        selectedItems.length ===
+                        order?.receptions?.flatMap((r: any) => r.orders || [])
+                          .filter(canSelectItem).length
+                      }
+                      onChange={toggleSelectAll}
+                    />
+                  </th>
+                )}
               <th className="px-4 py-2">نام قطعه</th>
               <th className="px-4 py-2">کد فنی</th>
               <th className="px-4 py-2">تعداد</th>
@@ -274,7 +290,7 @@ export const OrderDetails = ({
                               ) : null}
                               )
                             </span>
-                          
+
                           </div>
                         </div>
                       </div>
@@ -289,8 +305,10 @@ export const OrderDetails = ({
                     );
 
                     const canEdit =
+                      (isReception && part.status === "در انتظار نوبت دهی") ||
                       (isAccountant && part.status === "در انتظار تائید حسابداری") ||
-                      (isWarehouse && part.status !== "در انتظار تائید حسابداری" && currentTab !== "در انتظار تائید حسابداری");
+                      (isWarehouse && part.status !== "در انتظار نوبت دهی" && part.status !== "در انتظار تائید حسابداری" && currentTab !== "در انتظار تائید حسابداری");
+
 
 
                     return (
@@ -306,6 +324,7 @@ export const OrderDetails = ({
                             />
                           </td>
                         )}
+
 
                         <td className="px-4 py-3 flex items-center gap-1.5 font-medium text-gray-800">
                           <PackageOpen className="w-5 h-5 text-gray-600" />
@@ -342,7 +361,7 @@ export const OrderDetails = ({
                         </td>
                         <td className="px-4 py-3 text-center flex gap-3 justify-end items-center">
                           <div className="flex justify-center items-center gap-1">
-                            {options[0] && canEdit && (
+                            {options[0] && canEdit && !(part.status === "در انتظار نوبت دهی" && role !== "پذیرش") && (
                               <ToolTip status={part.status} actionType="confirm">
                                 <div>
                                   <ConfirmCircle
@@ -371,6 +390,7 @@ export const OrderDetails = ({
                                 </div>
                               </ToolTip>
                             )}
+
 
                             {options[1] && canEdit && (
                               <ToolTip hint={`لغو`}>
