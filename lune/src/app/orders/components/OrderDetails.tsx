@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Wrench, PackageOpen,  MessageCircleMore } from "lucide-react";
+import { Wrench, PackageOpen, MessageCircleMore } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle } from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,6 +18,7 @@ import AddItemToReception from "./add-item-to-reception";
 import { CheckBox } from "@/app/components/custom-form/check-box";
 import { Button } from "@/app/components/button";
 import InsertDescription from "./insert-description";
+import { useHoldAction } from "../hooks/use-hold-action";
 
 export const OrderDetails = ({
   id,
@@ -33,7 +34,7 @@ export const OrderDetails = ({
   refetch: () => void;
   selectable?: boolean;
   currentTab: string;
-  role : string | null
+  role: string | null
 }) => {
   const [openReceptionIndex, setOpenReceptionIndex] = useState<number | null>(null);
   const [openDateModal, setOpenDateModal] = useState(false);
@@ -45,7 +46,7 @@ export const OrderDetails = ({
   const isWarehouse = role === "انباردار";
   const isSelectableTab = !["تحویل شد", "canceled", "all"].includes(currentTab);
 
-  
+
 
   const canShowSelectUI =
     (isAccountant && currentTab === "در انتظار تائید حسابداری") ||
@@ -58,7 +59,7 @@ export const OrderDetails = ({
     return false;
   };
 
- 
+
 
   const isSelected = (id: string) => selectedItems.includes(id);
 
@@ -120,7 +121,7 @@ export const OrderDetails = ({
     setSelectedItems([]);
   };
 
-  
+
 
   const handleMultiCancel = async () => {
     const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
@@ -151,7 +152,8 @@ export const OrderDetails = ({
 
   const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []) || [];
   const allClosed = allOrders.every((o: any) => closedStatuses.includes(o.status));
-
+  const confirmHold = useHoldAction(handleMultiConfirm, 1000);
+  const cancelHold = useHoldAction(handleMultiCancel, 1000);
 
   return (
     <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
@@ -162,7 +164,7 @@ export const OrderDetails = ({
           {order?.receptions?.flatMap((r: { orders: any; }) => r.orders || []).length || 0})
         </span>
         {allClosed ? (
-          <AddItem id={id} disabled={isAccountant}/>
+          <AddItem id={id} disabled={isAccountant} />
         ) : (
           (() => {
             const openReceptions = order?.receptions?.filter((r: any) =>
@@ -190,19 +192,51 @@ export const OrderDetails = ({
         <div className="flex gap-2 mb-4">
           {canShowCancelAll && (
             <>
-              <Button
+              <div className="relative">
+                <Button
+                  className={`
+            relative overflow-hidden transition-all duration-300
+            ${confirmHold.isCompleted ? 'bg-green-500 text-white' : ''}
+          `}
+                  onMouseDown={confirmHold.startHold}
+                  onMouseUp={confirmHold.cancelHold}
+                  onMouseLeave={confirmHold.cancelHold}
+                  onTouchStart={confirmHold.startHold}
+                  onTouchEnd={confirmHold.cancelHold}
+                  disabled={confirmHold.isCompleted}
+                >
+                  {confirmHold.isCompleted ? "تایید شد ✓" : "تایید همه"}
 
-                onClick={handleMultiConfirm}
-              >
-                تایید همه
-              </Button>
-              <Button
-                variant={"outline"}
-                onClick={handleMultiCancel}
-                className="text-black"
-              >
-                لغو همه
-              </Button>
+                  <div
+                    className="absolute bottom-0 left-0 h-[3px] bg-green-500 transition-all"
+                    style={{ width: `${confirmHold.progress}%` }}
+                  />
+                </Button>
+              </div>
+
+              <div className="relative">
+                <Button
+                  variant="outline"
+                  className={`
+            relative overflow-hidden text-black border-red-400
+            transition-all duration-300
+            ${cancelHold.isCompleted ? 'bg-red-500 text-white border-none' : ''}
+          `}
+                  onMouseDown={cancelHold.startHold}
+                  onMouseUp={cancelHold.cancelHold}
+                  onMouseLeave={cancelHold.cancelHold}
+                  onTouchStart={cancelHold.startHold}
+                  onTouchEnd={cancelHold.cancelHold}
+                  disabled={cancelHold.isCompleted}
+                >
+                  {cancelHold.isCompleted ? "لغو شد " : "لغو همه"}
+
+                  <div
+                    className="absolute bottom-0 left-0 h-[3px] bg-red-500 transition-all"
+                    style={{ width: `${cancelHold.progress}%` }}
+                  />
+                </Button>
+              </div>
             </>
           )}
         </div>
@@ -274,7 +308,7 @@ export const OrderDetails = ({
                               ) : null}
                               )
                             </span>
-                          
+
                           </div>
                         </div>
                       </div>
