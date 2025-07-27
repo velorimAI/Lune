@@ -106,7 +106,7 @@ export const TimePicker = ({
         />
 
         <div
-          className={`rounded-md border border-gray  flex items-center shadow-sm ${hasNow ? 'pl-3 justify-between' : 'px-3'} py-1 flex-1 cursor-pointer`}
+          className={`rounded-md border border-gray  flex items-center shadow-sm ${hasNow ? 'pl-3 justify-between' : 'px-3'} py-1 h-[35px] flex-1 cursor-pointer`}
           onClick={() => handleOpenChange(true)}
         >
           {selectedHour}:{selectedMinute}

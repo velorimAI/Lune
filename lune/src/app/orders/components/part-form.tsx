@@ -68,6 +68,7 @@ export default function PartForm({
               }}
               disabled={!userInfoSubmitted}
             // ref={refs.partIdRef}
+            required
             />
             <Input
               label="نام قطعه"

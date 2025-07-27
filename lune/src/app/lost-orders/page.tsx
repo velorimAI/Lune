@@ -4,7 +4,7 @@ import { useState } from "react";
 import { MessageCircleMore } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { SearchBox } from "@/app/components/table/search-box";
-import { AddLostItem, DeleteLostItem,  EditLostItem } from "./components";
+import { AddLostItem, DeleteLostItem, EditLostItem } from "./components";
 import { useQuery } from "@tanstack/react-query";
 import { getLostItemsList } from "../apis/lost-orders/lostOrdersService";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 export default function MyCustomPage() {
   const [searchText, setSearchText] = useState("");
   const [searchField, setSearchField] = useState("all");
+
 
   const {
     data: lostItems = [],
@@ -65,13 +66,13 @@ export default function MyCustomPage() {
   return (
     <div className="p-4 md:p-6 bg-gray-50 min-h-[92vh]">
       <div className="max-w-7xl mx-auto space-y-6">
-        
+
         <div className="flex flex-col gap-4 w-full">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
+          <div className="flex flex-col md:flex-row  items-start md:items-center gap-2 w-full">
             <SearchBox
               searchText={searchText}
               setSearchText={setSearchText}
-              className="flex-1 min-w-[250px] md:min-w-[400px]"
+              className="flex-1 min-w-[250px] md:max-w-[400px]"
             />
             <DownloadModal />
           </div>
@@ -114,8 +115,9 @@ export default function MyCustomPage() {
                         {item.piece_name || "-"}
                       </td>
                       <td className="p-4 font-mono text-gray-700">
-                        <span className="bg-gray-100 rounded px-2 py-1 text-sm">
-                          {item.part_id || "-"}
+                        <span className={`rounded px-2 py-1 text-sm ${item.part_id ? "bg-gray-100" : ""
+                          }`}>
+                          {item.part_id || "---"}
                         </span>
                       </td>
                       <td className="p-4">
@@ -144,7 +146,7 @@ export default function MyCustomPage() {
                             className={cn(
                               "transition-colors cursor-pointer",
                               item.lost_description
-                                ? "text-gray-400 hover:text-gray-600"
+                                ? "text-gray-500 hover:text-gray-600"
                                 : "text-gray-300"
                             )}
                           >

@@ -22,7 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 type SelectBoxProps = {
   className?: string;
   disabled?: boolean;
- 
+
   hiddenSearch?: boolean;
   hint?: ReactNode;
   inline?: boolean;
@@ -49,7 +49,7 @@ export const Select: FC<SelectBoxProps> = (props) => {
   const {
     className,
     disabled,
-    
+
     hiddenSearch = false,
     hint,
     inline = false,
@@ -120,7 +120,7 @@ export const Select: FC<SelectBoxProps> = (props) => {
       });
     }
   };
- 
+
   useEffect(() => {
     restoreFocus();
   }, [filterResults]);
@@ -176,11 +176,11 @@ export const Select: FC<SelectBoxProps> = (props) => {
 
         <SelectContent
           className="dark:bg-box-brighter dark:border-none "
-        
-        dir='rtl'
+          dir='rtl'
+          
         >
           {isLoading ? (
-          
+
             <Skeleton />
           ) : (
             <>
@@ -191,8 +191,9 @@ export const Select: FC<SelectBoxProps> = (props) => {
                   placeholder="Search"
                   value={searchTerm}
                   onChange={handleSearchChange}
-                 
+
                   style={{ position: 'sticky', top: 0, zIndex: 10 }}
+                  
                 />
               )}
               {filterResults.length > 0 ? (

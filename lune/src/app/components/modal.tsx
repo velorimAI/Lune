@@ -54,6 +54,8 @@ export const Modal: FC<ModalProps> = (props) => {
       <AlertDialogContent
         onClick={(e) => e.stopPropagation()}
         className={cn(contentClassName, 'dark:bg-box-background')}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        // onInteractOutside={(e) => e.preventDefault()}
       >
         <AlertDialogHeader className="dark:text-zinc-300">
           <AlertDialogTitle className="flex justify-between items-center dark:text-zinc-300">

@@ -1,23 +1,21 @@
-
 "use client";
 
-import { FC, useEffect, useState, useCallback, useRef } from "react";
-import axios, { CancelTokenSource } from "axios";
+import { FC, useCallback, useRef, useEffect, useState } from "react";
 import { Input } from "@/app/components/custom-form/input";
 import { useDebounce } from "@/lib/useDebounce";
-import { SuggestionsList } from "@/app/orders/components/part-suggestions-list";
-
-
+import { PartNameSuggestionsList } from "./part-name-suggestions-list";
+import { usePartSuggestions } from "../hooks";
 
 interface PartSuggestion {
-  technical_code: string;
-  part_name: string;
+  piece_name: string;
+  part_id: string;
 }
 
 interface PartNameInputProps {
   value: string;
   onChange: (val: string) => void;
-  setPieceName: (name: string) => void;
+  setPieceName: (name: string, partId?: string) => void;
+  setHasSelected?: (val: boolean) => void;
   readOnly?: boolean;
   disabled?: boolean;
 }
@@ -26,91 +24,61 @@ export const PartNameInput: FC<PartNameInputProps> = ({
   value,
   onChange,
   setPieceName,
+  setHasSelected,
   readOnly,
   disabled,
 }) => {
-  const [suggestions, setSuggestions] = useState<PartSuggestion[]>([]);
   const [showList, setShowList] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-  const [hasSelected, setHasSelected] = useState<boolean>(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [hasSelected, _setHasSelected] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
   const debouncedValue = useDebounce(value, 500);
 
-  const scrollToItem = useCallback((index: number) => {
-    if (!suggestionsRef.current) return;
-    
-    const container = suggestionsRef.current;
-    const item = container.children[index] as HTMLElement;
-    
-    container.scrollTop = item.offsetTop - container.offsetHeight / 2 + item.offsetHeight / 2;
-  }, []);
+  const {
+    data: suggestions = [],
+    isLoading,
+    error,
+  } = usePartSuggestions(debouncedValue);
 
   useEffect(() => {
-    if (hasSelected) return;
-    if (!debouncedValue || debouncedValue.length < 5) {
-      setSuggestions([]);
+    if (hasSelected || debouncedValue.length < 2) {
       setShowList(false);
-      setLoading(false);
-      setError(null);
+      setSelectedIndex(-1);
       return;
     }
+    setShowList(suggestions.length > 0);
+  }, [debouncedValue, suggestions, hasSelected]);
 
-    let cancelToken: CancelTokenSource;
-    const fetchSuggestions = async () => {
-      setLoading(true);
-      setError(null);
-      cancelToken = axios.CancelToken.source();
-
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(
-         `http://localhost:3001/api/parts/suggest/${encodeURIComponent(debouncedValue)}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            cancelToken: cancelToken.token,
-          }
-        );
-        setSuggestions(res.data);
-        setShowList(true);
-      } catch (err) {
-        if (axios.isCancel(err)) return;
-        setError("خطا در دریافت پیشنهادها");
-        setSuggestions([]);
-        setShowList(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSuggestions();
-
-    return () => {
-      if (cancelToken) cancelToken.cancel();
-    };
-  }, [debouncedValue, hasSelected]);
+  const scrollToItem = useCallback((index: number) => {
+    const container = suggestionsRef.current;
+    const item = container?.children[index] as HTMLElement;
+    if (container && item) {
+      container.scrollTop =
+        item.offsetTop - container.offsetHeight / 2 + item.offsetHeight / 2;
+    }
+  }, []);
 
   const handleSelect = useCallback(
     (item: PartSuggestion) => {
-      onChange(item.technical_code);
-      setPieceName(item.part_name);
+      onChange(item.part_id);
+      setPieceName(item.piece_name, item.part_id);
       setShowList(false);
-      setSuggestions([]);
       setSelectedIndex(-1);
-      setHasSelected(true);
+      setHasSelected?.(true);
+      _setHasSelected(true);
     },
-    [onChange, setPieceName]
+    [onChange, setPieceName, setHasSelected]
   );
 
   const handleChange = (val?: string) => {
     if (val !== undefined) {
       onChange(val);
-      setShowList(val.length >= 5);
+      setHasSelected?.(false);
+      _setHasSelected(false);
       setSelectedIndex(-1);
-      setHasSelected(false);
     }
   };
 
@@ -131,11 +99,22 @@ export const PartNameInput: FC<PartNameInputProps> = ({
         setSelectedIndex(newIndex);
         scrollToItem(newIndex);
       }
-    } else if (e.key === "Enter" && selectedIndex >= 0) {
+    } else if (e.key === "Enter") {
       e.preventDefault();
-      handleSelect(suggestions[selectedIndex]);
+      if (selectedIndex >= 0) {
+        handleSelect(suggestions[selectedIndex]);
+      } else {
+        setShowList(false);
+        const form = containerRef.current?.closest("form");
+        const inputs = form?.querySelectorAll<HTMLElement>("input, select, textarea, button, [tabindex]");
+        const index = Array.from(inputs || []).indexOf(containerRef.current!);
+        if (index > -1 && inputs && index + 1 < inputs.length) {
+          inputs[index + 1]?.focus();
+        }
+      }
     }
   };
+
 
   return (
     <div
@@ -155,10 +134,10 @@ export const PartNameInput: FC<PartNameInputProps> = ({
         clearable
       />
 
-      <SuggestionsList
+      <PartNameSuggestionsList
         show={showList}
-        loading={loading}
-        error={error}
+        loading={isLoading}
+        error={error ? "خطا در دریافت پیشنهادها" : null}
         suggestions={suggestions}
         onSelect={handleSelect}
         selectedIndex={selectedIndex}
