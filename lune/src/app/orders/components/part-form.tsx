@@ -6,8 +6,6 @@ import { Card } from "@/app/components/card";
 import { usePartInputRefs } from "../hooks";
 import { PartIdInput } from "./part-id-input";
 import { TextArea } from "@/app/components/custom-form/text-area";
-import { useGetSettings } from "@/app/settings/hooks/use-get-settings";
-
 
 interface PartFormProps {
   userInfoSubmitted: boolean;
@@ -15,6 +13,7 @@ interface PartFormProps {
   setOrderChannel: (value: string) => void;
   estimatedArrivalDays?: string | number;
   onSubmit: (data: any) => void;
+  onFormReset?: () => void; 
 }
 
 export default function PartForm({
@@ -23,6 +22,7 @@ export default function PartForm({
   setOrderChannel,
   estimatedArrivalDays,
   onSubmit,
+  onFormReset,
 }: PartFormProps) {
   const { refs } = usePartInputRefs();
   const [arrivalDays, setArrivalDays] = useState<string>("1");
@@ -34,20 +34,22 @@ export default function PartForm({
   useEffect(() => {
     if (estimatedArrivalDays !== undefined && estimatedArrivalDays !== null) {
       setArrivalDays(String(estimatedArrivalDays));
-    } else {
-      setArrivalDays("1");
     }
   }, [estimatedArrivalDays]);
 
+  const resetForm = () => {
+    setFormValues({ part_id: '', piece_name: '' });
+  };
 
   return (
     <Card title="اطلاعات قطعه" className="p-0 pb-4">
       <Form
-      
         submitText="ثبت قطعه"
         cancelHide
         onSubmit={(data) => {
           onSubmit({ ...data, estimated_arrival_days: arrivalDays });
+          resetForm();
+          onFormReset?.();
         }}
         submitDisable={!userInfoSubmitted}
         className="mt-1"
@@ -67,7 +69,6 @@ export default function PartForm({
                 setFormValues((prev) => ({ ...prev, piece_name: name }));
               }}
               disabled={!userInfoSubmitted}
-            // ref={refs.partIdRef}
             />
             <Input
               label="نام قطعه"
@@ -98,7 +99,7 @@ export default function PartForm({
             <Select
               label="کانال سفارش"
               name="order_channel"
-              value={orderChannel} 
+              value={orderChannel}
               inputStyle="w-full"
               options={[
                 { value: "VOR", label: "VOR" },
@@ -139,7 +140,6 @@ export default function PartForm({
           </div>
 
           <div className="mt-2">
-
             <div className="col-span-1 sm:col-span-2 md:col-span-4">
               <TextArea
                 label="توضیحات"

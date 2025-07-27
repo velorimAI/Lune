@@ -4,14 +4,8 @@ import { usePartInputRefs } from "./usePartInputRefs";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAddOrder } from "./use-add-order";
-
 import { useGetSettings } from "@/app/settings/hooks/use-get-settings";
 import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
-
-interface ArrivalSettings {
-  VIS: string;
-  VOR: string;
-}
 
 interface OrderItem {
   all_description: string;
@@ -30,10 +24,8 @@ interface OrderItem {
 }
 
 export function useOrderData() {
-  // const userForm = useForm();
   const { mutate, isPending } = useAddOrder();
-  // const [formKey, setFormKey] = useState(0);
-  const [customerFormKey, setCustomerFormKey] = useState(0);
+  const [customerFormKey, setCustomerFormKey] = useState(0); // ✅ کلید برای ریست فرم مشتری
   const { data: settings } = useGetSettings();
 
   const userForm = useForm({
@@ -41,14 +33,6 @@ export function useOrderData() {
       reception_date: getTodayJalaliDate(),
     },
   });
-
-  // const resetPartForm = () => {
-  //   setFormKey((prev) => prev + 1);
-  //   setOrderChannel("VOR");
-  // };
-  const resetCustomerForm = () => {
-    setCustomerFormKey((prev) => prev + 1);
-  };
 
   const [userData, setUserData] = useState<any>({});
   const [userInfoSubmitted, setUserInfoSubmitted] = useState(false);
@@ -59,16 +43,11 @@ export function useOrderData() {
 
   const estimatedArrivalDays = useMemo(() => {
     switch (orderChannel) {
-      case "VOR":
-        return settings?.vor ?? "1";
-      case "VIS":
-        return settings?.vis ?? "1";
-      case "شارژ انبار":
-        return settings?.warhouse_charge ?? "1";
-      case "بازار آزاد":
-        return settings?.market ?? "1";
-      default:
-        return "1";
+      case "VOR": return settings?.vor ?? "1";
+      case "VIS": return settings?.vis ?? "1";
+      case "شارژ انبار": return settings?.warhouse_charge ?? "1";
+      case "بازار آزاد": return settings?.market ?? "1";
+      default: return "1";
     }
   }, [orderChannel, settings]);
 
@@ -83,13 +62,7 @@ export function useOrderData() {
   };
 
   const handleSubmit = () => {
-    if (
-      !userData.customer_name ||
-      !userData.phone_number ||
-      !userData.car_status ||
-      !userData.reception_number
-      // !userData.reception_date
-    ) {
+    if (!userData.customer_name || !userData.phone_number || !userData.car_status || !userData.reception_number) {
       toast.error("لطفا ابتدا اطلاعات مشتری را کامل وارد کنید.");
       return;
     }
@@ -105,17 +78,14 @@ export function useOrderData() {
       car_status: userData.car_status,
       car_name: userData.car_name,
       reception_number: userData.reception_number,
-      // reception_date: userData.reception_date,
       reception_date: userForm.getValues("reception_date"),
       orders: orderGroups.map((item) => ({
         piece_name: item.piece_name,
         part_id: item.part_id,
         number_of_pieces: parseInt(item.number_of_pieces.toString(), 10),
         order_channel: item.order_channel,
-        market_name:
-          item.order_channel === "بازار آزاد" ? item.market_name : null,
-        market_phone:
-          item.order_channel === "بازار آزاد" ? item.market_phone : null,
+        market_name: item.order_channel === "بازار آزاد" ? item.market_name : null,
+        market_phone: item.order_channel === "بازار آزاد" ? item.market_phone : null,
         order_number: item.order_number,
         estimated_arrival_days: Number(item.estimated_arrival_days),
         status: item.status,
@@ -134,6 +104,8 @@ export function useOrderData() {
           setOrderGroups([]);
           clearAllFields();
           setUserInfoSubmitted(false);
+          userForm.reset();
+          setCustomerFormKey((prev) => prev + 1);
         },
         onError: () => {
           toast.error("خطا در ارسال سفارش");
@@ -157,5 +129,6 @@ export function useOrderData() {
     isPending,
     refs,
     partRefs,
+    customerFormKey,
   };
 }

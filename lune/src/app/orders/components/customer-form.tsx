@@ -2,8 +2,6 @@ import { Input } from "@/app/components/custom-form/input";
 import { Select } from "@/app/components/custom-form/select-box";
 import { Form } from "@/app/components/custom-form/form";
 import { Card } from "@/app/components/card";
-import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
-import { useForm, UseFormReturn } from "react-hook-form";
 import { useCustomerInputRefs } from "../hooks";
 import { JalaliDatePicker } from "@/app/components/date-picker-ui";
 
@@ -11,26 +9,28 @@ interface CustomerFormProps {
   userForm: any;
   userInfoSubmitted: boolean;
   onSubmit: (data: any) => void;
-
+  onFormReset?: () => void; 
 }
 
 export function CustomerForm({
   userForm,
   userInfoSubmitted,
   onSubmit,
+  onFormReset,
 }: CustomerFormProps) {
   const { refs } = useCustomerInputRefs();
-
-  const { control} = userForm;
+  const { control } = userForm;
 
   return (
     <Card title="اطلاعات مشتری" className="p-0 pb-4">
       <Form
         submitText="ثبت اطلاعات"
         cancelHide
-        onSubmit={onSubmit}
+        onSubmit={(data) => {
+          onSubmit(data);
+          onFormReset?.(); 
+        }}
         submitDisable={userInfoSubmitted}
-
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <Input
@@ -39,7 +39,6 @@ export function CustomerForm({
             required
             readOnly={userInfoSubmitted}
             ref={refs.customerNameRef}
-           
           />
           <Input
             label="شماره تماس"
@@ -59,7 +58,6 @@ export function CustomerForm({
           <Select
             label="نام خودرو"
             name="car_name"
-            value=""
             inputStyle="w-full"
             placeholder="نام خودرو را انتخاب کنید"
             options={[
@@ -118,10 +116,9 @@ export function CustomerForm({
               { value: "XTRIM LX", label: "XTRIM LX" },
               { value: "XTRIM RX", label: "XTRIM RX" },
             ]}
-            required
+           required
             disabled={userInfoSubmitted}
           />
-
           <Select
             label="وضعیت خودرو"
             name="car_status"
@@ -135,14 +132,6 @@ export function CustomerForm({
             disabled={userInfoSubmitted}
             hiddenSearch
           />
-
-          {/* <Input
-            label="تاریخ پذیرش"
-            value={getTodayJalaliDate()}
-            name="reception_date"
-            required
-            readOnly
-          /> */}
           <JalaliDatePicker
             control={control}
             name="reception_date"
