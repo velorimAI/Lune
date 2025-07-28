@@ -17,6 +17,7 @@ export const Tabs: FC<TabsProps> = ({ activeTab, setActiveTab, tabCounts }) => {
     { label: `نوبت داده شد`, value: "نوبت داده شد" },
     { label: "لغو شده", value: "canceled" },
     { label: `تحویل شده`, value: "تحویل شد" },
+    { label: ` بحرانی ها`, value: " بحرانی ها" },
     { label: `همه سفارش‌ها`, value: "all" },
   ];
 
