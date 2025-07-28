@@ -20,10 +20,6 @@ export function CustomerForm({
   onFormReset,
 }: CustomerFormProps) {
   const { refs } = useCustomerInputRefs();
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/reset-part-form-and-customer
   const { control } = userForm;
 
   return (
@@ -44,10 +40,6 @@ export function CustomerForm({
             required
             disabled={userInfoSubmitted}
             ref={refs.customerNameRef}
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/reset-part-form-and-customer
           />
           <Input
             label="شماره تماس"
@@ -70,12 +62,6 @@ export function CustomerForm({
           <Select
             label="نام خودرو"
             name="car_name"
-<<<<<<< HEAD
-            value="MVM X5"
-            inputStyle="w-full"
-            options={carOptions}
-            required
-=======
             inputStyle="w-full"
             placeholder="نام خودرو را انتخاب کنید"
             options={[
@@ -135,7 +121,6 @@ export function CustomerForm({
               { value: "XTRIM RX", label: "XTRIM RX" },
             ]}
            required
->>>>>>> origin/reset-part-form-and-customer
             disabled={userInfoSubmitted}
           />
           <Select

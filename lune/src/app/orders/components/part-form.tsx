@@ -69,11 +69,6 @@ export default function PartForm({
                 setFormValues((prev) => ({ ...prev, piece_name: name }));
               }}
               disabled={!userInfoSubmitted}
-<<<<<<< HEAD
-            // ref={refs.partIdRef}
-            required
-=======
->>>>>>> origin/reset-part-form-and-customer
             />
             <Input
               label="نام قطعه"
