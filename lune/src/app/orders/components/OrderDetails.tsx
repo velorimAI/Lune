@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Wrench, PackageOpen,  MessageCircleMore } from "lucide-react";
+import { Wrench, PackageOpen, MessageCircleMore } from "lucide-react";
 import { DeleteItem } from "./delete-items";
 import { getStatusStyle } from "./statusStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,17 +25,18 @@ export const OrderDetails = ({
   refetch,
   selectable = false,
   currentTab,
-  role
+  role,
 }: {
-
   id: number;
   order: any;
   refetch: () => void;
   selectable?: boolean;
   currentTab: string;
-  role : string | null
+  role: string | null;
 }) => {
-  const [openReceptionIndex, setOpenReceptionIndex] = useState<number | null>(null);
+  const [openReceptionIndex, setOpenReceptionIndex] = useState<number | null>(
+    null
+  );
   const [openDateModal, setOpenDateModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -44,21 +45,51 @@ export const OrderDetails = ({
   const isAccountant = role === "حسابدار";
   const isWarehouse = role === "انباردار";
   const isSelectableTab = !["تحویل شد", "canceled", "all"].includes(currentTab);
+  const [confirmHold, setConfirmHold] = useState(false);
+  const [cancelHold, setCancelHold] = useState(false);
+  const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
 
-  
+  const handleHoldStart = (type: "confirm" | "cancel") => {
+    const timer = setTimeout(() => {
+      if (type === "confirm") {
+        handleMultiConfirm();
+        setConfirmHold(false);
+      } else {
+        handleMultiCancel();
+        setCancelHold(false);
+      }
+    }, 2000); // مدت زمان نگه داشتن
+
+    setHoldTimer(timer);
+    if (type === "confirm") setConfirmHold(true);
+    else setCancelHold(true);
+  };
+
+  const handleHoldEnd = () => {
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      setHoldTimer(null);
+    }
+    setConfirmHold(false);
+    setCancelHold(false);
+  };
 
   const canShowSelectUI =
     (isAccountant && currentTab === "در انتظار تائید حسابداری") ||
-    (isWarehouse && currentTab !== "در انتظار تائید حسابداری" && isSelectableTab);
-
+    (isWarehouse &&
+      currentTab !== "در انتظار تائید حسابداری" &&
+      isSelectableTab);
 
   const canSelectItem = (part: any) => {
-    if (isWarehouse && isSelectableTab && currentTab !== "در انتظار تائید حسابداری") return true;
+    if (
+      isWarehouse &&
+      isSelectableTab &&
+      currentTab !== "در انتظار تائید حسابداری"
+    )
+      return true;
     if (isAccountant && part.status === "در انتظار تائید حسابداری") return true;
     return false;
   };
-
- 
 
   const isSelected = (id: string) => selectedItems.includes(id);
 
@@ -70,7 +101,10 @@ export const OrderDetails = ({
 
   const toggleSelectAll = () => {
     const allSelectableIds =
-      order?.receptions?.flatMap((r: any) => r.orders || []).filter(canSelectItem).map((o: any) => o.order_id) || [];
+      order?.receptions
+        ?.flatMap((r: any) => r.orders || [])
+        .filter(canSelectItem)
+        .map((o: any) => o.order_id) || [];
 
     if (selectedItems.length === allSelectableIds.length) {
       setSelectedItems([]);
@@ -95,11 +129,18 @@ export const OrderDetails = ({
 
     await Promise.all(
       selectedOrders.map(async (part: any) => {
-        const options = getStatusOptions(part.status, part.order_channel, part.reception_car_status || "");
+        const options = getStatusOptions(
+          part.status,
+          part.order_channel,
+          part.reception_car_status || ""
+        );
 
         if (options.length > 0) {
           const nextStatus = options[0].value;
-          if (part.reception_car_status === "متوقع" && part.status === "در انتظار نوبت دهی") {
+          if (
+            part.reception_car_status === "متوقع" &&
+            part.status === "در انتظار نوبت دهی"
+          ) {
             setSelectedOrder({ id: part.order_id, name: part.piece_name });
             setOpenDateModal(true);
             return;
@@ -120,8 +161,6 @@ export const OrderDetails = ({
     setSelectedItems([]);
   };
 
-  
-
   const handleMultiCancel = async () => {
     const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
     const cancellableOrders = allOrders.filter((order: any) =>
@@ -139,19 +178,20 @@ export const OrderDetails = ({
 
   const canShowCancelAll = (isWarehouse && isSelectableTab) || isAccountant;
 
-
   const closedStatuses = [
     "تحویل شد",
     "لغو توسط شرکت",
     "انصراف مشتری",
     "عدم دریافت",
     "عدم پرداخت حسابداری",
-    "تحویل نشد"
+    "تحویل نشد",
   ];
 
-  const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []) || [];
-  const allClosed = allOrders.every((o: any) => closedStatuses.includes(o.status));
-
+  const allOrders =
+    order?.receptions?.flatMap((r: any) => r.orders || []) || [];
+  const allClosed = allOrders.every((o: any) =>
+    closedStatuses.includes(o.status)
+  );
 
   return (
     <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
@@ -159,17 +199,22 @@ export const OrderDetails = ({
         <Wrench className="w-5 h-5" />
         <span>
           جزئیات قطعات (
-          {order?.receptions?.flatMap((r: { orders: any; }) => r.orders || []).length || 0})
+          {order?.receptions?.flatMap((r: { orders: any }) => r.orders || [])
+            .length || 0}
+          )
         </span>
         {allClosed ? (
-          <AddItem id={id} disabled={isAccountant}/>
+          <AddItem id={id} disabled={isAccountant} />
         ) : (
           (() => {
             const openReceptions = order?.receptions?.filter((r: any) =>
-              (r.orders || []).some((o: any) => !closedStatuses.includes(o.status))
+              (r.orders || []).some(
+                (o: any) => !closedStatuses.includes(o.status)
+              )
             );
 
-            const latestOpenReception = openReceptions?.[openReceptions.length - 1];
+            const latestOpenReception =
+              openReceptions?.[openReceptions.length - 1];
 
             return latestOpenReception ? (
               <AddItemToReception
@@ -182,27 +227,61 @@ export const OrderDetails = ({
             ) : null;
           })()
         )}
-
-
       </div>
 
       {selectedItems.length > 0 && (
         <div className="flex gap-2 mb-4">
           {canShowCancelAll && (
             <>
-              <Button
+              {selectedItems.length > 0 && (
+                <div className="flex gap-2 mb-4">
+                  {canShowCancelAll && (
+                    <>
+                      <Button
+                        onMouseDown={() => handleHoldStart("confirm")}
+                        onMouseUp={handleHoldEnd}
+                        onMouseLeave={handleHoldEnd}
+                        className="relative overflow-hidden bg-white border border-black group hover:bg-gray-600 transition-colors duration-200"
+                      >
+                        <span
+                          className={`absolute inset-0 bg-black transition-transform duration-[2000ms] ease-linear origin-left transform ${
+                            confirmHold ? "scale-x-100" : "scale-x-0"
+                          }`}
+                          aria-hidden="true"
+                        />
 
-                onClick={handleMultiConfirm}
-              >
-                تایید همه
-              </Button>
-              <Button
-                variant={"outline"}
-                onClick={handleMultiCancel}
-                className="text-black"
-              >
-                لغو همه
-              </Button>
+                        <span
+                          className={`
+                        relative z-10 transition-colors duration-200
+                         ${confirmHold ? "text-white" : "text-black"}
+                         group-hover:text-white
+                                    `}
+                        >
+                          تایید همه
+                        </span>
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        onMouseDown={() => handleHoldStart("cancel")}
+                        onMouseUp={handleHoldEnd}
+                        onMouseLeave={handleHoldEnd}
+                        className="relative overflow-hidden bg-white border border-red-800 hover:bg-red-300 transition-colors duration-200"
+                      >
+                        <span
+                          className={`absolute inset-0 bg-red-600 transition-transform duration-[2000ms] ease-linear origin-left transform ${
+                            cancelHold ? "scale-x-100" : "scale-x-0"
+                          }`}
+                          aria-hidden="true"
+                        />
+                        <span className="relative z-10 text-black">
+                          لغو همه
+                        </span>
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -245,7 +324,7 @@ export const OrderDetails = ({
                   car_status: string;
                   settlement_status: string;
                   orders: any[];
-                  reception_id: number
+                  reception_id: number;
                 },
                 i: number
               ) => (
@@ -258,7 +337,9 @@ export const OrderDetails = ({
                       <div className="flex flex-col gap-2">
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-2 text-left mr-4">
-                            <span>شماره پذیرش: {reception.reception_number}</span>
+                            <span>
+                              شماره پذیرش: {reception.reception_number}
+                            </span>
                             <span className="flex items-center gap-1">
                               (<span>{reception.car_status}</span>
                               {reception.car_status === "متوقف" ? (
@@ -274,7 +355,6 @@ export const OrderDetails = ({
                               ) : null}
                               )
                             </span>
-                          
                           </div>
                         </div>
                       </div>
@@ -289,14 +369,18 @@ export const OrderDetails = ({
                     );
 
                     const canEdit =
-                      (isAccountant && part.status === "در انتظار تائید حسابداری") ||
-                      (isWarehouse && part.status !== "در انتظار تائید حسابداری" && currentTab !== "در انتظار تائید حسابداری");
-
+                      (isAccountant &&
+                        part.status === "در انتظار تائید حسابداری") ||
+                      (isWarehouse &&
+                        part.status !== "در انتظار تائید حسابداری" &&
+                        currentTab !== "در انتظار تائید حسابداری");
 
                     return (
                       <tr
                         key={j}
-                        className={`border-b ${j % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+                        className={`border-b ${
+                          j % 2 === 0 ? "bg-gray-50" : "bg-white"
+                        }`}
                       >
                         {canShowSelectUI && canSelectItem(part) && (
                           <td className="px-4 py-3 text-center">
@@ -314,16 +398,22 @@ export const OrderDetails = ({
                         <td className="px-4 py-3">{part.part_id}</td>
 
                         <td className="px-4 py-3">{part.number_of_pieces}</td>
-                        <td className="px-4 py-3 font-semibold">{part.order_channel}</td>
+                        <td className="px-4 py-3 font-semibold">
+                          {part.order_channel}
+                        </td>
                         <td className="px-4 py-3">
-                          {part.order_date ? part.order_date.split("T")[0] : "-"}
+                          {part.order_date
+                            ? part.order_date.split("T")[0]
+                            : "-"}
                         </td>
                         <td className="px-4 py-3">{part.order_number}</td>
                         <td className="px-4 py-3">
                           {part.estimated_arrival_days}
                         </td>
                         <td className="px-4 py-3">
-                          {part.delivery_date ? part.delivery_date.split("T")[0] : "-"}
+                          {part.delivery_date
+                            ? part.delivery_date.split("T")[0]
+                            : "-"}
                         </td>
                         <td className="px-4 py-3 font-semibold">
                           <div className="flex items-center gap-1.5">
@@ -343,7 +433,10 @@ export const OrderDetails = ({
                         <td className="px-4 py-3 text-center flex gap-3 justify-end items-center">
                           <div className="flex justify-center items-center gap-1">
                             {options[0] && canEdit && (
-                              <ToolTip status={part.status} actionType="confirm">
+                              <ToolTip
+                                status={part.status}
+                                actionType="confirm"
+                              >
                                 <div>
                                   <ConfirmCircle
                                     onConfirm={async () => {
@@ -351,20 +444,27 @@ export const OrderDetails = ({
                                       const newStatus = options[0].value;
 
                                       if (newStatus === "نوبت داده شد") {
-                                        setSelectedOrder({ id: part.order_id, name: part.piece_name });
+                                        setSelectedOrder({
+                                          id: part.order_id,
+                                          name: part.piece_name,
+                                        });
                                         setOpenDateModal(true);
                                         return;
                                       }
 
                                       try {
-                                        await editOrder(part.order_id, { status: newStatus });
+                                        await editOrder(part.order_id, {
+                                          status: newStatus,
+                                        });
                                         toast.success(
                                           `وضعیت «${part.piece_name}» از «${previousStatus}» به «${newStatus}» تغییر کرد`,
                                           { duration: 2500 }
                                         );
                                         refetch();
                                       } catch (error) {
-                                        toast.error("خطا در تغییر وضعیت قطعه", { duration: 3000 });
+                                        toast.error("خطا در تغییر وضعیت قطعه", {
+                                          duration: 3000,
+                                        });
                                       }
                                     }}
                                   />
@@ -383,7 +483,11 @@ export const OrderDetails = ({
                                           description: description,
                                         });
                                         toast.success(
-                                          `وضعیت «${part.piece_name}» لغو شد با توضیح: «${description || "بدون توضیح"}»`,
+                                          `وضعیت «${
+                                            part.piece_name
+                                          }» لغو شد با توضیح: «${
+                                            description || "بدون توضیح"
+                                          }»`,
                                           {
                                             duration: 2000,
                                             dismissible: true,
@@ -408,44 +512,55 @@ export const OrderDetails = ({
                             <ToolTip
                               hintClassName="ml-4"
                               hint={
-                                (part.description || part.all_description) ? (
+                                part.description || part.all_description ? (
                                   <div className="space-y-2 text-sm leading-6 text-gray-100 max-w-[400px]">
                                     {part.all_description && (
                                       <div>
-                                        <div className="font-semibold text-white mb-1">توضیحات کلی :</div>
-                                        <p className="text-gray-300">{part.all_description}</p>
+                                        <div className="font-semibold text-white mb-1">
+                                          توضیحات کلی :
+                                        </div>
+                                        <p className="text-gray-300">
+                                          {part.all_description}
+                                        </p>
                                       </div>
                                     )}
                                     {part.description && (
                                       <div>
-                                        <div className="font-semibold text-red-600 dark:text-red-400 mb-1">علت لغو :</div>
-                                        <p className="text-gray-300">{part.description}</p>
+                                        <div className="font-semibold text-red-600 dark:text-red-400 mb-1">
+                                          علت لغو :
+                                        </div>
+                                        <p className="text-gray-300">
+                                          {part.description}
+                                        </p>
                                       </div>
                                     )}
                                   </div>
                                 ) : (
-                                  <div className="text-sm text-gray-300">توضیحاتی وجود ندارد</div>
+                                  <div className="text-sm text-gray-300">
+                                    توضیحاتی وجود ندارد
+                                  </div>
                                 )
                               }
                             >
                               <MessageCircleMore
                                 className={`
                                     w-6 h-6
-                                    ${part.description || part.all_description
-                                    ? 'text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white'
-                                    : 'text-gray-400 '
-                                  }
+                                    ${
+                                      part.description || part.all_description
+                                        ? "text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                                        : "text-gray-400 "
+                                    }
                                 `}
                               />
                             </ToolTip>
-
                           </div>
                         </td>
                       </tr>
                     );
                   })}
                 </React.Fragment>
-              ))}
+              )
+            )}
           </tbody>
         </table>
       </div>
@@ -492,7 +607,11 @@ export const OrderDetails = ({
           await Promise.all(
             itemsToCancel.map(async (part) => {
               try {
-                const options = getStatusOptions(part.status, part.order_channel, part.car_status || "");
+                const options = getStatusOptions(
+                  part.status,
+                  part.order_channel,
+                  part.car_status || ""
+                );
                 const cancelStatus = options[1]?.value || "لغو شده";
 
                 await editOrder(part.order_id, {
