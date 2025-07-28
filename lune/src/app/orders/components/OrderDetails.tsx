@@ -242,7 +242,7 @@ export const OrderDetails = ({
                         onMouseDown={() => handleHoldStart("confirm")}
                         onMouseUp={handleHoldEnd}
                         onMouseLeave={handleHoldEnd}
-                        className="relative overflow-hidden bg-white border border-black group hover:bg-gray-600 transition-colors duration-200"
+                        className="relative overflow-hidden bg-white border border-black group  transition-colors duration-200 hover:bg-white hover:text-black hover:cursor-pointer"
                       >
                         <span
                           className={`absolute inset-0 bg-black transition-transform duration-[2000ms] ease-linear origin-left transform ${
@@ -255,7 +255,7 @@ export const OrderDetails = ({
                           className={`
                         relative z-10 transition-colors duration-200
                          ${confirmHold ? "text-white" : "text-black"}
-                         group-hover:text-white
+                         group-hover:text-black
                                     `}
                         >
                           تایید همه
@@ -267,7 +267,7 @@ export const OrderDetails = ({
                         onMouseDown={() => handleHoldStart("cancel")}
                         onMouseUp={handleHoldEnd}
                         onMouseLeave={handleHoldEnd}
-                        className="relative overflow-hidden bg-white border border-red-800 hover:bg-red-300 transition-colors duration-200"
+                        className="relative overflow-hidden bg-white border border-red-800  transition-colors duration-200"
                       >
                         <span
                           className={`absolute inset-0 bg-red-600 transition-transform duration-[2000ms] ease-linear origin-left transform ${
@@ -505,7 +505,7 @@ export const OrderDetails = ({
                             )}
                           </div>
                           <div className="flex gap-1">
-                            <UpdateDiscription data={part}  />
+                            <UpdateDiscription data={part} refetch={refetch}  />
                             <DeleteItem
                               id={String(part.order_id)}
                               name={part.piece_name}

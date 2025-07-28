@@ -52,25 +52,25 @@ export const DownloadModal = () => {
         onCancel={() => setOpen(false)}
       >
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="w-full sm:w-1/2">
-              <JalaliDatePicker<FormValues>
-                control={control}
-                name="fromDate"
-                label="از تاریخ"
-                required
-                className="text-right"
-              />
-            </div>
-            <div className="w-full sm:w-1/2">
-              <JalaliDatePicker<FormValues>
-                control={control}
-                name="toDate"
-                label="تا تاریخ"
-                required
-                className="text-right"
-              />
-            </div>
+          <div className="flex ">
+
+            <JalaliDatePicker<FormValues>
+              control={control}
+              name="fromDate"
+              label="از تاریخ"
+              required
+              className="text-left "
+            />
+
+
+            <JalaliDatePicker<FormValues>
+              control={control}
+              name="toDate"
+              label="تا تاریخ"
+              required
+              className="text-left"
+            />
+
           </div>
 
           {!isValidRange && fromDate && toDate && (
