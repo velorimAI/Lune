@@ -7,11 +7,11 @@ export const getConfirmMessage = (status: string): string => {
     case "در انتظار دریافت":
       return " دریافت شد.";
     case "دریافت شد":
-      return "دریافت شد.";
+      return "تحویل شد.";
     case "در انتظار نوبت دهی":
       return "نوبت‌دهی شد.";
     case "نوبت داده شد":
-      return "نوبت‌دهی شد .";
+      return "تحویل شد .";
     default:
       return "تأیید مرحلهٔ فعلی انجام شد.";
   }
