@@ -10,16 +10,20 @@ interface CustomerFormProps {
   userForm: any;
   userInfoSubmitted: boolean;
   onSubmit: (data: any) => void;
-
+  onFormReset?: () => void; 
 }
 
 export function CustomerForm({
   userForm,
   userInfoSubmitted,
   onSubmit,
+  onFormReset,
 }: CustomerFormProps) {
   const { refs } = useCustomerInputRefs();
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/reset-part-form-and-customer
   const { control } = userForm;
 
   return (
@@ -27,9 +31,11 @@ export function CustomerForm({
       <Form
         submitText="ثبت اطلاعات"
         cancelHide
-        onSubmit={onSubmit}
+        onSubmit={(data) => {
+          onSubmit(data);
+          onFormReset?.(); 
+        }}
         submitDisable={userInfoSubmitted}
-
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <Input
@@ -38,7 +44,10 @@ export function CustomerForm({
             required
             disabled={userInfoSubmitted}
             ref={refs.customerNameRef}
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/reset-part-form-and-customer
           />
           <Input
             label="شماره تماس"
@@ -61,10 +70,72 @@ export function CustomerForm({
           <Select
             label="نام خودرو"
             name="car_name"
+<<<<<<< HEAD
             value="MVM X5"
             inputStyle="w-full"
             options={carOptions}
             required
+=======
+            inputStyle="w-full"
+            placeholder="نام خودرو را انتخاب کنید"
+            options={[
+              { value: "MVM X22 Pro MT", label: "MVM X22 Pro MT" },
+              { value: "MVM X22 Pro AT", label: "MVM X22 Pro AT" },
+              { value: "MVM X33 Cross MT", label: "MVM X33 Cross MT" },
+              { value: "MVM X33 Cross CVT", label: "MVM X33 Cross CVT" },
+              { value: "MVM Arrizo5 FL", label: "MVM Arrizo5 FL" },
+              { value: "MVM X55 Pro IE", label: "MVM X55 Pro IE" },
+              { value: "MVM X77", label: "MVM X77" },
+              { value: "MVM X5", label: "MVM X5" },
+              { value: "MVM 110", label: "MVM 110" },
+              { value: "MVM 110S", label: "MVM 110S" },
+              { value: "MVM 315", label: "MVM 315" },
+              { value: "MVM 315 plus", label: "MVM 315 plus" },
+              { value: "MVM 530", label: "MVM 530" },
+              { value: "MVM 550", label: "MVM 550" },
+              { value: "MVM X22", label: "MVM X22" },
+              { value: "MVM X33s", label: "MVM X33s" },
+              { value: "MVM X55", label: "MVM X55" },
+              { value: "Fownix Arrizo 8", label: "Fownix Arrizo 8" },
+              { value: "Fownix Arrizo 6 Pro", label: "Fownix Arrizo 6 Pro" },
+              { value: "Fownix Arrizo 6 GT", label: "Fownix Arrizo 6 GT" },
+              { value: "MVM Tiggo 7", label: "MVM Tiggo 7" },
+              { value: "MVM Tiggo 7 IE", label: "MVM Tiggo 7 IE" },
+              {
+                value: "Fownix Tiggo 7 Pro Premium",
+                label: "Fownix Tiggo 7 Pro Premium",
+              },
+              {
+                value: "Fownix Tiggo 7 Pro Max",
+                label: "Fownix Tiggo 7 Pro Max",
+              },
+              {
+                value: "Fownix Tiggo 7 Pro Max AWD",
+                label: "Fownix Tiggo 7 Pro Max AWD",
+              },
+              { value: "Arrizo 8 e+", label: "Arrizo 8 e+" },
+              {
+                value: "Fownix Tiggo 8 Pro Max IE",
+                label: "Fownix Tiggo 8 Pro Max IE",
+              },
+              { value: "Fownix FX", label: "Fownix FX" },
+              { value: "Fownix FX AWD", label: "Fownix FX AWD" },
+              {
+                value: "Fownix Tiggo 7 Pro e+",
+                label: "Fownix Tiggo 7 Pro e+",
+              },
+              {
+                value: "Fownix Tiggo 8 Pro e+",
+                label: "Fownix Tiggo 8 Pro e+",
+              },
+              { value: "Fownix FX EV", label: "Fownix FX EV" },
+              { value: "XTRIM VX", label: "XTRIM VX" },
+              { value: "XTRIM TXL", label: "XTRIM TXL" },
+              { value: "XTRIM LX", label: "XTRIM LX" },
+              { value: "XTRIM RX", label: "XTRIM RX" },
+            ]}
+           required
+>>>>>>> origin/reset-part-form-and-customer
             disabled={userInfoSubmitted}
           />
           <Select

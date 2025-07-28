@@ -23,8 +23,7 @@ export default function NewOrderPage() {
     handleSubmitItem,
     handleSubmit,
     setOrderGroups,
-    // formKey,
-    // resetPartForm,
+    customerFormKey, 
   } = useOrderData();
 
   return (
@@ -40,9 +39,11 @@ export default function NewOrderPage() {
       <div className="flex gap-5 pt-10">
         <div className="w-[50%] flex flex-col gap-5">
           <CustomerForm
+            key={customerFormKey} 
             userForm={userForm}
             userInfoSubmitted={userInfoSubmitted}
             onSubmit={handleUserData}
+            onFormReset={() => userForm.reset()}
           />
           <PartForm
             userInfoSubmitted={userInfoSubmitted}
@@ -50,8 +51,7 @@ export default function NewOrderPage() {
             setOrderChannel={setOrderChannel}
             estimatedArrivalDays={estimatedArrivalDays}
             onSubmit={handleSubmitItem}
-            // formKey={formKey}
-            // onFormReset={resetPartForm}
+            onFormReset={() => {}} 
           />
         </div>
         <div className="w-[50%]">
