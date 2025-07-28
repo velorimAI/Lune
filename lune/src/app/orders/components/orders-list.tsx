@@ -16,8 +16,9 @@ import { DeleteOrder } from "./DeleteOrderButton";
 import { OrdersListProps } from "@/types/orders.d.type";
 import { OrderDetails } from "./OrderDetails";
 import { extractMonthDay } from "@/app/utils/extractMonthlyDay";
+import ToolTip from "@/app/components/custom-tooltip";
 
-export const OrdersList: FC<OrdersListProps> = ({ data, refetch , currentTab , role}) => {
+export const OrdersList: FC<OrdersListProps> = ({ data, refetch, currentTab, role }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const toggleDetails = (index: number) => {
@@ -67,7 +68,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch , currentTab , r
             );
           const firstReception = sorted.length ? sorted[0] : null;
 
-         
+
           const receptionNumbers = sorted
             .map((r: any) => r.reception_number)
             .filter(Boolean)
@@ -80,44 +81,59 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch , currentTab , r
             >
               <div
                 onClick={() => toggleDetails(index)}
-                className={`grid grid-cols-6 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-100 ${
-                  expandedIndex === index ? "bg-gray-100 border-b" : ""
-                }`}
+                className={`grid grid-cols-6 px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-100 ${expandedIndex === index ? "bg-gray-100 border-b" : ""
+                  }`}
               >
                 <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-gray-500" />
+                  <ToolTip hint="نام مشتری">
+                    <User className="w-4 h-4 text-gray-500" />
+                  </ToolTip>
                   <span className="text-gray-800">{order?.customer_name}</span>
                 </div>
+
                 <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-gray-500" />
+                  <ToolTip hint="شماره تماس">
+                    <Phone className="w-4 h-4 text-gray-500" />
+                  </ToolTip>
                   <span className="text-gray-800">{order?.customer_phone}</span>
                 </div>
+
                 <div className="flex items-center gap-2">
-                  <FileDigit className="w-4 h-4 text-gray-500" />
+                  <ToolTip hint="شماره پذیرش">
+                    <FileDigit className="w-4 h-4 text-gray-500" />
+                  </ToolTip>
                   <span className="text-gray-800">{receptionNumbers}</span>
                 </div>
+
                 <div className="flex items-center gap-2">
-                  <CalendarPlus2 className="w-4 h-4 text-gray-500" />
+                  <ToolTip hint="تاریخ اولین پذیرش">
+                    <CalendarPlus2 className="w-4 h-4 text-gray-500" />
+                  </ToolTip>
                   <span className="text-gray-800">
                     {firstReception
                       ? firstReception.reception_date.split(" ")[0]
                       : "—"}
                   </span>
                 </div>
+
                 <div className="flex items-center gap-2">
-                  <CalendarCheck className="w-4 h-4 text-gray-500" />
+                  <ToolTip hint="بازه تخمینی تحویل">
+                    <CalendarCheck className="w-4 h-4 text-gray-500" />
+                  </ToolTip>
                   <span className="text-gray-800">{displayDates(order)}</span>
                 </div>
+
                 <div
                   className="flex justify-center items-center mr-auto gap-2"
                   onClick={(e) => e.stopPropagation()}
                 >
+                  {/* <EditOrderModal data={order} refetch={refetch} /> */}
                   <DeleteOrder
                     id={String(order?.customer_id)}
                     name={order?.customer_name}
                     disabled={role === "حسابدار"}
                   />
-                 
+
                   <motion.div
                     className="cursor-pointer ml-2"
                     onClick={(e) => handleArrowClick(e, index)}
@@ -130,11 +146,10 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch , currentTab , r
                     transition={{ duration: 0.2 }}
                   >
                     <CircleArrowLeft
-                      className={`w-6 h-6 transition-colors duration-200 ${
-                        expandedIndex === index
-                          ? "text-blue-500"
-                          : "text-gray-500"
-                      } hover:text-blue-500`}
+                      className={`w-6 h-6 transition-colors duration-200 ${expandedIndex === index
+                        ? "text-blue-500"
+                        : "text-gray-500"
+                        } hover:text-blue-500`}
                     />
                   </motion.div>
                 </div>
@@ -150,7 +165,7 @@ export const OrdersList: FC<OrdersListProps> = ({ data, refetch , currentTab , r
                     className="border-t border-gray-100"
                   >
                     <div className="px-3 pt-2 pb-4 max-h-[350px] overflow-y-auto rounded-b-xl scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                      <OrderDetails order={order} id={order.customer_id} refetch={refetch} selectable={true}   currentTab={currentTab}  role={role}/>
+                      <OrderDetails order={order} id={order.customer_id} refetch={refetch} selectable={true} currentTab={currentTab} role={role} />
                     </div>
                   </motion.div>
                 )}

@@ -18,6 +18,7 @@ import AddItemToReception from "./add-item-to-reception";
 import { CheckBox } from "@/app/components/custom-form/check-box";
 import { Button } from "@/app/components/button";
 import InsertDescription from "./insert-description";
+import { UpdateDiscription } from "./update-description";
 
 export const OrderDetails = ({
   id,
@@ -400,6 +401,7 @@ export const OrderDetails = ({
                             )}
                           </div>
                           <div className="flex gap-1">
+                            <UpdateDiscription data={part}  />
                             <DeleteItem
                               id={String(part.order_id)}
                               name={part.piece_name}
