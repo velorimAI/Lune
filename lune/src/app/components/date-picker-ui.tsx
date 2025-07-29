@@ -204,7 +204,7 @@ export function JalaliDatePicker<T extends FieldValues>({
                 containerStyle={{ direction: "rtl" }}
                 className="text-right"
                 render={(_val, openCalendar) => (
-                  <>
+                  <div className="relative w-full">
                     <input
                       id={name}
                       dir="ltr"
@@ -215,7 +215,7 @@ export function JalaliDatePicker<T extends FieldValues>({
                       onFocus={handleFocus}
                       disabled={disabled}
                       className={clsx(
-                        "w-full h-10 pl-10 pr-3 rounded-md border text-sm text-right focus:outline-none focus:ring-2 h-[36px]",
+                        "w-full h-10 pl-10 pr-3 rounded-md border text-sm text-right focus:outline-none focus:ring-2 h-[36px]  ",
                         error
                           ? "border-red-500 focus:ring-red-500"
                           : "border-gray-300 focus:ring-blue-500"
@@ -234,7 +234,7 @@ export function JalaliDatePicker<T extends FieldValues>({
                     >
                       <CalendarDays size={18} />
                     </Button>
-                  </>
+                  </div>
                 )}
               />
 

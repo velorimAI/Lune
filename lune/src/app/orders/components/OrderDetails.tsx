@@ -19,6 +19,7 @@ import { CheckBox } from "@/app/components/custom-form/check-box";
 import { Button } from "@/app/components/button";
 import InsertDescription from "./insert-description";
 import { UpdateDiscription } from "./update-description";
+import { InsertFinalOrderNumber } from "./insert-final-order-number";
 
 export const OrderDetails = ({
   id,
@@ -49,6 +50,9 @@ export const OrderDetails = ({
   const [confirmHold, setConfirmHold] = useState(false);
   const [cancelHold, setCancelHold] = useState(false);
   const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
+  const [openFinalOrderModal, setOpenFinalOrderModal] = useState(false);
+  const [selectedFinalOrderItem, setSelectedFinalOrderItem] = useState<any>(null);
+
 
   const handleHoldStart = (type: "confirm" | "cancel") => {
     const timer = setTimeout(() => {
@@ -59,7 +63,7 @@ export const OrderDetails = ({
         handleMultiCancel();
         setCancelHold(false);
       }
-    }, 2000); // مدت زمان نگه داشتن
+    }, 2000); 
 
     setHoldTimer(timer);
     if (type === "confirm") setConfirmHold(true);
@@ -79,7 +83,9 @@ export const OrderDetails = ({
     (isAccountant && currentTab === "در انتظار تائید حسابداری") ||
     (isWarehouse &&
       currentTab !== "در انتظار تائید حسابداری" &&
-      isSelectableTab);
+      currentTab !== "در انتظار نوبت‌دهی" &&
+      isSelectableTab) ||
+    (role === "پذیرش" && currentTab === "در انتظار نوبت‌دهی");
 
   const canSelectItem = (part: any) => {
     if (role === "پذیرش" && part.status === "در انتظار نوبت دهی") return true;
@@ -144,6 +150,32 @@ export const OrderDetails = ({
       return;
     }
 
+    const needFinalNumber = selectedOrders.find(
+      (part: any) => part.status === "در انتظار تایید شرکت"
+    );
+
+    if (needFinalNumber) {
+      setSelectedFinalOrderItem({
+        id: needFinalNumber.order_id,
+        name: needFinalNumber.piece_name,
+      });
+      setOpenFinalOrderModal(true);
+      return;
+    }
+
+    const needDateSelection = selectedOrders.find(
+      (part: any) =>
+        part.status === "در انتظار نوبت دهی" && part.reception_car_status === "متوقع"
+    );
+
+    if (needDateSelection) {
+      setSelectedOrder({
+        id: needDateSelection.order_id,
+        name: needDateSelection.piece_name,
+      });
+      setOpenDateModal(true);
+      return;
+    }
     let successCount = 0;
 
     await Promise.all(
@@ -165,6 +197,13 @@ export const OrderDetails = ({
           setOpenDateModal(true);
           return;
         }
+
+        if (part.status === "در انتظار تائید شرکت") {
+          setSelectedFinalOrderItem({ id: part.order_id, name: part.piece_name });
+          setOpenFinalOrderModal(true);
+          return;
+        }
+
 
         try {
           await editOrder(part.order_id, { status: nextStatus });
@@ -212,7 +251,11 @@ export const OrderDetails = ({
   };
 
 
-  const canShowCancelAll = (isWarehouse && isSelectableTab) || isAccountant;
+  const canShowCancelAll =
+    (isWarehouse && isSelectableTab) ||
+    isAccountant ||
+    (role === "پذیرش" && currentTab === "در انتظار نوبت‌دهی");
+
 
   const closedStatuses = [
     "تحویل شد",
@@ -494,6 +537,15 @@ export const OrderDetails = ({
                                           return;
                                         }
 
+                                        if (part.status === "در انتظار تائید شرکت") {
+                                          setSelectedFinalOrderItem({
+                                            id: part.order_id,
+                                            name: part.piece_name,
+                                          });
+                                          setOpenFinalOrderModal(true);
+                                          return;
+                                        }
+
                                         try {
                                           await editOrder(part.order_id, { status: newStatus });
                                           toast.success(
@@ -512,7 +564,7 @@ export const OrderDetails = ({
                                 </ToolTip>
                               )}
 
-                              
+
                             {options[1] && canEdit && (
                               <ToolTip hint={`لغو`}>
                                 <div>
@@ -671,6 +723,62 @@ export const OrderDetails = ({
           setOpenDescriptionModal(false);
         }}
       />
+      <InsertFinalOrderNumber
+        open={openFinalOrderModal}
+        onClose={() => {
+          setOpenFinalOrderModal(false);
+          setSelectedItems([]);
+          setSelectedFinalOrderItem(null);
+        }}
+        onSubmit={async (final_order_number) => {
+          let targets: any[] = [];
+
+          const allOrders =
+            order?.receptions?.flatMap((r: any) => r.orders || []) || [];
+
+
+          if (selectedFinalOrderItem) {
+            const item = allOrders.find(
+              (o: any) => o.order_id === selectedFinalOrderItem.id
+            );
+            if (item) targets.push(item);
+          } else {
+            targets = allOrders.filter((o: any) =>
+              selectedItems.includes(o.order_id)
+            );
+          }
+
+          let successCount = 0;
+
+          await Promise.all(
+            targets.map(async (part: any) => {
+              try {
+                const options = getStatusOptions(
+                  part.status,
+                  part.order_channel,
+                  part.car_status || ""
+                );
+                const confirmStatus = options[0]?.value || "";
+
+                await editOrder(part.order_id, {
+                  status: confirmStatus,
+                  final_order_number,
+                });
+                successCount++;
+              } catch (error) {
+                console.error(`خطا در تایید قطعه ${part.piece_name}`, error);
+              }
+            })
+          );
+
+          toast.success(`${successCount} قطعه با موفقیت تایید شدند`);
+          refetch();
+          setSelectedItems([]);
+          setSelectedFinalOrderItem(null);
+          setOpenFinalOrderModal(false);
+        }}
+      />
+
     </div>
   );
 };
