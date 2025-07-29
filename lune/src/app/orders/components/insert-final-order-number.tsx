@@ -33,7 +33,7 @@ export const InsertFinalOrderNumber = ({
             hideCancel
             hideConfirm
         >
-            <Form cancelText="لغو" submitText="ثبت شماره حواله" onSubmit={handleConfirm}>
+            <Form cancelText="لغو" submitText="ثبت شماره حواله" onSubmit={handleConfirm} onCancel={onClose}>
                 <Input label="شماره حواله" name="final_order_number" value={data?.order_number || ""}  />
             </Form>
         </Modal>

@@ -390,6 +390,7 @@ export const OrderDetails = ({
               <th className="px-4 py-2">رسیدن (روز)</th>
               <th className="px-4 py-2">تاریخ تحویل</th>
               <th className="px-4 py-2">وضعیت</th>
+              <th className="px-4 py-2">تاریخ و ساعت نوبت دهی</th>
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
@@ -408,7 +409,7 @@ export const OrderDetails = ({
                 <React.Fragment key={i}>
                   <tr>
                     <td
-                      colSpan={11}
+                      colSpan={13}
                       className="bg-blue-50 text-blue-800 font-bold px-4 py-2 border-y border-blue-300"
                     >
                       <div className="flex flex-col gap-2">
@@ -508,6 +509,22 @@ export const OrderDetails = ({
                             })()}
                           </div>
                         </td>
+
+                        <td className="px-4 py-3">
+                          {part.status === "نوبت داده شد" ? (
+                            <div className="flex flex-col text-sm leading-5 text-gray-700">
+                              <span>
+                                {part.appointment_date
+                                  ? part.appointment_date.split("T")[0]
+                                  : "-"}
+                              </span>
+                              <span>{part.appointment_time || "-"}</span>
+                            </div>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+
                         <td className="px-4 py-3 text-center flex gap-3 justify-end items-center">
                           <div className="flex justify-center items-center gap-1">
                             {options[0] &&
@@ -595,7 +612,7 @@ export const OrderDetails = ({
                             )}
                           </div>
                           <div className="flex gap-1">
-                            <UpdateDiscription data={part} refetch={refetch}  />
+                            <UpdateDiscription data={part} refetch={refetch} />
                             <DeleteItem
                               id={String(part.order_id)}
                               name={part.piece_name}
