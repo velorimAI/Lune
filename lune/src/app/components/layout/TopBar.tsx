@@ -17,8 +17,8 @@ const pathToTitle: Record<string, string> = {
   "/admin":"مدیریت",
   "/admin/users":"کاربران",
   "/admin/logs":"سوابق فعالیت",
-  "/lost-orders":"قطعات از دست رفته"
-
+  "/lost-orders":"قطعات از دست رفته",
+  "/exp":"اشتراک ها",
 };
 
 export default function TopBar() {

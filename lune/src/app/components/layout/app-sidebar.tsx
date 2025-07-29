@@ -13,6 +13,7 @@ import {
   ShieldUser,
   ClipboardList,
    FileX,
+   Award,
 } from "lucide-react";
 
 
@@ -44,6 +45,7 @@ export function AppSidebar() {
         icon: ShieldUser,
         disabled: userRole !== "مدیریت",
       },
+      { title: "اشتراک ها", url: "/exp", icon: Award, sidbar: true, disabled: userRole !== "مدیریت"},
       { title: "تنظیمات", url: "/settings", icon: Settings, sidbar: true },
     ],
   };
