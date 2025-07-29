@@ -19,6 +19,7 @@ import { CheckBox } from "@/app/components/custom-form/check-box";
 import { Button } from "@/app/components/button";
 import InsertDescription from "./insert-description";
 import { UpdateDiscription } from "./update-description";
+import { InsertFinalOrderNumber } from "./insert-final-order-number";
 
 export const OrderDetails = ({
   id,
@@ -49,6 +50,9 @@ export const OrderDetails = ({
   const [confirmHold, setConfirmHold] = useState(false);
   const [cancelHold, setCancelHold] = useState(false);
   const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
+  const [openFinalOrderModal, setOpenFinalOrderModal] = useState(false);
+  const [selectedFinalOrderItem, setSelectedFinalOrderItem] = useState<any>(null);
+
 
   const handleHoldStart = (type: "confirm" | "cancel") => {
     const timer = setTimeout(() => {
@@ -59,7 +63,7 @@ export const OrderDetails = ({
         handleMultiCancel();
         setCancelHold(false);
       }
-    }, 2000); // مدت زمان نگه داشتن
+    }, 2000); 
 
     setHoldTimer(timer);
     if (type === "confirm") setConfirmHold(true);
@@ -79,18 +83,24 @@ export const OrderDetails = ({
     (isAccountant && currentTab === "در انتظار تائید حسابداری") ||
     (isWarehouse &&
       currentTab !== "در انتظار تائید حسابداری" &&
-      isSelectableTab);
+      currentTab !== "در انتظار نوبت‌دهی" &&
+      isSelectableTab) ||
+    (role === "پذیرش" && currentTab === "در انتظار نوبت‌دهی");
 
   const canSelectItem = (part: any) => {
+    if (role === "پذیرش" && part.status === "در انتظار نوبت دهی") return true;
+    if (role === "حسابدار" && part.status === "در انتظار تائید حسابداری") return true;
     if (
-      isWarehouse &&
+      role === "انباردار" &&
       isSelectableTab &&
-      currentTab !== "در انتظار تائید حسابداری"
-    )
+      part.status !== "در انتظار نوبت دهی" &&
+      part.status !== "در انتظار تائید حسابداری"
+    ) {
       return true;
-    if (isAccountant && part.status === "در انتظار تائید حسابداری") return true;
+    }
     return false;
   };
+
 
   const isSelected = (id: string) => selectedItems.includes(id);
 
@@ -116,16 +126,56 @@ export const OrderDetails = ({
 
   const handleMultiConfirm = async () => {
     const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
-    const selectedOrders = allOrders.filter((order: any) =>
-      selectedItems.includes(order.order_id)
-    );
+    const selectedOrders = allOrders
+      .filter((order: any) => selectedItems.includes(order.order_id))
+      .filter((order: any) => {
+        if (order.status === "در انتظار نوبت دهی") {
+          return role === "پذیرش";
+        }
+        if (order.status === "در انتظار تائید حسابداری") {
+          return role === "حسابدار";
+        }
+        if (
+          role === "انباردار" &&
+          order.status !== "در انتظار نوبت دهی" &&
+          order.status !== "در انتظار تائید حسابداری"
+        ) {
+          return true;
+        }
+        return false;
+      });
 
     if (selectedOrders.length === 0) {
-      toast.warning("هیچ قطعه‌ای انتخاب نشده است");
+      toast.warning("هیچ قطعه‌ای برای تایید موجود نیست یا دسترسی ندارید");
       return;
     }
 
-    console.log(selectedOrders);
+    const needFinalNumber = selectedOrders.find(
+      (part: any) => part.status === "در انتظار تایید شرکت"
+    );
+
+    if (needFinalNumber) {
+      setSelectedFinalOrderItem({
+        id: needFinalNumber.order_id,
+        name: needFinalNumber.piece_name,
+      });
+      setOpenFinalOrderModal(true);
+      return;
+    }
+
+    const needDateSelection = selectedOrders.find(
+      (part: any) =>
+        part.status === "در انتظار نوبت دهی" && part.reception_car_status === "متوقع"
+    );
+
+    if (needDateSelection) {
+      setSelectedOrder({
+        id: needDateSelection.order_id,
+        name: needDateSelection.piece_name,
+      });
+      setOpenDateModal(true);
+      return;
+    }
     let successCount = 0;
 
     await Promise.all(
@@ -135,24 +185,31 @@ export const OrderDetails = ({
           part.order_channel,
           part.reception_car_status || ""
         );
+        const nextStatus = options[0]?.value;
 
-        if (options.length > 0) {
-          const nextStatus = options[0].value;
-          if (
-            part.reception_car_status === "متوقع" &&
-            part.status === "در انتظار نوبت دهی"
-          ) {
-            setSelectedOrder({ id: part.order_id, name: part.piece_name });
-            setOpenDateModal(true);
-            return;
-          }
-          if (nextStatus === "نوبت داده شد") return;
-          try {
-            await editOrder(part.order_id, { status: nextStatus });
-            successCount++;
-          } catch (error) {
-            console.error(`خطا در بروزرسانی قطعه ${part.piece_name}`, error);
-          }
+        if (!nextStatus || nextStatus === "نوبت داده شد") return;
+
+        if (
+          part.reception_car_status === "متوقع" &&
+          part.status === "در انتظار نوبت دهی"
+        ) {
+          setSelectedOrder({ id: part.order_id, name: part.piece_name });
+          setOpenDateModal(true);
+          return;
+        }
+
+        if (part.status === "در انتظار تائید شرکت") {
+          setSelectedFinalOrderItem({ id: part.order_id, name: part.piece_name });
+          setOpenFinalOrderModal(true);
+          return;
+        }
+
+
+        try {
+          await editOrder(part.order_id, { status: nextStatus });
+          successCount++;
+        } catch (error) {
+          console.error(`خطا در بروزرسانی قطعه ${part.piece_name}`, error);
         }
       })
     );
@@ -162,14 +219,30 @@ export const OrderDetails = ({
     setSelectedItems([]);
   };
 
+
   const handleMultiCancel = async () => {
     const allOrders = order?.receptions?.flatMap((r: any) => r.orders || []);
-    const cancellableOrders = allOrders.filter((order: any) =>
-      selectedItems.includes(order.order_id)
-    );
+    const cancellableOrders = allOrders
+      .filter((order: any) => selectedItems.includes(order.order_id))
+      .filter((order: any) => {
+        if (order.status === "در انتظار نوبت دهی") {
+          return role === "پذیرش";
+        }
+        if (order.status === "در انتظار تائید حسابداری") {
+          return role === "حسابدار";
+        }
+        if (
+          role === "انباردار" &&
+          order.status !== "در انتظار نوبت دهی" &&
+          order.status !== "در انتظار تائید حسابداری"
+        ) {
+          return true;
+        }
+        return false;
+      });
 
     if (cancellableOrders.length === 0) {
-      toast.warning("هیچ قطعه‌ای برای لغو وجود ندارد");
+      toast.warning("هیچ قطعه‌ای برای لغو وجود ندارد یا دسترسی ندارید");
       return;
     }
 
@@ -177,7 +250,12 @@ export const OrderDetails = ({
     setOpenDescriptionModal(true);
   };
 
-  const canShowCancelAll = (isWarehouse && isSelectableTab) || isAccountant;
+
+  const canShowCancelAll =
+    (isWarehouse && isSelectableTab) ||
+    isAccountant ||
+    (role === "پذیرش" && currentTab === "در انتظار نوبت‌دهی");
+
 
   const closedStatuses = [
     "تحویل شد",
@@ -245,9 +323,8 @@ export const OrderDetails = ({
                         className="relative overflow-hidden bg-white border border-black group  transition-colors duration-200 hover:bg-white hover:text-black hover:cursor-pointer"
                       >
                         <span
-                          className={`absolute inset-0 bg-black transition-transform duration-[2000ms] ease-linear origin-left transform ${
-                            confirmHold ? "scale-x-100" : "scale-x-0"
-                          }`}
+                          className={`absolute inset-0 bg-black transition-transform duration-[2000ms] ease-linear origin-left transform ${confirmHold ? "scale-x-100" : "scale-x-0"
+                            }`}
                           aria-hidden="true"
                         />
 
@@ -270,9 +347,8 @@ export const OrderDetails = ({
                         className="relative overflow-hidden bg-white border border-red-800  transition-colors duration-200"
                       >
                         <span
-                          className={`absolute inset-0 bg-red-600 transition-transform duration-[2000ms] ease-linear origin-left transform ${
-                            cancelHold ? "scale-x-100" : "scale-x-0"
-                          }`}
+                          className={`absolute inset-0 bg-red-600 transition-transform duration-[2000ms] ease-linear origin-left transform ${cancelHold ? "scale-x-100" : "scale-x-0"
+                            }`}
                           aria-hidden="true"
                         />
                         <span className="relative z-10 text-black">
@@ -370,18 +446,19 @@ export const OrderDetails = ({
                     );
 
                     const canEdit =
-                      (isAccountant &&
-                        part.status === "در انتظار تائید حسابداری") ||
-                      (isWarehouse &&
+                      (role === "پذیرش" && part.status === "در انتظار نوبت دهی") ||
+                      (role === "حسابدار" && part.status === "در انتظار تائید حسابداری") ||
+                      (role === "انباردار" &&
+                        part.status !== "در انتظار نوبت دهی" &&
                         part.status !== "در انتظار تائید حسابداری" &&
                         currentTab !== "در انتظار تائید حسابداری");
+
 
                     return (
                       <tr
                         key={j}
-                        className={`border-b ${
-                          j % 2 === 0 ? "bg-gray-50" : "bg-white"
-                        }`}
+                        className={`border-b ${j % 2 === 0 ? "bg-gray-50" : "bg-white"
+                          }`}
                       >
                         {canShowSelectUI && canSelectItem(part) && (
                           <td className="px-4 py-3 text-center">
@@ -433,45 +510,60 @@ export const OrderDetails = ({
                         </td>
                         <td className="px-4 py-3 text-center flex gap-3 justify-end items-center">
                           <div className="flex justify-center items-center gap-1">
-                            {options[0] && canEdit && (
-                              <ToolTip
-                                status={part.status}
-                                actionType="confirm"
-                              >
-                                <div>
-                                  <ConfirmCircle
-                                    onConfirm={async () => {
-                                      const previousStatus = part.status;
-                                      const newStatus = options[0].value;
+                            {options[0] &&
+                              (
+                                (part.status === "در انتظار نوبت دهی" && role === "پذیرش") ||
+                                (part.status === "در انتظار تائید حسابداری" && role === "حسابدار") ||
+                                (
+                                  role === "انباردار" &&
+                                  part.status !== "در انتظار نوبت دهی" &&
+                                  part.status !== "در انتظار تائید حسابداری" &&
+                                  currentTab !== "در انتظار تائید حسابداری"
+                                )
+                              ) && (
+                                <ToolTip status={part.status} actionType="confirm">
+                                  <div>
+                                    <ConfirmCircle
+                                      onConfirm={async () => {
+                                        const previousStatus = part.status;
+                                        const newStatus = options[0].value;
 
-                                      if (newStatus === "نوبت داده شد") {
-                                        setSelectedOrder({
-                                          id: part.order_id,
-                                          name: part.piece_name,
-                                        });
-                                        setOpenDateModal(true);
-                                        return;
-                                      }
+                                        if (newStatus === "نوبت داده شد") {
+                                          setSelectedOrder({
+                                            id: part.order_id,
+                                            name: part.piece_name,
+                                          });
+                                          setOpenDateModal(true);
+                                          return;
+                                        }
 
-                                      try {
-                                        await editOrder(part.order_id, {
-                                          status: newStatus,
-                                        });
-                                        toast.success(
-                                          `وضعیت «${part.piece_name}» از «${previousStatus}» به «${newStatus}» تغییر کرد`,
-                                          { duration: 2500 }
-                                        );
-                                        refetch();
-                                      } catch (error) {
-                                        toast.error("خطا در تغییر وضعیت قطعه", {
-                                          duration: 3000,
-                                        });
-                                      }
-                                    }}
-                                  />
-                                </div>
-                              </ToolTip>
-                            )}
+                                        if (part.status === "در انتظار تائید شرکت") {
+                                          setSelectedFinalOrderItem({
+                                            id: part.order_id,
+                                            name: part.piece_name,
+                                          });
+                                          setOpenFinalOrderModal(true);
+                                          return;
+                                        }
+
+                                        try {
+                                          await editOrder(part.order_id, { status: newStatus });
+                                          toast.success(
+                                            `وضعیت «${part.piece_name}» از «${previousStatus}» به «${newStatus}» تغییر کرد`,
+                                            { duration: 2500 }
+                                          );
+                                          refetch();
+                                        } catch (error) {
+                                          toast.error("خطا در تغییر وضعیت قطعه", {
+                                            duration: 3000,
+                                          });
+                                        }
+                                      }}
+                                    />
+                                  </div>
+                                </ToolTip>
+                              )}
+
 
                             {options[1] && canEdit && (
                               <ToolTip hint={`لغو`}>
@@ -484,10 +576,8 @@ export const OrderDetails = ({
                                           description: description,
                                         });
                                         toast.success(
-                                          `وضعیت «${
-                                            part.piece_name
-                                          }» لغو شد با توضیح: «${
-                                            description || "بدون توضیح"
+                                          `وضعیت «${part.piece_name
+                                          }» لغو شد با توضیح: «${description || "بدون توضیح"
                                           }»`,
                                           {
                                             duration: 2000,
@@ -505,7 +595,11 @@ export const OrderDetails = ({
                             )}
                           </div>
                           <div className="flex gap-1">
+<<<<<<< HEAD
                             <UpdateDiscription data={part} refetch={refetch}  />
+=======
+                            <UpdateDiscription data={part} />
+>>>>>>> fixing-orders-deatail-for-reception-iliya
                             <DeleteItem
                               id={String(part.order_id)}
                               name={part.piece_name}
@@ -547,11 +641,10 @@ export const OrderDetails = ({
                               <MessageCircleMore
                                 className={`
                                     w-6 h-6
-                                    ${
-                                      part.description || part.all_description
-                                        ? "text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
-                                        : "text-gray-400 "
-                                    }
+                                    ${part.description || part.all_description
+                                    ? "text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                                    : "text-gray-400 "
+                                  }
                                 `}
                               />
                             </ToolTip>
@@ -634,6 +727,62 @@ export const OrderDetails = ({
           setOpenDescriptionModal(false);
         }}
       />
+      <InsertFinalOrderNumber
+        open={openFinalOrderModal}
+        onClose={() => {
+          setOpenFinalOrderModal(false);
+          setSelectedItems([]);
+          setSelectedFinalOrderItem(null);
+        }}
+        onSubmit={async (final_order_number) => {
+          let targets: any[] = [];
+
+          const allOrders =
+            order?.receptions?.flatMap((r: any) => r.orders || []) || [];
+
+
+          if (selectedFinalOrderItem) {
+            const item = allOrders.find(
+              (o: any) => o.order_id === selectedFinalOrderItem.id
+            );
+            if (item) targets.push(item);
+          } else {
+            targets = allOrders.filter((o: any) =>
+              selectedItems.includes(o.order_id)
+            );
+          }
+
+          let successCount = 0;
+
+          await Promise.all(
+            targets.map(async (part: any) => {
+              try {
+                const options = getStatusOptions(
+                  part.status,
+                  part.order_channel,
+                  part.car_status || ""
+                );
+                const confirmStatus = options[0]?.value || "";
+
+                await editOrder(part.order_id, {
+                  status: confirmStatus,
+                  final_order_number,
+                });
+                successCount++;
+              } catch (error) {
+                console.error(`خطا در تایید قطعه ${part.piece_name}`, error);
+              }
+            })
+          );
+
+          toast.success(`${successCount} قطعه با موفقیت تایید شدند`);
+          refetch();
+          setSelectedItems([]);
+          setSelectedFinalOrderItem(null);
+          setOpenFinalOrderModal(false);
+        }}
+      />
+
     </div>
   );
 };
