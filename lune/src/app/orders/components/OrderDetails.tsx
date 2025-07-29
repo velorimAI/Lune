@@ -595,11 +595,7 @@ export const OrderDetails = ({
                             )}
                           </div>
                           <div className="flex gap-1">
-<<<<<<< HEAD
                             <UpdateDiscription data={part} refetch={refetch}  />
-=======
-                            <UpdateDiscription data={part} />
->>>>>>> fixing-orders-deatail-for-reception-iliya
                             <DeleteItem
                               id={String(part.order_id)}
                               name={part.piece_name}
