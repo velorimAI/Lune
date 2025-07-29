@@ -1,5 +1,5 @@
 'use client';
-
+import React, { useEffect } from 'react';
 import {
   MessageCircle,
   ArrowRight,
@@ -23,6 +23,11 @@ export default function LogsPage() {
 
   const logs = data?.logs || [];
 
+  // ورود داده‌ها به کنسول برای دیباگ
+  useEffect(() => {
+    console.log('Logs data:', logs);
+  }, [logs]);
+
   const formatTime = (time: string) => time?.slice(0, 5);
 
 
@@ -36,7 +41,7 @@ export default function LogsPage() {
             variant="outline"
             className="text-center content-center"
           >
-            <ArrowRight size={26}/>
+            <ArrowRight size={26} />
           </Button>
         </div>
 
@@ -68,19 +73,24 @@ export default function LogsPage() {
             <>
 
               <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-100 text-sm font-medium text-gray-600 border-b border-gray-200">
+                <div className="col-span-2 text-right">نام کاربر</div>
                 <div className="col-span-2 text-right">عملیات</div>
                 <div className="col-span-2 text-right">تاریخ و زمان</div>
-                <div className="col-span-8 text-right">توضیحات</div>
+                <div className="col-span-6 text-right">توضیحات</div>
               </div>
 
 
               <ScrollArea className="h-[calc(100vh-320px)]">
                 <div dir="rtl" className="divide-y divide-gray-100">
                   {logs.map((log: any) => (
-                    <div
-                      key={log.id}
+                    <div key={log.id}
                       className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50 transition-all duration-150"
                     >
+                      <div className="col-span-2 text-right text-sm text-gray-700">
+                        {log.user_name}
+                      </div>
+
+
                       <div className="col-span-2 text-right">
                         <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${getActionStyle(log.action)}`}>
                           {log.action}
@@ -90,7 +100,7 @@ export default function LogsPage() {
                         <div className="text-gray-700">{log.date}</div>
                         <div className="text-xs text-gray-500 mt-1">{formatTime(log.time)}</div>
                       </div>
-                      <div className="col-span-8 text-right text-sm text-gray-600 leading-relaxed">
+                      <div className="col-span-6 text-right text-sm text-gray-600 leading-relaxed">
                         {log.message}
                       </div>
                     </div>
