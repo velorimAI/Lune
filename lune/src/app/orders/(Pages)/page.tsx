@@ -35,13 +35,16 @@ const Orders: FC = () => {
     setSearchText
   );
 
-  useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (role === "حسابدار") {
-      setActiveTab("در انتظار تائید حسابداری");
-    }
-  }, []);
-
+   useEffect(() => {
+  const role = localStorage.getItem("role");
+  if (role === "حسابدار") {
+    setActiveTab("در انتظار تائید حسابداری");
+  } else if (role === "پذیرش") {
+    setActiveTab( "در انتظار نوبت‌دهی");
+  } else if (role === "انباردار") {
+    setActiveTab("در انتظار تائید شرکت");
+  }
+}, []);
 
   return (
     <Card contentClassName="min-h-[85vh]" className="lg:h-[calc(100%-55px)]">
