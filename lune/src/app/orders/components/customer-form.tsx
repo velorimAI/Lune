@@ -58,7 +58,7 @@ export function CustomerForm({
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-          <Input label="شماره شاسی" name="chassis_number" required disabled={userInfoSubmitted} />
+          <Input label="شماره شاسی" name="chassis_number"  disabled={userInfoSubmitted} />
           <Select
             label="نام خودرو"
             name="car_name"
