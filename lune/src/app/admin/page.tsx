@@ -7,6 +7,7 @@ import { AddItemModal } from './componrnts';
 
 export default function AdminPage() {
   const router = useRouter();
+  
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">

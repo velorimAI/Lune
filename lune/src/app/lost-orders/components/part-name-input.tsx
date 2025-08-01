@@ -1,8 +1,8 @@
 "use client";
 
-import { FC, useCallback, useRef, useEffect, useState } from "react";
+import {useCallback, useRef, useEffect, useState } from "react";
 import { Input } from "@/app/components/custom-form/input";
-import { useDebounce } from "@/lib/useDebounce";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 import { PartNameSuggestionsList } from "./part-name-suggestions-list";
 import { usePartSuggestions } from "../hooks";
 
@@ -20,14 +20,14 @@ interface PartNameInputProps {
   disabled?: boolean;
 }
 
-export const PartNameInput: FC<PartNameInputProps> = ({
+export const PartNameInput = ({
   value,
   onChange,
   setPieceName,
   setHasSelected,
   readOnly,
   disabled,
-}) => {
+} : PartNameInputProps) => {
   const [showList, setShowList] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [hasSelected, _setHasSelected] = useState(false);

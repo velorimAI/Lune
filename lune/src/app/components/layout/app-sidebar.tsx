@@ -12,37 +12,30 @@ import {
   Settings,
   ShieldUser,
   ClipboardList,
-   FileX,
+  FileX,
 } from "lucide-react";
-
-
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
-import { title } from "process";
+import { useAuth } from "@/context/AuthContext";
 
 export function AppSidebar() {
   const { state } = useSidebar();
-  const [userRole, setUserRole] = useState("");
+  const { role } = useAuth();
 
-  useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    setUserRole(storedRole || "");
-  }, []);
 
   const data = {
     navMain: [
       { title: "داشبورد", url: "#", icon: ChartColumn },
       { title: "سفارش ها", url: "/orders", icon: ClipboardList },
-      { title:"قطعات از دست رفته", url:"/lost-orders", icon:FileX },
+      { title: "قطعات از دست رفته", url: "/lost-orders", icon: FileX },
     ],
     navSecondary: [
       {
         title: "مدیریت",
         url: "/admin",
         icon: ShieldUser,
-        disabled: userRole !== "مدیریت",
+        disabled: role !== "مدیریت",
       },
       { title: "تنظیمات", url: "/settings", icon: Settings, sidbar: true },
     ],

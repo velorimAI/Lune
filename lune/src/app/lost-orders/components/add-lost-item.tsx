@@ -6,19 +6,18 @@ import { Modal } from "@/app/components/modal";
 import { Input } from "@/app/components/custom-form/input";
 import { CirclePlus } from "lucide-react";
 import { Form } from "@/app/components/custom-form/form";
-import { Select } from "@/app/components/custom-form/select-box";
 import { TimePicker } from "@/app/components/time-picker";
 import { toZonedTime } from "date-fns-tz";
 import { TextArea } from "@/app/components/custom-form/text-area";
 import { useAddLostItem } from "../hooks";
 import { JalaliDatePicker } from "@/app/components/date-picker-ui";
 import { useForm } from "react-hook-form";
-import { PartNameInput } from "./part-name-input";
 import { useQueryClient } from "@tanstack/react-query";
 import { PartIdInput } from "@/app/orders/components/part-id-input";
 import { getTodayJalaliDate } from "@/app/utils/getTodayJalali";
 import { carOptions } from "@/constants/carOptions";
 import { SelectPopover } from "@/app/components/custom-form/select-popover";
+import { PartNameInput } from "./part-name-input";
 
 interface AddUserModalProps {
   refetch?: () => void;
@@ -78,7 +77,7 @@ export const AddLostItem = ({ refetch }: AddUserModalProps) => {
   return (
     <>
       <CirclePlus
-        className="w-10 h-10 cursor-pointer hover:scale-110 transition-transform"
+        className="w-8 h-8 cursor-pointer hover:scale-110 transition-transform"
         onClick={() => setOpen(true)}
       />
       <Modal
@@ -149,6 +148,7 @@ export const AddLostItem = ({ refetch }: AddUserModalProps) => {
               options={carOptions}
               required
               placeholder="انتخاب خودرو..."
+              hiddenSearch
             />
             {/* <Input label="تاریخ" name="lost_date" required /> */}
 

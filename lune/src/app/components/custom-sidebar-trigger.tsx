@@ -1,6 +1,6 @@
 import { useSidebar } from '@/components/ui/sidebar';
 import { Button } from '../../components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/app/utils/cn';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 interface SidebarTriggerProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {

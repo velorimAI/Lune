@@ -1,4 +1,3 @@
-import { FC } from "react";
 
 interface PartSuggestion {
   technical_code: string;
@@ -14,14 +13,14 @@ interface SuggestionsListProps {
   selectedIndex: number;
 }
 
-export const SuggestionsList: FC<SuggestionsListProps> = ({
+export const SuggestionsList = ({
   show,
   loading,
   error,
   suggestions,
   onSelect,
   selectedIndex,
-}) => {
+} : SuggestionsListProps) => {
   if (!show) return null;
 
   return (

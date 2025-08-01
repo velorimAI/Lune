@@ -7,11 +7,11 @@ interface InsertDescriptionProps {
   onSubmit: (description: string) => void;
 }
 
-const InsertDescription: React.FC<InsertDescriptionProps> = ({
+const InsertDescription= ({
   open,
   onClose,
   onSubmit,
-}) => {
+} : InsertDescriptionProps) => {
   const [description, setDescription] = useState("");
 
   const handleConfirm = () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useState } from 'react';
+import {useState } from 'react';
 import { toast } from 'sonner';
 import { Modal } from '@/app/components/modal';
 import { UserX } from 'lucide-react';
@@ -12,7 +12,7 @@ interface DeleteUserModalProps {
   refetch: () => void;
 }
 
-export const DeleteUserModal: FC<DeleteUserModalProps> = ({ id, name , refetch}) => {
+export const DeleteUserModal= ({ id, name , refetch} : DeleteUserModalProps) => {
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useDeleteUser();
 

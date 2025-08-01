@@ -4,7 +4,7 @@ import { Button as ShadcnButton, buttonVariants } from '@/components/ui/button'
 import { VariantProps } from 'class-variance-authority'
 import { LoaderCircle } from 'lucide-react'
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
+import { cn } from '@/app/utils/cn'
 
 interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,

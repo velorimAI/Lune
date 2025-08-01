@@ -1,10 +1,10 @@
 
 "use client";
 
-import { FC, useEffect, useState, useCallback, useRef } from "react";
+import {useEffect, useState, useCallback, useRef } from "react";
 import axios, { CancelTokenSource } from "axios";
 import { Input } from "@/app/components/custom-form/input";
-import { useDebounce } from "@/lib/useDebounce";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 import { SuggestionsList } from "./part-suggestions-list";
 
 
@@ -22,14 +22,14 @@ interface PartIdInputProps {
   required?: boolean;
 }
 
-export const PartIdInput: FC<PartIdInputProps> = ({
+export const PartIdInput = ({
   value,
   onChange,
   setPieceName,
   readOnly,
   disabled,
   required
-}) => {
+} : PartIdInputProps) => {
   const [suggestions, setSuggestions] = useState<PartSuggestion[]>([]);
   const [showList, setShowList] = useState(false);
   const [loading, setLoading] = useState(false);

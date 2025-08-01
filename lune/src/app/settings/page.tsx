@@ -11,6 +11,7 @@ import { settingsConfig } from "./config/settings-config";
 import { Button } from "../components/button";
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import { HotkeyRedirect } from "../components/escape-hot-key";
 
 
 export default function SettingsPage() {
@@ -40,12 +41,13 @@ export default function SettingsPage() {
   if (isError) return <ErrorState message="خطا در دریافت تنظیمات" />;
 
   return (
-    <div className="p-8">
-      <div className="max-w-5xl mx-auto mt-26">
+    <div className="pb-8">
+      <div className="max-w-5xl mx-auto mt-18">
         <Card className="bg-gray-100" >
           <div className="mb-4" >
 
             <Button onClick={() => router.push('/admin')} variant={"outline"} className="text-black"> <ArrowRight size={26} /></Button>
+            <HotkeyRedirect redirectTo="/orders" />
           </div>
           <Form
             submitText={isPending ? "در حال ذخیره..." : "ذخیره تغییرات"}

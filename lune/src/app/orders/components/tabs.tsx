@@ -1,4 +1,3 @@
-import { FC } from "react";
 
 interface TabsProps {
   activeTab: string;
@@ -6,9 +5,9 @@ interface TabsProps {
   tabCounts: Record<string, number>;
 }
 
-export const Tabs: FC<TabsProps> = ({ activeTab, setActiveTab, tabCounts }) => {
+export const Tabs = ({ activeTab, setActiveTab, tabCounts } : TabsProps) => {
   const tabs = [
-    
+
     { label: `در انتظار تایید شرکت`, value: "در انتظار تائید شرکت" },
     { label: `در انتظار تایید حسابداری`, value: "در انتظار تائید حسابداری" },
     { label: `در انتظار دریافت`, value: "در انتظار دریافت" },
@@ -29,10 +28,9 @@ export const Tabs: FC<TabsProps> = ({ activeTab, setActiveTab, tabCounts }) => {
           onClick={() => setActiveTab(tab.value)}
           className={`
             group relative px-3 py-1 text-sm font-medium transition-colors duration-300 ease-in-out
-            ${
-              activeTab === tab.value
-                ? "text-primary"
-                : "text-gray-500 hover:text-primary"
+            ${activeTab === tab.value
+              ? "text-primary"
+              : "text-gray-500 hover:text-primary"
             }
           `}
         >
@@ -40,10 +38,9 @@ export const Tabs: FC<TabsProps> = ({ activeTab, setActiveTab, tabCounts }) => {
           <span
             className={`
               absolute left-0 -bottom-[2px] h-[2px] bg-primary transition-all duration-300 ease-in-out
-              ${
-                activeTab === tab.value
-                  ? "w-full opacity-100 scale-x-100"
-                  : "w-full opacity-30 scale-x-90"
+              ${activeTab === tab.value
+                ? "w-full opacity-100 scale-x-100"
+                : "w-full opacity-30 scale-x-90"
               }
             `}
           />

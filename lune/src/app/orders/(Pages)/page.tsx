@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "../../components/card";
 import { useRouter } from "next/navigation";
 import { CirclePlus } from "lucide-react";
@@ -14,13 +14,14 @@ import { useOrdersFilter } from "../hooks/use-orders-filter";
 import { Tabs } from "../components/tabs";
 import { OrdersListWrapper } from "../components/orders-list-wrapper";
 import { Select } from "@/app/components/custom-form/select-box";
+import { useAuth } from "@/context/AuthContext";
 
-const Orders: FC = () => {
+const Orders  = () => {
   const router = useRouter();
   const [searchText, setSearchText] = useState<string>("");
   const [searchField, setSearchField] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("all");
-  const role = localStorage.getItem("role");
+  const { role } = useAuth();
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["orders"],
@@ -36,9 +37,12 @@ const Orders: FC = () => {
   );
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
     if (role === "حسابدار") {
       setActiveTab("در انتظار تائید حسابداری");
+    } else if (role === "پذیرش") {
+      setActiveTab("در انتظار نوبت‌دهی");
+    } else if (role === "انباردار") {
+      setActiveTab("در انتظار تائید شرکت");
     }
   }, []);
 
@@ -99,9 +103,9 @@ const Orders: FC = () => {
       </ScrollArea>
       <motion.div
         className={`
-    fixed left-6 bottom-[20px] 
-    ${role === "حسابدار" ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
-  `}
+        fixed left-6 bottom-[20px] 
+        ${role === "حسابدار" ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+        `}
         whileHover={role === "حسابدار" ? {} : { scale: 1.2 }}
         transition={{ type: "spring", stiffness: 300 }}
         onClick={() => {

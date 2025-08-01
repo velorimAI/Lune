@@ -1,8 +1,9 @@
 import axios from "axios";
+import { API_BASE } from "@/app/utils/baseURL";
 
 export const login = async (formData: { code_meli: string; password: string }) => {
   const response = await axios.post(
-    "http://localhost:3001/api/auth/login",
+    `${API_BASE}auth/login`,
     formData,
     {
       headers: {

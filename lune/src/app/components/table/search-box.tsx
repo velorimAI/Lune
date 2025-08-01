@@ -1,8 +1,8 @@
 "use client";
 
-import { FC, useState, useCallback, useEffect } from "react";
+import {useState, useCallback, useEffect } from "react";
 import debounce from "lodash/debounce";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/utils/cn";
 import { Input } from "../custom-form/input";
 import { Select } from "../custom-form/select-box";
 
@@ -12,14 +12,13 @@ export type SearchBoxProps = {
   disabled?: boolean;
   clearable?: boolean;
   placeholderSearch?: string;
-
   searchText?: string;
   setSearchText?: (value: string) => void;
   searchField?: string;
   setSearchField?: (value: string) => void;
 };
 
-export const SearchBox: FC<SearchBoxProps> = ({
+export const SearchBox = ({
   className,
   onSearch,
   disabled,
@@ -28,7 +27,7 @@ export const SearchBox: FC<SearchBoxProps> = ({
   setSearchText,
   searchField,
   setSearchField,
-}) => {
+} : SearchBoxProps) => {
   const [internalSearch, setInternalSearch] = useState(searchText || "");
 
   useEffect(() => {

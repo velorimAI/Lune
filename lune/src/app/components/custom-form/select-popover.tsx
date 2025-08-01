@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/utils/cn";
 import { Check, ChevronDown } from "lucide-react";
 import { FormLabel } from "./form-label";
 import { FormDescription } from "./form-description";
@@ -270,7 +270,7 @@ const SelectPopoverComponent: ForwardRefRenderFunction<
                         "hover:bg-primary/10 hover:text-primary",
                         option.disabled && "opacity-50 cursor-not-allowed hover:bg-transparent",
                         selectedValue === option.value && "bg-primary text-primary-foreground font-medium",
-                        highlightedIndex === index && selectedValue !== option.value && "bg-primary/20 text-primary-foreground"
+                        highlightedIndex === index && selectedValue !== option.value && "bg-primary/10 text-black"
                       )}
                       onClick={() => {
                         if (!option.disabled) {

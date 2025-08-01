@@ -2,40 +2,43 @@
 
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+
 
 function isTokenExpired(token: string): boolean {
   try {
-    const payloadBase64 = token.split(".")[1];
-    const payloadJson = atob(payloadBase64);
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+
+    const payloadJson = atob(parts[1]);
     const payload = JSON.parse(payloadJson);
 
-    if (!payload.exp) return true;
+    if (!payload.exp) return false;
 
     const currentTime = Math.floor(Date.now() / 1000);
     return payload.exp < currentTime;
-  } catch (error) {
-    return true;
+  } catch {
+    return false;
   }
 }
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { token, logout } = useAuth();
 
   useEffect(() => {
     const publicPaths = ["/auth/login", "/register"];
     const isPublic = publicPaths.includes(pathname);
 
     const checkToken = () => {
-      const token = localStorage.getItem("token");
-
       if (!token && !isPublic) {
         router.replace("/auth/login");
         return;
       }
-
       if (token && isTokenExpired(token)) {
-        localStorage.removeItem("token");
+        console.log("Token expired for user:", token);
+        logout();
         router.replace("/auth/login");
       }
     };
@@ -45,7 +48,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     const interval = setInterval(checkToken, 5000);
 
     return () => clearInterval(interval);
-  }, [pathname]);
+  }, [pathname, token, logout, router]);
 
   return <>{children}</>;
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { User } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 type UserData = {
     name: string;
@@ -10,13 +11,13 @@ type UserData = {
 };
 
 const UserInfo = () => {
+    const { role } = useAuth();
     const [user, setUser] = useState<UserData | null>(null);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const name = localStorage.getItem('name');
             const lastname = localStorage.getItem('lastname');
-            const role = localStorage.getItem('role');
 
             if (name && lastname && role) {
                 setUser({ name, lastname, role });

@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { Trash2 } from "lucide-react";
 
 interface PartItem {
@@ -14,7 +13,7 @@ interface ItemsListProp {
   onDelete?: (index: number) => void;
 }
 
-export const ItemList: FC<ItemsListProp> = ({ data, onDelete }) => {
+export const ItemList = ({ data, onDelete } : ItemsListProp) => {
   return (
     <div className="space-y-3">
       {data.length === 0 ? (

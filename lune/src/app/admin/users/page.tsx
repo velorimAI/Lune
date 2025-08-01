@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { UserX, UserPen, ShieldUser, ArrowRight } from "lucide-react";
+import { UserX, ShieldUser, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { getUsersList } from "@/app/apis/admin/adminService";
@@ -10,6 +10,7 @@ import { useUsersSearch } from "../hooks/useUsersSearch";
 import { SearchBox } from "@/app/components/table/search-box";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { AddUserModal, DeleteUserModal, EditUserModal } from "./components";
+import { HotkeyRedirect } from "@/app/components/escape-hot-key";
 
 export default function UsersListPage() {
   const router = useRouter();
@@ -53,6 +54,7 @@ export default function UsersListPage() {
             >
               <ArrowRight size={26} />
             </Button>
+            <HotkeyRedirect redirectTo="/admin" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -148,9 +150,8 @@ export default function UsersListPage() {
                 filteredUsers.map((u, index) => (
                   <tr
                     key={u.id}
-                    className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
-                    }`}
+                    className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+                      }`}
                   >
                     <td className="p-6">
                       <div className="flex items-center gap-3">
@@ -174,11 +175,10 @@ export default function UsersListPage() {
                     </td>
                     <td className="p-6">
                       <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          u.role === "مدیریت"
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${u.role === "مدیریت"
                             ? "bg-gray-900 text-white"
                             : "bg-gray-100 text-gray-700"
-                        }`}
+                          }`}
                       >
                         {u.role}
                       </span>

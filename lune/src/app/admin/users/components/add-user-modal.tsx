@@ -1,19 +1,19 @@
 'use client';
 
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Modal } from '@/app/components/modal';
-import { Select } from '@/app/components/custom-form/select-box';
 import { Input } from '@/app/components/custom-form/input';
 import { UserPlus } from 'lucide-react';
 import { Form } from '@/app/components/custom-form/form';
 import { useAddUser } from '../../hooks/use-add-user';
+import { SelectPopover } from '@/app/components/custom-form/select-popover';
 
 interface AddUserModalProps {
   refetch: () => void;
 }
 
-export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
+export const AddUserModal = ({ refetch } : AddUserModalProps) => {
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useAddUser();
 
@@ -34,7 +34,7 @@ export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
     <>
       <UserPlus
         size={24}
-        className="group-hover:rotate-12 transition-transform"
+        className="group-hover:rotate-12 transition-transform hover:cursor-pointer"
         onClick={() => setOpen(true)}
       />
       <Modal
@@ -72,6 +72,7 @@ export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
                 [&::-webkit-inner-spin-button]:appearance-none 
                 [&::-webkit-outer-spin-button]:appearance-none"
               idNumber
+              required
             />
             <Input
               label="رمز عبور"
@@ -80,7 +81,7 @@ export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
               placeholder="****"
               required
             />
-            <Select
+            <SelectPopover
               label="نقش"
               name="role"
               value="پذیرش"
@@ -90,8 +91,8 @@ export const AddUserModal: FC<AddUserModalProps> = ({ refetch }) => {
                 { label: 'حسابدار', value: 'حسابدار' },
                 { label: 'پذیرش', value: 'پذیرش' },
               ]}
-              inputStyle="w-full"
               required
+              hiddenSearch
             />
           </div>
         </Form>

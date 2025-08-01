@@ -5,6 +5,7 @@ import { ClientWrapper } from "./components/layout/client-wrapper";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { AuthGuard } from "./components/layout/AuthGuard";
 import TopBar from "./components/layout/TopBar";
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,16 +35,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthGuard>
-          <ReactQueryProvider>
-            <ClientWrapper>
-              <div className="sticky top-0 z-30">
-                <TopBar />
-              </div>{" "}
-              {children}
-            </ClientWrapper>
-          </ReactQueryProvider>
-        </AuthGuard>
+        <AuthProvider>
+          <AuthGuard>
+            <ReactQueryProvider>
+              <ClientWrapper>
+                <div className="sticky top-0 z-30">
+                  <TopBar />
+                </div>{" "}
+                {children}
+              </ClientWrapper>
+            </ReactQueryProvider>
+          </AuthGuard>
+        </AuthProvider>
       </body>
     </html>
   );

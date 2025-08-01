@@ -4,15 +4,17 @@ import { Card } from "@/app/components/card";
 import { Form } from "@/app/components/custom-form/form";
 import { Input } from "@/app/components/custom-form/input";
 import Image from "next/image";
-import { FC, useState } from "react";
+import {useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { login } from "@/app/apis/auth/Service";
 import LiveIcon from "./components/LiveIcon";
+import { useAuth } from "@/context/AuthContext";
 
-const Login: FC = () => {
+const Login = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { setToken, setRole } = useAuth();
 
   const onSubmit = async (data: any) => {
     setLoading(true);
@@ -32,8 +34,8 @@ const Login: FC = () => {
 
       }
       );
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
+      setToken(token);
+      setRole(role);
       localStorage.setItem("name", name);
       localStorage.setItem("lastname", last_name);
       if (role === "مدیریت") {

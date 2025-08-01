@@ -21,12 +21,12 @@ interface AddItemModalProp {
   disabled?: boolean;
 }
 
-const AddItem: React.FC<AddItemModalProp> = ({
+const AddItem= ({
   data,
   refetch,
   id,
   disabled,
-}) => {
+} : AddItemModalProp) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState<string>("VOR");
   const { mutate } = useAddItem();

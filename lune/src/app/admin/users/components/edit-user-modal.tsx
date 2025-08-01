@@ -1,20 +1,20 @@
 'use client';
 
-import { FC, useState } from 'react';
+import {useState } from 'react';
 import { toast } from 'sonner';
 import { Modal } from '@/app/components/modal';
-import { Select } from '@/app/components/custom-form/select-box';
 import { Input } from '@/app/components/custom-form/input';
 import { UserPen } from 'lucide-react';
 import { Form } from '@/app/components/custom-form/form';
 import { useEditUser } from '../../hooks';
+import { SelectPopover } from '@/app/components/custom-form/select-popover';
 
 interface EditUserModalProps {
   data: any
   refetch: () => void;
 }
 
-export const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
+export const EditUserModal= ({ data, refetch } :EditUserModalProps) => {
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useEditUser();
 
@@ -60,11 +60,13 @@ export const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
               label="نام"
               name="name"
               value={data?.name}
+              required
             />
             <Input
               label="نام خانوادگی"
               name="last_name"
               value={data?.last_name}
+              required
             />
           </div>
           <div className="grid grid-cols-3 gap-4 mt-4">
@@ -79,6 +81,7 @@ export const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
               [&::-webkit-outer-spin-button]:appearance-none"
               value={data?.code_meli}
               idNumber
+              required
             />
             <Input
               label="رمز عبور جدید"
@@ -86,7 +89,7 @@ export const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
               type="password"
               placeholder="****"
             />
-            <Select
+            <SelectPopover
               label="نقش"
               name='role'
               options={[
@@ -95,8 +98,9 @@ export const EditUserModal: FC<EditUserModalProps> = ({ data, refetch }) => {
                 { label: 'حسابدار', value: 'حسابدار' },
                 { label: 'پذیرش', value: 'پذیرش' },
               ]}
-              inputStyle='w-full'
               value={data?.role}
+              required
+              hiddenSearch
             />
           </div>
         </Form>

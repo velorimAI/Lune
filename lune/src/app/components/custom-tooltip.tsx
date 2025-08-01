@@ -7,10 +7,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/utils/cn";
 import { ReactNode, CSSProperties } from "react";
 import { InfoIcon } from "lucide-react";
-import { getCancelMessage, getConfirmMessage } from "../utils/status-utils";
+import { getCancelMessage, getConfirmMessage } from "../utils/statusUtils";
 
 interface ToolTipProps {
   hint?: string | ReactNode;

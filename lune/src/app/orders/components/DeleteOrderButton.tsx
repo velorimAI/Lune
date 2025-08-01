@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ interface DeleteItemProps {
   disabled?: boolean;
 }
 
-export const DeleteOrder: FC<DeleteItemProps> = ({ id, name , disabled}) => {
+export const DeleteOrder = ({ id, name , disabled} : DeleteItemProps) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { mutate, isPending } = useDeleteOrder();

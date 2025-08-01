@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Loader2, X } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
+import { cn } from '@/app/utils/cn';
 
 type ModalProps = {
   open: boolean;

@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/utils/cn";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useFormField } from "@/app/hooks/form/useFormField";
 import { FormLabel } from "./form-label";

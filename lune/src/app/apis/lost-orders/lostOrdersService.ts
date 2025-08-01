@@ -1,52 +1,31 @@
-import { API_BASE } from "@/app/utils/baseURL";
-import axios from "axios";
+import apiClient from "@/app/utils/apiClient";
+
 
 export const getLostItemsList = async () => {
-  const token = localStorage.getItem("token");
-  const res = await axios.get(`${API_BASE}orders/getlostorders`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
+  const res = await apiClient.get("orders/getlostorders");
   return res.data.data;
 };
 
 export const addLostItem = async (Data: any) => {
-  const token = localStorage.getItem("token");
-  const response = await axios.post(`${API_BASE}orders/addlostorder`, Data, {
+  const response = await apiClient.post("orders/addlostorder", Data, {
     headers: {
-      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
   });
-
   return response.data;
 };
 
 export const editLostItem = async (id: string, updatedData: any) => {
-  const token = localStorage.getItem("token");
-  const response = await axios.patch(
-    `${API_BASE}orders/update-lost-order/${id}`,
-    updatedData,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
+  const response = await apiClient.patch(`orders/update-lost-order/${id}`, updatedData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   return response.data;
 };
 
 export const deleteLostItem = async (id: string) => {
-  const token = localStorage.getItem("token");
-  const response = await axios.delete(`${API_BASE}orders/delete-lost-order/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.delete(`orders/delete-lost-order/${id}`);
   return response.data;
 };
 
@@ -55,14 +34,9 @@ export const downloadLostOrdersReport = async (
   fromDate: string,
   toDate: string
 ) => {
-  const token = localStorage.getItem('token');
-
-  const response = await axios.get(
-    `${API_BASE}reports/lost-orders-report?format=${format}&from_date=${fromDate}&to_date=${toDate}`,
+  const response = await apiClient.get(
+    `reports/lost-orders-report?format=${format}&from_date=${fromDate}&to_date=${toDate}`,
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       responseType: 'blob',
     }
   );

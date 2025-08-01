@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/app/utils/cn';
 import { cva } from 'class-variance-authority';
 import ToolTip from './custom-tooltip';
 

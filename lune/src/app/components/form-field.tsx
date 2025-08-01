@@ -1,6 +1,6 @@
 'use client';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import { cn } from '@/app/utils/cn';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
 interface FormFieldProps {

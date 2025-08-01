@@ -8,6 +8,7 @@ import { CustomerForm } from "../../components/customer-form";
 import OrderList from "../../components/order-list";
 import { ArrowRight } from "lucide-react";
 import { Button } from '@/app/components/button';
+import { HotkeyRedirect } from '@/app/components/escape-hot-key';
 
 export default function NewOrderPage() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function NewOrderPage() {
     handleSubmitItem,
     handleSubmit,
     setOrderGroups,
-    customerFormKey, 
+    customerFormKey,
   } = useOrderData();
 
   return (
@@ -34,12 +35,13 @@ export default function NewOrderPage() {
         className="absolute top-4 right-4 flex items-center text-gray-800 hover:text-gray-1000 transition cursor-pointer"
       >
         <ArrowRight size={20} />
+        <HotkeyRedirect redirectTo="/orders" />
       </Button>
 
       <div className="flex gap-5 pt-10">
         <div className="w-[50%] flex flex-col gap-5">
           <CustomerForm
-            key={customerFormKey} 
+            key={customerFormKey}
             userForm={userForm}
             userInfoSubmitted={userInfoSubmitted}
             onSubmit={handleUserData}
@@ -51,7 +53,7 @@ export default function NewOrderPage() {
             setOrderChannel={setOrderChannel}
             estimatedArrivalDays={estimatedArrivalDays}
             onSubmit={handleSubmitItem}
-            onFormReset={() => {}} 
+            onFormReset={() => { }}
           />
         </div>
         <div className="w-[50%]">

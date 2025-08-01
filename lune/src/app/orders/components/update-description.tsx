@@ -13,7 +13,7 @@ interface editOrderModalProp {
   refetch?: () => void;
 }
 
-export const UpdateDiscription: React.FC<editOrderModalProp> = ({ data, refetch }) => {
+export const UpdateDiscription = ({ data, refetch } : editOrderModalProp) => {
   const [open, setOpen] = useState(false);
   const { mutate: UpdatePartMutate } = useUpdatePart();
 

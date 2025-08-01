@@ -4,13 +4,12 @@ import { useState } from "react";
 import { MessageCircleMore } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { SearchBox } from "@/app/components/table/search-box";
-import { AddLostItem, DeleteLostItem, EditLostItem } from "./components";
+import { AddLostItem, DeleteLostItem, DownloadModal, EditLostItem } from "./components";
 import { useQuery } from "@tanstack/react-query";
 import { getLostItemsList } from "../apis/lost-orders/lostOrdersService";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DownloadModal } from "./components/download-modal";
 import ToolTip from "../components/custom-tooltip";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/utils/cn";
 
 export default function MyCustomPage() {
   const [searchText, setSearchText] = useState("");

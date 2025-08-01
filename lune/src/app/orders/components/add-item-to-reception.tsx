@@ -20,7 +20,7 @@ interface AddItemToReceptionProps {
   disabled?: boolean;
 }
 
-const AddItemToReception: React.FC<AddItemToReceptionProps> = ({ data, refetch, id, onClose, disabled }) => {
+const AddItemToReception= ({ data, refetch, id, onClose, disabled } :AddItemToReceptionProps) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState<string>("VOR");
   const { mutate } = useAddItemToReception();

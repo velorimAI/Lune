@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import {useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CircleArrowLeft,
@@ -15,10 +15,10 @@ import {
 import { DeleteOrder } from "./DeleteOrderButton";
 import { OrdersListProps } from "@/types/orders.d.type";
 import { OrderDetails } from "./OrderDetails";
-import { extractMonthDay } from "@/app/utils/extractMonthlyDay";
 import ToolTip from "@/app/components/custom-tooltip";
+import { extractMonthDay } from "@/app/utils/extractMonthlyDay";
 
-export const OrdersList: FC<OrdersListProps> = ({ data, refetch, currentTab, role }) => {
+export const OrdersList  = ({ data, refetch, currentTab, role } : OrdersListProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const toggleDetails = (index: number) => {

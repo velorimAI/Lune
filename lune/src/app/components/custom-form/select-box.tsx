@@ -10,9 +10,8 @@ import {
   SelectGroup,
   SelectLabel,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+import { cn } from '@/app/utils/cn';
 import { Input } from '@/components/ui/input';
-
 import { FormDescription } from './form-description';
 import { FormLabel } from './form-label';
 import { useFormFieldValidations } from '@/app/hooks/form/useFormFieldValidations';

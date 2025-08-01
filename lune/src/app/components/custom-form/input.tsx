@@ -10,7 +10,7 @@ import {
   useEffect,
 } from "react";
 import { Input as InputShadcn } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/utils/cn";
 import { Eye, EyeOff, CircleX } from "lucide-react";
 import { Button } from "../button";
 import { FormLabel } from "./form-label";

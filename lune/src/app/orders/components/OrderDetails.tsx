@@ -10,7 +10,7 @@ import AddItem from "./add-item";
 import { ConfirmCircle } from "./check-confrim";
 import { CancelCircle } from "./cancel-circle";
 import { editOrder } from "@/app/apis/orders/orderService";
-import { getStatusOptions } from "@/lib/getStatusOptions";
+
 import { toast } from "sonner";
 import { InsertDate } from "./insert-date";
 import ToolTip from "@/app/components/custom-tooltip";
@@ -20,6 +20,7 @@ import { Button } from "@/app/components/button";
 import InsertDescription from "./insert-description";
 import { UpdateDiscription } from "./update-description";
 import { InsertFinalOrderNumber } from "./insert-final-order-number";
+import { getStatusOptions } from "@/lib/constants/getStatusOptions";
 
 export const OrderDetails = ({
   id,
@@ -63,7 +64,7 @@ export const OrderDetails = ({
         handleMultiCancel();
         setCancelHold(false);
       }
-    }, 2000); 
+    }, 2000);
 
     setHoldTimer(timer);
     if (type === "confirm") setConfirmHold(true);
@@ -273,7 +274,7 @@ export const OrderDetails = ({
   );
 
   return (
-    <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-0 shadow-md">
+    <div className="bg-white border border-gray-200 border-t-0 rounded-xl rounded-t-none p-5 pt-2 shadow-md ">
       <div className="flex items-center gap-2 mb-4 text-gray-800 font-semibold text-lg">
         <Wrench className="w-5 h-5" />
         <span>
@@ -474,7 +475,7 @@ export const OrderDetails = ({
                           <PackageOpen className="w-5 h-5 text-gray-600" />
                           {part.piece_name}
                         </td>
-                        <td className="px-4 py-3">{part.part_id}</td>
+                        <td className="px-4 py-3">{part.part_id || "_ _ _"}</td>
 
                         <td className="px-4 py-3">{part.number_of_pieces}</td>
                         <td className="px-4 py-3 font-semibold">
@@ -487,8 +488,13 @@ export const OrderDetails = ({
                         </td>
                         <td className="px-4 py-3">{part.order_number}</td>
                         <td className="px-4 py-3">
-                          {part.estimated_arrival_days}
+                          {part.estimated_arrival_days != null
+                            ? Number(part.estimated_arrival_days) < 0
+                              ? `${Math.abs(part.estimated_arrival_days)} -`
+                              : part.estimated_arrival_days
+                            : "-"}
                         </td>
+
                         <td className="px-4 py-3">
                           {part.delivery_date
                             ? part.delivery_date.split("T")[0]

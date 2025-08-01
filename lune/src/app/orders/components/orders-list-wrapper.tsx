@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { OrdersList } from "@/app/orders/components/orders-list";
 
 interface Props {
@@ -8,6 +7,6 @@ interface Props {
   role : string | null
 }
 
-export const OrdersListWrapper: FC<Props> = ({ orders, refetch, currentTab , role }) => {
+export const OrdersListWrapper= ({ orders, refetch, currentTab , role } :Props) => {
   return <OrdersList data={orders} refetch={refetch} currentTab={currentTab} role={role} />;
 };

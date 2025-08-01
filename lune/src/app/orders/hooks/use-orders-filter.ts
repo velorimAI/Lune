@@ -2,7 +2,11 @@
 import { useMemo } from "react";
 
 
-const mapStatusToTabValue = (status: string): string => {
+const mapStatusToTabValue = (status: string, estimated_arrival_days?: number): string => {
+  if (estimated_arrival_days !== undefined && estimated_arrival_days <= 0) {
+    return " بحرانی ها";
+  }
+
   if (/نوبت\s*-?\s*دهی/.test(status)) {
     return "در انتظار نوبت‌دهی";
   }
@@ -16,6 +20,7 @@ const mapStatusToTabValue = (status: string): string => {
     "لغو توسط شرکت",
     "عدم پرداخت حسابداری",
     "عدم دریافت",
+    "حذف شده",
   ];
   if (canceledStatuses.includes(status)) {
     return "canceled";
@@ -23,6 +28,7 @@ const mapStatusToTabValue = (status: string): string => {
 
   return status;
 };
+
 
 export const useOrdersFilter = (
   customers: any[],
@@ -62,11 +68,12 @@ export const useOrdersFilter = (
           "لغو توسط شرکت",
           "عدم پرداخت حسابداری",
           "عدم دریافت",
+          "حذف شده"
         ];
         filtered = filtered.filter(p => canceledStatuses.includes(p.status));
       } else {
         filtered = filtered.filter(
-          p => mapStatusToTabValue(p.status) === activeTab
+          p => mapStatusToTabValue(p.status, p.estimated_arrival_days) === activeTab
         );
       }
     }
@@ -151,7 +158,7 @@ export const useOrdersFilter = (
   const tabCounts = useMemo(() => {
     const counts: Record<string, number> = { all: allPieces.length };
     allPieces.forEach(p => {
-      const key = mapStatusToTabValue(p.status || "");
+      const key = mapStatusToTabValue(p.status || "", p.estimated_arrival_days);
       counts[key] = (counts[key] || 0) + 1;
     });
     return counts;
