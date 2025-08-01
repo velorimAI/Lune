@@ -1,9 +1,8 @@
-import axios from "axios";
-import { API_BASE } from "@/app/utils/baseURL";
+import apiClient from "@/app/utils/apiClient";
 
 export const login = async (formData: { code_meli: string; password: string }) => {
-  const response = await axios.post(
-    `${API_BASE}auth/login`,
+  const response = await apiClient.post(
+    `auth/login`,
     formData,
     {
       headers: {

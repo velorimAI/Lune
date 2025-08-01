@@ -13,14 +13,13 @@ import { PartIdInput } from "./part-id-input";
 
 
 interface AddItemToReceptionProps {
-  data?: any;
   refetch?: () => void;
   id?: number;
   onClose?: () => void;
   disabled?: boolean;
 }
 
-const AddItemToReception= ({ data, refetch, id, onClose, disabled } :AddItemToReceptionProps) => {
+const AddItemToReception= ({ refetch, id, onClose, disabled } :AddItemToReceptionProps) => {
   const [open, setOpen] = useState(false);
   const [orderChannel, setOrderChannel] = useState<string>("VOR");
   const { mutate } = useAddItemToReception();

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Bell, Clock4 } from "lucide-react";
+import {  Clock4 } from "lucide-react";
 import { LogoutButton } from "./logout-button";
 import UserInfo from "./user-info";
 import { useQuery } from "@tanstack/react-query";

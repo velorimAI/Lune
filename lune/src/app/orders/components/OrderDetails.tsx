@@ -26,20 +26,16 @@ export const OrderDetails = ({
   id,
   order,
   refetch,
-  selectable = false,
   currentTab,
   role,
 }: {
   id: number;
   order: any;
   refetch: () => void;
-  selectable?: boolean;
   currentTab: string;
   role: string | null;
 }) => {
-  const [openReceptionIndex, setOpenReceptionIndex] = useState<number | null>(
-    null
-  );
+  const [, setOpenReceptionIndex] = useState<number | null>(null);
   const [openDateModal, setOpenDateModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -299,7 +295,7 @@ export const OrderDetails = ({
             return latestOpenReception ? (
               <AddItemToReception
                 id={latestOpenReception.reception_id}
-                data={order.receptions}
+                // data={order.receptions}
                 refetch={refetch}
                 onClose={() => setOpenReceptionIndex(null)}
                 disabled={isAccountant}
@@ -576,7 +572,7 @@ export const OrderDetails = ({
                                             { duration: 2500 }
                                           );
                                           refetch();
-                                        } catch (error) {
+                                        } catch  {
                                           toast.error("خطا در تغییر وضعیت قطعه", {
                                             duration: 3000,
                                           });
@@ -696,7 +692,7 @@ export const OrderDetails = ({
 
             toast.success(`نوبت برای «${selectedOrder.name}» با موفقیت ثبت شد`);
             refetch();
-          } catch (error) {
+          } catch {
             toast.error("خطا در ثبت نوبت");
           } finally {
             setOpenDateModal(false);

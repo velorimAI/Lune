@@ -15,14 +15,12 @@ import { useForm } from "react-hook-form";
 import { JalaliDatePicker } from "@/app/components/date-picker-ui";
 
 interface AddItemModalProp {
-  data?: any;
   refetch?: () => void;
   id?: number;
   disabled?: boolean;
 }
 
 const AddItem= ({
-  data,
   refetch,
   id,
   disabled,

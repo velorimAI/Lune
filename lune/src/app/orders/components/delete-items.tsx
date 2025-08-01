@@ -2,7 +2,6 @@
 import { Modal } from "@/app/components/modal";
 import { Trash2 } from "lucide-react";
 import {useState } from "react";
-import { useRouter } from "next/navigation";
 import { useDeletePart } from "../hooks";
 
 
@@ -15,7 +14,6 @@ interface DeleteItemProps {
 
 export const DeleteItem= ({ id, name, disabled } : DeleteItemProps) => {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
 
   const { mutate, isPending } = useDeletePart();
 

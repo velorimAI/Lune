@@ -13,7 +13,8 @@ import { cn } from "@/app/utils/cn";
 
 export default function MyCustomPage() {
   const [searchText, setSearchText] = useState("");
-  const [searchField, setSearchField] = useState("all");
+  const [searchField] = useState("all");
+
 
 
   const {

@@ -55,7 +55,6 @@ type InputProps = {
   tooltip?: string | ReactNode;
   tooltipTriggerIcon?: any;
   isPositiveNumber?: boolean;
-  justPersian?: boolean;
   min ?: number;
   max?:number
 };
@@ -97,7 +96,6 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     tooltip,
     isPositiveNumber,
     idNumber,
-    justPersian,
     min,
     max
     
@@ -138,9 +136,6 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
         val = val.replace(/^0+/, "");
       }
     }
-    if (props.justPersian) {
-      val = val.replace(/[^\u0600-\u06FF\s]/g, "");
-    }
 
     setInternalValue(val);
     formField.setValueState(val);
@@ -168,7 +163,7 @@ const InputComponent: ForwardRefRenderFunction<InputRefHandle, InputProps> = (
     if (value !== internalValue) {
       setInternalValue(value || "");
     }
-  }, [value]);
+  }, [value , internalValue]);
 
   return (
     <div

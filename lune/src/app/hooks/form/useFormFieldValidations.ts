@@ -22,9 +22,6 @@ export const useFormFieldValidations = (params: formValidationParams) => {
     strongPassword,
     ip,
     phone,
-    hasHoursAndMinutes,
-    isPositiveNumber,
-    idNumber,
   } = validations;
 
   const validationObject: Record<any, any> = {

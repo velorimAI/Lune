@@ -52,7 +52,7 @@ export function NavMain({ items }: { items: NavMainTypes[] }) {
       });
       return newState;
     });
-  }, []);
+  }, [items, pathname]);
 
   const toggleSection = (title: string) => {
     setOpenSections((prev) => {

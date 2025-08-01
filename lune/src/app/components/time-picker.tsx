@@ -15,7 +15,6 @@ interface TimePickerProps {
   hasNow?: boolean;
   timezone?: string;
   label?: string;
-  name?: string;
   errorMessage?: string;
   tooltip?: string | React.ReactNode;
   tooltipTriggerIcon?: any;
@@ -31,7 +30,6 @@ export const TimePicker = ({
   hasNow = false,
   timezone = 'Asia/Tehran',
   label,
-  name,
   errorMessage,
   tooltip,
   tooltipTriggerIcon,

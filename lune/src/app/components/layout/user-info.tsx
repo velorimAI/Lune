@@ -23,7 +23,7 @@ const UserInfo = () => {
                 setUser({ name, lastname, role });
             }
         }
-    }, []);
+    }, [role]);
 
     if (!user) return <p className="text-sm text-gray-500">در حال بارگذاری...</p>;
 

@@ -3,7 +3,7 @@ import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { Label } from "@/components/ui/label";
-import { CalendarDays, X } from "lucide-react";
+import { CalendarDays} from "lucide-react";
 import { useRef, useState } from "react";
 
 interface JalaliDatePickerProps {

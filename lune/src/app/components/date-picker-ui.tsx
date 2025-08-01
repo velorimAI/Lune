@@ -15,7 +15,6 @@ import { CalendarDays } from "lucide-react";
 import { useRef, useState } from "react";
 import clsx from "clsx";
 import { FormLabel } from "./custom-form/form-label";
-import { Input } from "./custom-form/input";
 import { Button } from "./button";
 
 type JalaliDatePickerProps<T extends FieldValues> = {
@@ -49,13 +48,6 @@ const sanitizeAndFormat = (s: string) => {
   return cleaned.slice(0, 10); // Limit to YYYY/MM/DD format
 };
 
-const JALALI_REGEX = /^\d{4}\/\d{2}\/\d{2}$/;
-
-const isValidJalaliString = (val: string) => {
-  if (!JALALI_REGEX.test(val)) return false;
-  const [y, m, d] = val.split("/").map(Number);
-  return jalaali.isValidJalaaliDate(y, m, d);
-};
 
 // Enhanced validation with better error messages
 const getValidationError = (value: string, required: boolean) => {
@@ -203,7 +195,7 @@ export function JalaliDatePicker<T extends FieldValues>({
                 calendarPosition="bottom-right"
                 containerStyle={{ direction: "rtl" }}
                 className="text-right"
-                render={(_val, openCalendar) => (
+                render={() => (
                   <div className="relative w-full">
                     <input
                       id={name}

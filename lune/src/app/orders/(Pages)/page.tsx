@@ -44,7 +44,7 @@ const Orders  = () => {
     } else if (role === "انباردار") {
       setActiveTab("در انتظار تائید شرکت");
     }
-  }, []);
+  }, [role]);
 
 
   return (

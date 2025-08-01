@@ -7,32 +7,25 @@ import { Input } from '@/app/components/custom-form/input';
 import { PackagePlus } from 'lucide-react';
 import { Form } from '@/app/components/custom-form/form';
 import { useAddItem } from '../hooks/use-add-item';
-import { AxiosError } from 'axios';
 
 interface AddUserModalProps {
     refetch?: () => void;
 }
 
-interface AddItemFormData {
-    part_name: string;
-    technical_code: string;
-}
 
-export const AddItemModal = ({ refetch }: AddUserModalProps) => {
+export const AddItemModal = ({ refetch } : AddUserModalProps) => {
     const [open, setOpen] = useState(false);
     const { mutate, isPending } = useAddItem();
 
-    const handleSubmit = (values?: Record<string, any>) => {
-        const formData = values as AddItemFormData;
-
+    const handleSubmit = (formData: any) => {
         mutate(formData, {
             onSuccess: () => {
                 refetch?.();
                 toast.success(`قطعه "${formData.part_name}" با موفقیت اضافه شد`);
                 setOpen(false);
             },
-            onError: unknown => {
-                toast.error(error?.response?.data?.message || 'خطا در افزودن قطعه');
+            onError: (error: any) => {
+                toast.error(error?.response?.data?.message || "خطا در افزودن قطعه");
             },
         });
     };
@@ -54,22 +47,25 @@ export const AddItemModal = ({ refetch }: AddUserModalProps) => {
                 title="اضافه کردن قطعه جدید"
                 hideCancel
                 hideConfirm
-                contentClassName="pb-2"
+                contentClassName='pb-2'
                 onCancel={() => setOpen(false)}
             >
-                <Form
-                    cancelText="لغو"
-                    submitText="اضافه"
-                    onSubmit={handleSubmit}
-                    onCancel={() => setOpen(false)}
-                    submitLoading={isPending}
-                >
+                <Form cancelText='لغو' submitText='اضافه' onSubmit={handleSubmit} onCancel={() => setOpen(false)} submitLoading={isPending} >
                     <div className="grid grid-cols-2 gap-4">
-                        <Input label="نام قطعه" name="part_name" required />
-                        <Input label="شماره فنی" name="technical_code" required />
+                        <Input
+                            label="نام قطعه"
+                            name="part_name"
+                            required
+                        />
+                        <Input
+                            label="شماره فنی"
+                            name="technical_code"
+                            required
+                        />
                     </div>
                 </Form>
             </Modal>
         </>
     );
 };
+

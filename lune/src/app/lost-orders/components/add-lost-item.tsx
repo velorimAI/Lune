@@ -30,7 +30,7 @@ export const AddLostItem = ({ refetch }: AddUserModalProps) => {
     piece_name: "",
     part_id: ""
   });
-  const [hasSelected, setHasSelected] = useState(false);
+  const [, setHasSelected] = useState(false);
   const queryClient = useQueryClient();
 
 
@@ -93,6 +93,7 @@ export const AddLostItem = ({ refetch }: AddUserModalProps) => {
           submitText="اضافه"
           onSubmit={handleSubmit}
           onCancel={() => setOpen(false)}
+          submitLoading={isPending}
         >
           <div className="grid grid-cols-3 gap-4">
             <PartNameInput

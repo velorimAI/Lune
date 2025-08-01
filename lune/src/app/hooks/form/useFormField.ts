@@ -22,14 +22,14 @@ export const useFormField = (params: formFieldParams) => {
     }
     setValueState(result);
    
-  }, [initialValue]);
+  }, [initialValue , type]);
 
   useEffect(() => {
     if (setValue && name) {
       setValue(name, valueState);
     }
    
-  }, [name, valueState]);
+  }, [name, valueState , setValue]);
 
   useEffect(() => {
     return () => {

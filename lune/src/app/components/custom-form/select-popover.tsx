@@ -158,13 +158,11 @@ const SelectPopoverComponent: ForwardRefRenderFunction<
     if (value !== selectedValue) {
       setSelectedValue(value || "");
     }
-  }, [value]);
+  }, [value , selectedValue]);
 
   useEffect(() => {
-    if (open) {
-      // همیشه سرچ را پاک کن وقتی باز می‌شود
+    if (open) {      
       setSearchTerm("");
-      // فوکوس را بلافاصله به input سرچ بده
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 10);

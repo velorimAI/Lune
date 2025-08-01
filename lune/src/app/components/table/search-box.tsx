@@ -1,6 +1,6 @@
 "use client";
 
-import {useState, useCallback, useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import debounce from "lodash/debounce";
 import { cn } from "@/app/utils/cn";
 import { Input } from "../custom-form/input";
@@ -27,19 +27,29 @@ export const SearchBox = ({
   setSearchText,
   searchField,
   setSearchField,
-} : SearchBoxProps) => {
+}: SearchBoxProps) => {
   const [internalSearch, setInternalSearch] = useState(searchText || "");
 
   useEffect(() => {
     setInternalSearch(searchText || "");
   }, [searchText]);
 
-  const handleDebounceFn = (value: string) => {
-    onSearch?.(value);
-    setSearchText?.(value);
-  };
+  // ✅ ایجاد debounce تابع جستجو
+  const debounceFn = useMemo(
+    () =>
+      debounce((value: string) => {
+        onSearch?.(value);
+        setSearchText?.(value);
+      }, 500),
+    [onSearch, setSearchText]
+  );
 
-  const debounceFn = useCallback(debounce(handleDebounceFn, 500), []);
+  // ✅ پاک‌سازی debounce در هنگام unmount
+  useEffect(() => {
+    return () => {
+      debounceFn.cancel();
+    };
+  }, [debounceFn]);
 
   const handleInputChange = (value?: string) => {
     const val = value || "";
@@ -56,21 +66,20 @@ export const SearchBox = ({
         disabled={disabled}
         className="flex-1 min-h-[0px]"
         clearable
-
       />
+
       {setSearchField && (
         <Select
           value={searchField}
           onChange={setSearchField}
           options={[
-            { label: 'همه', value: 'all' },
-            { label: 'نام', value: 'name' },
-           
-            { label: 'کد ملی', value: 'code_meli' },
-            { label: 'نقش', value: 'role' },
+            { label: "همه", value: "all" },
+            { label: "نام", value: "name" },
+            { label: "کد ملی", value: "code_meli" },
+            { label: "نقش", value: "role" },
           ]}
-          className=" min-h-[0px] mt-2"
-          />
+          className="min-h-[0px] mt-2"
+        />
       )}
     </div>
   );

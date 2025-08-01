@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   MessageCircle,
   ArrowRight,
@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useQuery } from '@tanstack/react-query';
 import { getLogsList } from '@/app/apis/admin/adminService';
-import { getActionStyle } from '../utils/getActionStyle';
 import { HotkeyRedirect } from '@/app/components/escape-hot-key';
 
 export default function LogsPage() {
@@ -27,10 +26,6 @@ export default function LogsPage() {
   });
 
   const logs = data?.logs || [];
-
-  useEffect(() => {
-    console.log('Logs data:', logs);
-  }, [logs]);
 
   const formatTime = (time: string) => time?.slice(0, 5);
 

@@ -1,4 +1,4 @@
-import { addItem, deleteOrder } from "@/app/apis/orders/orderService";
+import { addItem } from "@/app/apis/orders/orderService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 

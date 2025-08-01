@@ -23,7 +23,7 @@ export default function SettingsPage() {
   const { mutate, isPending } = useUpdateSetting();
   const router = useRouter();
 
-  const handleSubmit = (formData: any) => {
+  const handleSubmit = (formData?: Record<any, any>) => {
     mutate({ updatedData: formData }, {
       onSuccess: () => {
         toast.success("تنظیمات با موفقیت بروزرسانی شد");

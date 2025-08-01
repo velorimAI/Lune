@@ -67,7 +67,7 @@ export const Form: FC<FormProps> = (props) => {
     if (onFormState) {
       onFormState({ ...methods.formState });
     }
-  }, [methods.formState]);
+  }, [methods.formState , onFormState]);
 
   const onFormSubmit = (values: Record<any, any> = {}) => {
     const result = sanitizeValues
